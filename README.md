@@ -37,6 +37,6 @@ Catatan yang perlu diperbaiki :
 -
 - Error Update di Controllers/DashboardController.php
 - Ini menggunakan dependensi public atau mengambil dari sumber luar jadi ada kendala bagi yang mau clone-nya
-- Masih belum bisa untuk Profil Admin
+- Masih Error Index untuk Profil Admin
 
 
