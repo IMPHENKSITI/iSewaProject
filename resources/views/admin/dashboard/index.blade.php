@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>Dashboard - Analytics | Sneat</title>
     <meta name="description" content="" />
-    <link rel="icon" type="image/x-icon" href="{{ asset('Admin/img/favicon/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('Admin/img/favicon/isewalogo.png') }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
@@ -61,7 +61,7 @@
                                 </g>
                             </svg>
                         </span>
-                        <span class="app-brand-text demo menu-text fw-bolder ms-2">Sneat</span>
+                        <span class="app-brand-text demo menu-text fw-bolder ms-2">iSewa</span>
                     </a>
                     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
                         <i class="bx bx-chevron-left bx-sm align-middle"></i>
@@ -480,14 +480,14 @@
                                     <div class="d-flex align-items-end row">
                                         <div class="col-sm-7">
                                             <div class="card-body">
-                                                <h5 class="card-title text-primary">Congratulations John! 🎉</h5>
-                                                <p class="mb-4">You have done <span class="fw-bold">72%</span> more sales today. Check your new badge in your profile.</p>
+                                                <h5 class="card-title text-primary">Selamat Datang di iSewa 🎉</h5>
+                                                <p class="mb-4">Sistem Penyewaan Alat dan Promosi Usaha BUMDes berbasis Digital <span class="fw-bold">Desa Pematang Duku Timur</span> Kamu masuk sebagai Admin.</p>
                                                 <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a>
                                             </div>
                                         </div>
                                         <div class="col-sm-5 text-center text-sm-left">
                                             <div class="card-body pb-0 px-0 px-md-4">
-                                                <img src="{{ asset('Admin/img/illustrations/man-with-laptop-light.png') }}" height="140" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png" />
+                                                <img src="{{ asset('Admin/img/illustrations/isewalogo.png') }}" height="210" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png" />
                                             </div>
                                         </div>
                                     </div>
@@ -500,7 +500,7 @@
                                             <div class="card-body">
                                                 <div class="card-title d-flex align-items-start justify-content-between">
                                                     <div class="avatar flex-shrink-0">
-                                                        <img src="{{ asset('Admin/img/icons/unicons/chart-success.png') }}" alt="chart success" class="rounded" />
+                                                        <img src="{{ asset('Admin/img/5.png') }}" alt="" class="rounded w-75" />
                                                     </div>
                                                     <div class="dropdown">
                                                         <button class="btn p-0" type="button" id="cardOpt3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -512,8 +512,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <span class="fw-semibold d-block mb-1">Profit</span>
-                                                <h3 class="card-title mb-2">$12,628</h3>
+                                                <span class="fw-semibold d-block mb-1 small">Unit Penyewaan Alat</span>
+                                                <h3 class="card-title mb-2"></h3>
                                                 <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> +72.80%</small>
                                             </div>
                                         </div>
@@ -812,7 +812,7 @@
                             <div class="col-md-6 col-lg-4 order-2 mb-4">
                                 <div class="card h-100">
                                     <div class="card-header d-flex align-items-center justify-content-between">
-                                        <h5 class="card-title m-0 me-2">Transactions</h5>
+                                        <h5 class="card-title m-0 me-2">Populer</h5>
                                         <div class="dropdown">
                                             <button class="btn p-0" type="button" id="transactionID" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="bx bx-dots-vertical-rounded"></i>
@@ -832,12 +832,12 @@
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
-                                                        <small class="text-muted d-block mb-1">Paypal</small>
-                                                        <h6 class="mb-0">Send money</h6>
+                                                        <small class="text-muted d-block mb-1">Unit Penjualan Gas</small>
+                                                        <h6 class="mb-0">Gas LPG 3 Kg</h6>
                                                     </div>
                                                     <div class="user-progress d-flex align-items-center gap-1">
-                                                        <h6 class="mb-0">+82.6</h6>
-                                                        <span class="text-muted">USD</span>
+                                                        <h6 class="mb-0">+15.000.000</h6>
+                                                        <span class="text-muted">IDR</span>
                                                     </div>
                                                 </div>
                                             </li>
@@ -847,12 +847,12 @@
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
-                                                        <small class="text-muted d-block mb-1">Wallet</small>
-                                                        <h6 class="mb-0">Mac'D</h6>
+                                                        <small class="text-muted d-block mb-1">Unit Penyewaan Alat</small>
+                                                        <h6 class="mb-0">Sound System</h6>
                                                     </div>
                                                     <div class="user-progress d-flex align-items-center gap-1">
-                                                        <h6 class="mb-0">+270.69</h6>
-                                                        <span class="text-muted">USD</span>
+                                                        <h6 class="mb-0">+8.500.000</h6>
+                                                        <span class="text-muted">IDR</span>
                                                     </div>
                                                 </div>
                                             </li>
@@ -862,12 +862,12 @@
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
-                                                        <small class="text-muted d-block mb-1">Transfer</small>
-                                                        <h6 class="mb-0">Refund</h6>
+                                                        <small class="text-muted d-block mb-1">Unit Penyewaan Alat</small>
+                                                        <h6 class="mb-0">Tenda Komplit</h6>
                                                     </div>
                                                     <div class="user-progress d-flex align-items-center gap-1">
-                                                        <h6 class="mb-0">+637.91</h6>
-                                                        <span class="text-muted">USD</span>
+                                                        <h6 class="mb-0">+7.000.000</h6>
+                                                        <span class="text-muted">IDR</span>
                                                     </div>
                                                 </div>
                                             </li>
@@ -877,12 +877,12 @@
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
-                                                        <small class="text-muted d-block mb-1">Credit Card</small>
-                                                        <h6 class="mb-0">Ordered Food</h6>
+                                                        <small class="text-muted d-block mb-1">Unit Penyewaan Alat</small>
+                                                        <h6 class="mb-0">Meja dan Kursi</h6>
                                                     </div>
                                                     <div class="user-progress d-flex align-items-center gap-1">
-                                                        <h6 class="mb-0">-838.71</h6>
-                                                        <span class="text-muted">USD</span>
+                                                        <h6 class="mb-0">-500.000</h6>
+                                                        <span class="text-muted">IDR</span>
                                                     </div>
                                                 </div>
                                             </li>
@@ -892,12 +892,12 @@
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
-                                                        <small class="text-muted d-block mb-1">Wallet</small>
-                                                        <h6 class="mb-0">Starbucks</h6>
+                                                        <small class="text-muted d-block mb-1">Unit Pertanian</small>
+                                                        <h6 class="mb-0">Bermitra</h6>
                                                     </div>
                                                     <div class="user-progress d-flex align-items-center gap-1">
-                                                        <h6 class="mb-0">+203.33</h6>
-                                                        <span class="text-muted">USD</span>
+                                                        <h6 class="mb-0">+2.500.000</h6>
+                                                        <span class="text-muted">IDR</span>
                                                     </div>
                                                 </div>
                                             </li>
@@ -907,12 +907,12 @@
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
-                                                        <small class="text-muted d-block mb-1">Mastercard</small>
-                                                        <h6 class="mb-0">Ordered Food</h6>
+                                                        <small class="text-muted d-block mb-1">Unit Simpan Pinjam</small>
+                                                        <h6 class="mb-0">Pengajuan Pinjaman</h6>
                                                     </div>
                                                     <div class="user-progress d-flex align-items-center gap-1">
-                                                        <h6 class="mb-0">-92.45</h6>
-                                                        <span class="text-muted">USD</span>
+                                                        <h6 class="mb-0">-200.000</h6>
+                                                        <span class="text-muted">IDR</span>
                                                     </div>
                                                 </div>
                                             </li>
@@ -931,8 +931,8 @@
                                 <script>
                                     document.write(new Date().getFullYear());
                                 </script>
-                                , made with ❤️ by
-                                <a href="https://themeselection.com" target="_blank" class="footer-link fw-bolder">ThemeSelection</a>
+                                , made with 😎 by
+                                <a href="https://themeselection.com" target="_blank" class="footer-link fw-bolder">BUMDes Desa Pematang Duku Timur</a>
                             </div>
                             <div>
                                 <a href="https://themeselection.com/license/" class="footer-link me-4" target="_blank">License</a>
