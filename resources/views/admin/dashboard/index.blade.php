@@ -28,7 +28,7 @@
                 <div class="app-brand demo">
                     <a href="{{ route('admin.dashboard') }}" class="app-brand-link">
                         <span class="app-brand-logo demo">
-                            <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <img src="img/illustrations/isewalogo.png" alt="Logo" width="130" height="130">
                                 <defs>
                                     <path d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z" id="path-1"></path>
                                     <path d="M5.47320593,6.00457225 C4.05321814,8.216144 4.36334763,10.0722806 6.40359441,11.5729822 C8.61520715,12.571656 10.0999176,13.2171421 10.8577257,13.5094407 L15.5088241,14.433041 L18.6192054,7.984237 C15.5364148,3.11535317 13.9273018,0.573395879 13.7918663,0.358365126 C13.5790555,0.511491653 10.8061687,2.3935607 5.47320593,6.00457225 Z" id="path-3"></path>
@@ -61,7 +61,6 @@
                                 </g>
                             </svg>
                         </span>
-                        <span class="app-brand-text demo menu-text fw-bolder ms-2">iSewa</span>
                     </a>
                     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
                         <i class="bx bx-chevron-left bx-sm align-middle"></i>
@@ -410,7 +409,7 @@
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('Admin/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle" />
+                                        <img src="{{ asset('Admin/img/avatars/hamizulf.jpg') }}" alt class="w-px-40 h-auto rounded-circle" />
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -480,14 +479,14 @@
                                     <div class="d-flex align-items-end row">
                                         <div class="col-sm-7">
                                             <div class="card-body">
-                                                <h5 class="card-title text-primary">Selamat Datang di iSewa 🎉</h5>
+                                                <h5 class="card-title text-primary">Selamat Datang di iSewa 🏛️</h5>
                                                 <p class="mb-4">Sistem Penyewaan Alat dan Promosi Usaha BUMDes berbasis Digital <span class="fw-bold">Desa Pematang Duku Timur</span> Kamu masuk sebagai Admin.</p>
                                                 <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a>
                                             </div>
                                         </div>
                                         <div class="col-sm-5 text-center text-sm-left">
                                             <div class="card-body pb-0 px-0 px-md-4">
-                                                <img src="{{ asset('Admin/img/illustrations/isewalogo.png') }}" height="210" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png" />
+                                                <img src="{{ asset('Admin/img/illustrations/bermasab.png') }}" height="210" alt="View Badge User" data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png" />
                                             </div>
                                         </div>
                                     </div>
@@ -523,7 +522,7 @@
                                             <div class="card-body">
                                                 <div class="card-title d-flex align-items-start justify-content-between">
                                                     <div class="avatar flex-shrink-0">
-                                                        <img src="{{ asset('Admin/img/icons/unicons/wallet-info.png') }}" alt="Credit Card" class="rounded" />
+                                                        <img src="{{ asset('Admin/img/icons/unicons/6.png') }}" alt="" class="rounded w-75" />
                                                     </div>
                                                     <div class="dropdown">
                                                         <button class="btn p-0" type="button" id="cardOpt6" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -535,8 +534,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <span>Sales</span>
-                                                <h3 class="card-title text-nowrap mb-1">$4,679</h3>
+                                                <span class="fw-semibold d-block mb-1 small">Unit Penjualan Gas</span>
+
                                                 <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> +28.42%</small>
                                             </div>
                                         </div>
@@ -601,7 +600,7 @@
                                             <div class="card-body">
                                                 <div class="card-title d-flex align-items-start justify-content-between">
                                                     <div class="avatar flex-shrink-0">
-                                                        <img src="{{ asset('Admin/img/icons/unicons/paypal.png') }}" alt="Credit Card" class="rounded" />
+                                                        <img src="{{ asset('Admin/img/icons/unicons/4.png') }}" alt="" class="rounded w-75" />
                                                     </div>
                                                     <div class="dropdown">
                                                         <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -613,8 +612,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <span class="d-block mb-1">Payments</span>
-                                                <h3 class="card-title text-nowrap mb-2">$2,456</h3>
+                                                <span class="fw-semibold d-block mb-1 small">Unit Pertanian dan Perkebunan</span>
+
                                                 <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i> -14.82%</small>
                                             </div>
                                         </div>
@@ -624,7 +623,7 @@
                                             <div class="card-body">
                                                 <div class="card-title d-flex align-items-start justify-content-between">
                                                     <div class="avatar flex-shrink-0">
-                                                        <img src="{{ asset('Admin/img/icons/unicons/cc-primary.png') }}" alt="Credit Card" class="rounded" />
+                                                        <img src="{{ asset('Admin/img/icons/unicons/isewa.png') }}" alt="" class="rounded w-75" />
                                                     </div>
                                                     <div class="dropdown">
                                                         <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -636,8 +635,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <span class="fw-semibold d-block mb-1">Transactions</span>
-                                                <h3 class="card-title mb-2">$14,857</h3>
+                                                <span class="fw-semibold d-block mb-1 small">Unit Penjualan Gas</span>
+      
                                                 <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> +28.14%</small>
                                             </div>
                                         </div>
@@ -649,12 +648,12 @@
                                                 <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
                                                     <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
                                                         <div class="card-title">
-                                                            <h5 class="text-nowrap mb-2">Profile Report</h5>
-                                                            <span class="badge bg-label-warning rounded-pill">Year 2021</span>
+                                                            <h5 class="text-nowrap mb-2">Total Pendapatan</h5>
+                                                            <span class="badge bg-label-warning rounded-pill">Tahun 2025</span>
                                                         </div>
                                                         <div class="mt-sm-auto">
                                                             <small class="text-success text-nowrap fw-semibold"><i class="bx bx-chevron-up"></i> 68.2%</small>
-                                                            <h3 class="mb-0">$84,686k</h3>
+                                                            <h3 class="mb-0">Rp.50.000.000</h3>
                                                         </div>
                                                     </div>
                                                     <div id="profileReportChart"></div>
@@ -779,7 +778,7 @@
                                             <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
                                                 <div class="d-flex p-4 pt-3">
                                                     <div class="avatar flex-shrink-0 me-3">
-                                                        <img src="{{ asset('Admin/img/icons/unicons/wallet.png') }}" alt="User" />
+                                                        <img src="{{ asset('Admin/img/icons/unicons/ii.png') }}" alt="" class="rounded w-75" />
                                                     </div>
                                                     <div>
                                                         <small class="text-muted d-block">Total Balance</small>
@@ -828,7 +827,7 @@
                                         <ul class="p-0 m-0">
                                             <li class="d-flex mb-4 pb-1">
                                                 <div class="avatar flex-shrink-0 me-3">
-                                                    <img src="{{ asset('Admin/img/icons/unicons/paypal.png') }}" alt="User" class="rounded" />
+                                                    <img src="{{ asset('Admin/img/icons/unicons/gas.png') }}" alt="" class="rounded w-70" />
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
@@ -843,7 +842,7 @@
                                             </li>
                                             <li class="d-flex mb-4 pb-1">
                                                 <div class="avatar flex-shrink-0 me-3">
-                                                    <img src="{{ asset('Admin/img/icons/unicons/wallet.png') }}" alt="User" class="rounded" />
+                                                    <img src="{{ asset('Admin/img/icons/unicons/sound system.png') }}" alt="" class="rounded w-7"0 />
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
@@ -858,7 +857,7 @@
                                             </li>
                                             <li class="d-flex mb-4 pb-1">
                                                 <div class="avatar flex-shrink-0 me-3">
-                                                    <img src="{{ asset('Admin/img/icons/unicons/chart.png') }}" alt="User" class="rounded" />
+                                                    <img src="{{ asset('Admin/img/icons/unicons/tendakom.jpg') }}" alt="" class="rounded w-70" />
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
@@ -873,7 +872,7 @@
                                             </li>
                                             <li class="d-flex mb-4 pb-1">
                                                 <div class="avatar flex-shrink-0 me-3">
-                                                    <img src="{{ asset('Admin/img/icons/unicons/cc-success.png') }}" alt="User" class="rounded" />
+                                                    <img src="{{ asset('Admin/img/icons/unicons/tendakursi.jpg') }}" alt="" class="rounded w-70" />
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
@@ -888,7 +887,7 @@
                                             </li>
                                             <li class="d-flex mb-4 pb-1">
                                                 <div class="avatar flex-shrink-0 me-3">
-                                                    <img src="{{ asset('Admin/img/icons/unicons/wallet.png') }}" alt="User" class="rounded" />
+                                                    <img src="{{ asset('Admin/img/icons/unicons/mitra.png') }}" alt="" class="rounded w-70" />
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
@@ -903,7 +902,7 @@
                                             </li>
                                             <li class="d-flex">
                                                 <div class="avatar flex-shrink-0 me-3">
-                                                    <img src="{{ asset('Admin/img/icons/unicons/cc-warning.png') }}" alt="User" class="rounded" />
+                                                    <img src="{{ asset('Admin/img/icons/unicons/sp.png') }}" alt="" class="rounded w-70" />
                                                 </div>
                                                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                                     <div class="me-2">
