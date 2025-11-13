@@ -3,6 +3,16 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\Unit\PenyewaanAlatController;
+use App\Http\Controllers\Admin\Unit\PenjualanGasController;
+use App\Http\Controllers\Admin\Unit\PertanianPerkebunanController;
+use App\Http\Controllers\Admin\Unit\SimpanPinjamController;
+use App\Http\Controllers\Admin\Aktivitas\PermintaanController;
+use App\Http\Controllers\Admin\Aktivitas\TransaksiController;
+use App\Http\Controllers\Admin\Aktivitas\KemitraanController;
+use App\Http\Controllers\Admin\Laporan\LaporanController;
+use App\Http\Controllers\Admin\BumdesProfileController;
+use App\Http\Controllers\Admin\SettingController; // Gunakan SettingController yang baru untuk halaman setting utama
 
 // Welcome Page
 Route::get('/', function () {
@@ -34,10 +44,11 @@ Route::get('/admin/profile', [DashboardController::class, 'profile'])->name('adm
 Route::post('/admin/profile', [DashboardController::class, 'profileUpdate'])->name('admin.profile.update');
 
 // ============================================
-// SETTINGS ROUTES
+// SETTINGS ROUTES (Menggunakan SettingController yang baru)
 // ============================================
-Route::get('/admin/settings', [DashboardController::class, 'settings'])->name('admin.settings');
-Route::post('/admin/settings', [DashboardController::class, 'settingsUpdate'])->name('admin.settings.update');
+// Route untuk halaman utama pengaturan, diganti untuk menggunakan controller baru
+Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
+Route::post('/admin/settings', [SettingController::class, 'update'])->name('admin.settings.update'); // Misalnya untuk update pengaturan umum
 
 // ============================================
 // USERS MANAGEMENT ROUTES
@@ -60,3 +71,45 @@ Route::post('/admin/settings/notifications', [DashboardController::class, 'notif
 // MAINTENANCE ROUTE
 // ============================================
 Route::get('/maintenance', [DashboardController::class, 'maintenance'])->name('maintenance');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// ============================================
+// ROUTES BARU SESUAI STRUKTUR MENU UNTUK SIDEBAR INDEX.BLADE.PHP
+// ============================================
+
+// Rute untuk Notifikasi (diperlukan oleh sidebar index.blade.php)
+Route::get('/admin/notifications', [DashboardController::class, 'notifications'])->name('admin.notifications.index');
+
+// Grup Rute untuk Unit Layanan (diperlukan oleh sidebar index.blade.php)
+Route::prefix('admin/unit')->group(function () {
+    Route::get('/penyewaan', [DashboardController::class, 'index'])->name('admin.unit.penyewaan.index');
+    Route::get('/gas', [DashboardController::class, 'index'])->name('admin.unit.gas.index');
+    Route::get('/pertanian', [DashboardController::class, 'index'])->name('admin.unit.pertanian.index');
+    Route::get('/simpanpinjam', [DashboardController::class, 'index'])->name('admin.unit.simpanpinjam.index');
+});
+
+// Grup Rute untuk Aktivitas (diperlukan oleh sidebar index.blade.php)
+Route::prefix('admin/aktivitas')->group(function () {
+    Route::get('/permintaan', [DashboardController::class, 'index'])->name('admin.aktivitas.permintaan.index');
+    Route::get('/transaksi', [DashboardController::class, 'index'])->name('admin.aktivitas.transaksi.index');
+    Route::get('/kemitraan', [DashboardController::class, 'index'])->name('admin.aktivitas.kemitraan.index');
+});
+
+// Grup Rute untuk Data & Laporan (diperlukan oleh sidebar index.blade.php)
+Route::prefix('admin/laporan')->group(function () {
+    Route::get('/transaksi', [DashboardController::class, 'index'])->name('admin.laporan.transaksi');
+    Route::get('/panen', [DashboardController::class, 'index'])->name('admin.laporan.panen');
+    Route::get('/pendapatan', [DashboardController::class, 'index'])->name('admin.laporan.pendapatan');
+    Route::get('/log', [DashboardController::class, 'index'])->name('admin.laporan.log');
+});
+
+// Rute untuk Manajemen Pengguna (diperlukan oleh sidebar index.blade.php)
+// Sudah ada: Route::get('/admin/users', [DashboardController::class, 'usersList'])->name('admin.users.index');
+
+// Rute untuk Profil BUMDes (diperlukan oleh sidebar index.blade.php)
+Route::get('/admin/bumdes/profile', [DashboardController::class, 'profile'])->name('admin.bumdes.profile');
+// Rute untuk Profil iSewa (baru)
+Route::get('/admin/isewa/profile', [DashboardController::class, 'index'])->name('admin.isewa.profile');
+
+// Rute untuk Pengaturan (Selain akun) - Jika Anda ingin tautan ke pengaturan global di sidebar
+// Sudah ada: Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
