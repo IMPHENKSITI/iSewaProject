@@ -39,4 +39,10 @@ Catatan yang perlu diperbaiki :
 - Ini menggunakan dependensi public atau mengambil dari sumber luar jadi ada kendala bagi yang mau clone-nya
 - Masih Error Index untuk Profil Admin
 
+## Version 0.2.5
 
+- Penambahan model
+- Penambahan database/migrations
+- Pengembangan layout admin
+- Pemecahan index.blade.php nya admin
+- Catatan klo mau mengembangkan folder nya lebih lanjut sesuaikan di ```routes\web.php ``` dan ```layouts\admin.blade.php ``` untuk membuat Controllernya.
