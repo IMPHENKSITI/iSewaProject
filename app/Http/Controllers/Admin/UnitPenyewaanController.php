@@ -14,7 +14,7 @@ class UnitPenyewaanController extends Controller
      */
     public function index()
     {
-        $barangs = Barang::where('kategori', 'Per lengkapan Acara')->get(); // Filter berdasarkan kategori
+        $barangs = Barang::where('kategori', 'Per lengkapan Acara')->paginate(5); // Filter berdasarkan kategori
         return view('admin.unit.penyewaan.index', compact('barangs'));
     }
 

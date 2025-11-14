@@ -104,7 +104,7 @@ Route::prefix('admin/laporan')->group(function () {
     Route::get('/log', [DashboardController::class, 'index'])->name('admin.laporan.log');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->group(function () {
     // ... route lainnya ...
 
     // Unit Penyewaan Alat - Tambahkan ini jika belum ada
