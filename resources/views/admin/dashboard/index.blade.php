@@ -24,7 +24,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         .unit-card {
-            border-left: 4px solid #696cff;
+            border-left: 4px solid #007bff;
             transition: all 0.3s ease;
         }
         .unit-card:hover {
@@ -69,12 +69,12 @@
             transition: all 0.3s ease;
         }
         .nav-link:hover {
-            color: #696cff !important;
-            background-color: rgba(105, 105, 255, 0.1) !important;
+            color: #007bff !important;
+            background-color: rgba(0, 123, 255, 0.1) !important;
         }
         .menu-item.active .menu-link {
-            background-color: rgba(105, 105, 255, 0.1) !important;
-            color: #696cff !important;
+            background-color: rgba(0, 123, 255, 0.1) !important;
+            color: #007bff !important;
         }
         .avatar {
             transition: transform 0.3s ease;
@@ -91,23 +91,6 @@
         .animate-fade-in.visible {
             opacity: 1;
             transform: translateY(0);
-        }
-        /* Product ranking badge */
-        .product-rank {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #696cff;
-            color: white;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            z-index: 1;
         }
         /* Chart container styling */
         .chart-container {
@@ -163,8 +146,8 @@
             border: 1px solid #e9ecef;
         }
         .product-card:hover {
-            border-color: #696cff;
-            box-shadow: 0 4px 12px rgba(105, 105, 255, 0.15);
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
         }
         /* Partnership card styling */
         .partnership-card {
@@ -172,8 +155,8 @@
             border: 1px solid #e9ecef;
         }
         .partnership-card:hover {
-            border-color: #696cff;
-            box-shadow: 0 4px 12px rgba(105, 105, 255, 0.15);
+            border-color: #007bff;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
         }
         /* Card header styling */
         .card-header {
@@ -238,6 +221,39 @@
             text-align: center;
             color: #6c757d;
         }
+        /* Fix for dropdown z-index */
+        .dropdown-menu {
+            z-index: 10000 !important;
+        }
+        /* Remove product ranking badge */
+        .product-rank {
+            display: none;
+        }
+        /* Product image styling */
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        /* Partnership card styling */
+        .partnership-card .avatar {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        /* Laporan BUMDes button styling */
+        .laporan-bumdes-btn {
+            margin-top: 1rem;
+        }
+        /* Gap between sections */
+        .section-gap {
+            margin-bottom: 2rem;
+        }
     </style>
     <script src="{{ asset('Admin/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('Admin/js/config.js') }}"></script>
@@ -275,25 +291,25 @@
                         <ul class="menu-sub">
                             <li class="menu-item">
                                 <a href="{{ route('admin.unit.penyewaan.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-wrench"></i>
+ 
                                     <div data-i18n="Unit Penyewaan Alat">Penyewaan Alat</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.unit.gas.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-fire"></i>
+                                  
                                     <div data-i18n="Unit Penjualan Gas">Penjualan Gas</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.unit.pertanian.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-sprout"></i>
+                             
                                     <div data-i18n="Unit Pertanian & Perkebunan">Pertanian & Perkebunan</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.unit.simpanpinjam.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-money"></i>
+                               
                                     <div data-i18n="Unit Simpan Pinjam">Simpan Pinjam</div>
                                 </a>
                             </li>
@@ -302,25 +318,25 @@
                     <!-- Aktivitas -->
                     <li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-activity"></i>
+                            <i class="menu-icon tf-icons bx bx-time"></i>
                             <div data-i18n="Aktivitas">Aktivitas</div>
                         </a>
                         <ul class="menu-sub">
                             <li class="menu-item">
                                 <a href="{{ route('admin.aktivitas.permintaan.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-envelope"></i>
+                                  
                                     <div data-i18n="Permintaan & Pengajuan">Permintaan & Pengajuan</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.aktivitas.transaksi.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-receipt"></i>
+                                
                                     <div data-i18n="Bukti Transaksi">Bukti Transaksi</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.aktivitas.kemitraan.index') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-handshake"></i>
+                               
                                     <div data-i18n="Kemitraan">Kemitraan</div>
                                 </a>
                             </li>
@@ -335,25 +351,25 @@
                         <ul class="menu-sub">
                             <li class="menu-item">
                                 <a href="{{ route('admin.laporan.transaksi') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-file"></i>
+                                    
                                     <div data-i18n="Laporan Transaksi">Laporan Transaksi</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.laporan.panen') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-leaf"></i>
+                                    
                                     <div data-i18n="Laporan Hasil Panen">Laporan Hasil Panen</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.laporan.pendapatan') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-pie-chart-alt"></i>
+                                  
                                     <div data-i18n="Laporan Pendapatan Total">Laporan Pendapatan</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.laporan.log') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons bx bx-log-in"></i>
+                                  
                                     <div data-i18n="Log Aktivitas">Log Aktivitas</div>
                                 </a>
                             </li>
@@ -466,6 +482,7 @@
                         </ul>
                     </div>
                 </nav>
+                
                 <!-- Content wrapper -->
                 <div class="content-wrapper">
                     <div class="container-xxl flex-grow-1 container-p-y">
@@ -513,6 +530,8 @@
                                 </div>
                             </div>
                         </div>
+                        <ul></ul>
+                        <div></div>
 
                         <!-- Unit Cards - SATU PER BARIS -->
                         <div class="row mb-4">
@@ -583,7 +602,7 @@
                                             </div>
                                             <div class="text-end">
                                                 <h5 class="text-success mb-0"><i class="bx bx-up-arrow-alt"></i> +26.14%</h5>
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -679,8 +698,10 @@
                                 </div>
                             </div>
                         </div>
+                        <ul></ul>
+                        <div></div>
 
-                        <!-- Three Column Layout for Financial Stats -->
+                       <!-- Three Column Layout for Financial Stats -->
                         <div class="row mb-4">
                             <div class="col-12">
                                 <div class="dashboard-stats-row">
@@ -690,7 +711,7 @@
                                             <div class="card-header">
                                                 <h5 class="card-title mb-0">Pendapatan dan Pengeluaran</h5>
                                             </div>
-                                            <div class="card-body">
+                                            <div class="body">
                                                 <div class="chart-wrapper">
                                                     <div id="totalRevenueChart" class="px-2"></div>
                                                 </div>
@@ -711,45 +732,119 @@
                                     </div>
 
                                     <!-- Middle Column: Grafik Transaksi (Persentase) -->
-                                    <div class="dashboard-stats-col">
-                                        <div class="card animate-fade-in">
-                                            <div class="card-header">
-                                                <h5 class="card-title mb-0">Grafik Transaksi</h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="chart-wrapper">
-                                                    <div id="transactionChart" class="px-2"></div>
-                                                </div>
-                                                <div class="text-center mt-3">
-                                                    <p class="mb-0">Perbandingan transaksi antar unit</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+<div class="dashboard-stats-col">
+  <div class="card animate-fade-in">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Perbandingan Transaksi</h5>
+    </div>
+    <ul></ul>
+    <div></div>
+    <div class="card-body d-flex flex-column justify-content-center align-items-center" style="height: 320px;">
+      <h2 class="mb-1">500</h2>
+      <span class="text-muted mb-2">Total Transaksi</span>
+      <!-- Chart di tengah dan besar -->
+      <ul></ul>
+      <div></div>
+      <ul></ul>
+      <div></div>
+      <div id="orderStatisticsChart" style="width: 130px; height: 280px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Script ApexCharts untuk Transaksi -->
+<script>
+  var optionsOrder = {
+    series: [58, 82],
+    chart: {
+      type: "donut",
+      width: 800,   // ✅ ukuran besar
+      height: 800,  // ✅ proporsional dengan card
+    },
+    labels: ["Weekly", "Others"],
+    colors: ["#28C76F", "#00CFE8"],
+    legend: { show: false },
+    dataLabels: { enabled: false },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: "100%", // ✅ besar dan tebal
+          labels: {
+            show: true,
+            name: {
+              show: true,
+              fontSize: "16px",
+              color: "#6e6b7b",
+              offsetY: 20,
+            },
+            value: {
+              show: true,
+              fontSize: "30px",
+              fontWeight: 600,
+              color: "#5e5873",
+              offsetY: -10,
+              formatter: function () {
+                return "38%";
+              },
+            },
+            total: {
+              show: true,
+              label: "2025",
+              fontSize: "16px",
+              color: "#6e6b7b",
+            },
+          },
+        },
+      },
+    },
+  };
+
+  var chartOrder = new ApexCharts(
+    document.querySelector("#orderStatisticsChart"),
+    optionsOrder
+  );
+  chartOrder.render();
+</script>
+
 
                                     <!-- Right Column: Anggota Mitra Aktif & Total Transaksi -->
                                     <div class="dashboard-stats-col">
                                         <div class="card animate-fade-in">
                                             <div class="card-header">
-                                                <h5 class="card-title mb-0">Anggota Mitra Aktif & Total Transaksi</h5>
-                                            </div>
+                                                <h5 class="card-title mb-0">Transaksi dan Pendapatan</h5>
                                             <div class="card-body">
-                                                <div class="d-flex justify-content-between mb-3">
-                                                    <div>
-                                                        <h6 class="mb-0">Anggota Mitra Aktif</h6>
-                                                        <div class="stat-value">156</div>
-                                                        <div class="stat-change positive">+42.9%</div>
+                                                <div class="tab-content p-0">
+                                            <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
+                                               
                                                     </div>
                                                     <div>
-                                                        <h6 class="mb-0">Total Transaksi</h6>
-                                                        <div class="stat-value">1,245</div>
-                                                        <div class="stat-change positive">+26.14%</div>
+                                                        <small class="text-muted d-block">Pendapatan</small>
+                                                        <div class="d-flex align-items-center">
+                                                            <h6 class="mb-0 me-1">$459.10</h6>
+                                                            <small class="text-success fw-semibold">
+                                                                <i class="bx bx-chevron-up"></i>
+                                                                42.9%
+                                                            </small>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="chart-placeholder">
-                                                    <p>Klik untuk melihat detail transaksi per unit</p>
+                                                <div id="incomeChart"></div>
+                                                <div class="d-flex justify-content-center pt-4 gap-2">
+                                                    <div class="flex-shrink-0">
+                                                        <div id="expensesOfWeek"></div>
+                                                    </div>
+                                                    <div>
+                                                        <p class="mb-n1 mt-1">Minggu ini</p>
+                                                        <small class="text-muted">Transaksi dan Pendapatan</small>
+                                                    </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                                <div class="chart-wrapper">
+                                                    <div id="transactionChart" class="px-2"></div>
+
+                                               
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -757,7 +852,7 @@
                         </div>
 
                         <!-- Popular Products -->
-                        <div class="row mb-2">
+                        <div class="row mb-2 section-gap">
                             <div class="col-12">
                                 <div class="card animate-fade-in">
                                     <div class="card-header p-3">
@@ -767,11 +862,10 @@
                                         <div class="row g-3">
                                             <div class="col-md-4 product-item">
                                                 <div class="card h-100 product-card">
-                                                    <div class="card-body p-2 position-relative">
-                                                        <div class="product-rank">1</div>
+                                                    <div class="card-body p-2">
                                                         <div class="d-flex align-items-center mb-2">
                                                             <div class="avatar flex-shrink-0 me-3">
-                                                                <img src="{{ asset('Admin/img/icons/unicons/gas.png') }}" alt="" class="rounded w-70" />
+                                                                <img src="{{ asset('Admin/img/icons/unicons/gas.png') }}" alt="" class="product-image" />
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="mb-0">Gas LPG 3 Kg</h6>
@@ -781,8 +875,7 @@
                                                         <div class="d-flex justify-content-between">
                                                             <div></div>
                                                             <div class="user-progress">
-                                                                <h6 class="mb-0">+15.000.000</h6>
-                                                                <span class="text-muted">IDR</span>
+                                                               
                                                             </div>
                                                         </div>
                                                     </div>
@@ -790,11 +883,10 @@
                                             </div>
                                             <div class="col-md-4 product-item">
                                                 <div class="card h-100 product-card">
-                                                    <div class="card-body p-2 position-relative">
-                                                        <div class="product-rank">2</div>
+                                                    <div class="card-body p-2">
                                                         <div class="d-flex align-items-center mb-2">
                                                             <div class="avatar flex-shrink-0 me-3">
-                                                                <img src="{{ asset('Admin/img/icons/unicons/sound system.png') }}" alt="" class="rounded w-70" />
+                                                                <img src="{{ asset('Admin/img/icons/unicons/sound system.png') }}" alt="" class="product-image" />
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="mb-0">Sound System</h6>
@@ -804,8 +896,7 @@
                                                         <div class="d-flex justify-content-between">
                                                             <div></div>
                                                             <div class="user-progress">
-                                                                <h6 class="mb-0">+8.500.000</h6>
-                                                                <span class="text-muted">IDR</span>
+                                                               
                                                             </div>
                                                         </div>
                                                     </div>
@@ -813,11 +904,10 @@
                                             </div>
                                             <div class="col-md-4 product-item">
                                                 <div class="card h-100 product-card">
-                                                    <div class="card-body p-2 position-relative">
-                                                        <div class="product-rank">3</div>
+                                                    <div class="card-body p-2">
                                                         <div class="d-flex align-items-center mb-2">
                                                             <div class="avatar flex-shrink-0 me-3">
-                                                                <img src="{{ asset('Admin/img/icons/unicons/tendakom.jpg') }}" alt="" class="rounded w-70" />
+                                                                <img src="{{ asset('Admin/img/icons/unicons/tendakom.jpg') }}" alt="" class="product-image" />
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="mb-0">Tenda Komplit</h6>
@@ -827,8 +917,7 @@
                                                         <div class="d-flex justify-content-between">
                                                             <div></div>
                                                             <div class="user-progress">
-                                                                <h6 class="mb-0">+7.000.000</h6>
-                                                                <span class="text-muted">IDR</span>
+                                                              
                                                             </div>
                                                         </div>
                                                     </div>
@@ -836,11 +925,10 @@
                                             </div>
                                             <div class="col-md-4 product-item">
                                                 <div class="card h-100 product-card">
-                                                    <div class="card-body p-2 position-relative">
-                                                        <div class="product-rank">4</div>
+                                                    <div class="card-body p-2">
                                                         <div class="d-flex align-items-center mb-2">
                                                             <div class="avatar flex-shrink-0 me-3">
-                                                                <img src="{{ asset('Admin/img/icons/unicons/tendakursi.jpg') }}" alt="" class="rounded w-70" />
+                                                                <img src="{{ asset('Admin/img/icons/unicons/tendakursi.jpg') }}" alt="" class="product-image" />
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="mb-0">Meja dan Kursi</h6>
@@ -850,8 +938,7 @@
                                                         <div class="d-flex justify-content-between">
                                                             <div></div>
                                                             <div class="user-progress">
-                                                                <h6 class="mb-0">-500.000</h6>
-                                                                <span class="text-muted">IDR</span>
+                                                            
                                                             </div>
                                                         </div>
                                                     </div>
@@ -859,11 +946,10 @@
                                             </div>
                                             <div class="col-md-4 product-item">
                                                 <div class="card h-100 product-card">
-                                                    <div class="card-body p-2 position-relative">
-                                                        <div class="product-rank">5</div>
+                                                    <div class="card-body p-2">
                                                         <div class="d-flex align-items-center mb-2">
                                                             <div class="avatar flex-shrink-0 me-3">
-                                                                <img src="{{ asset('Admin/img/icons/unicons/mitra.png') }}" alt="" class="rounded w-70" />
+                                                                <img src="{{ asset('Admin/img/icons/unicons/mitra.png') }}" alt="" class="product-image" />
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="mb-0">Bermitra</h6>
@@ -873,8 +959,7 @@
                                                         <div class="d-flex justify-content-between">
                                                             <div></div>
                                                             <div class="user-progress">
-                                                                <h6 class="mb-0">+2.500.000</h6>
-                                                                <span class="text-muted">IDR</span>
+                                                          
                                                             </div>
                                                         </div>
                                                     </div>
@@ -882,11 +967,10 @@
                                             </div>
                                             <div class="col-md-4 product-item">
                                                 <div class="card h-100 product-card">
-                                                    <div class="card-body p-2 position-relative">
-                                                        <div class="product-rank">6</div>
+                                                    <div class="card-body p-2">
                                                         <div class="d-flex align-items-center mb-2">
                                                             <div class="avatar flex-shrink-0 me-3">
-                                                                <img src="{{ asset('Admin/img/icons/unicons/sp.png') }}" alt="" class="rounded w-70" />
+                                                                <img src="{{ asset('Admin/img/icons/unicons/sp.png') }}" alt="" class="product-image" />
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="mb-0">Pengajuan Pinjaman</h6>
@@ -896,8 +980,7 @@
                                                         <div class="d-flex justify-content-between">
                                                             <div></div>
                                                             <div class="user-progress">
-                                                                <h6 class="mb-0">-200.000</h6>
-                                                                <span class="text-muted">IDR</span>
+                                                              
                                                             </div>
                                                         </div>
                                                     </div>
@@ -910,7 +993,7 @@
                         </div>
 
                         <!-- Partnership Section -->
-                        <div class="row mb-2">
+                        <div class="row mb-2 section-gap">
                             <div class="col-12">
                                 <div class="card animate-fade-in">
                                     <div class="card-header p-3">
@@ -922,8 +1005,8 @@
                                                 <div class="card h-100 partnership-card">
                                                     <div class="card-body p-3">
                                                         <div class="d-flex align-items-center mb-3">
-                                                            <div class="avatar flex-shrink-0 me-3">
-                                                                <span class="avatar-initial rounded bg-label-success">H</span>
+                                                            <div class="avatar flex-shrink-0 me-3 bg-success text-white">
+                                                                H
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="card-title mb-0">Heri</h6>
@@ -943,8 +1026,8 @@
                                                 <div class="card h-100 partnership-card">
                                                     <div class="card-body p-3">
                                                         <div class="d-flex align-items-center mb-3">
-                                                            <div class="avatar flex-shrink-0 me-3">
-                                                                <span class="avatar-initial rounded bg-label-info">S</span>
+                                                            <div class="avatar flex-shrink-0 me-3 bg-info text-white">
+                                                                S
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="card-title mb-0">Siti</h6>
@@ -964,8 +1047,8 @@
                                                 <div class="card h-100 partnership-card">
                                                     <div class="card-body p-3">
                                                         <div class="d-flex align-items-center mb-3">
-                                                            <div class="avatar flex-shrink-0 me-3">
-                                                                <span class="avatar-initial rounded bg-label-warning">B</span>
+                                                            <div class="avatar flex-shrink-0 me-3 bg-warning text-white">
+                                                                B
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <h6 class="card-title mb-0">Budi</h6>
@@ -994,7 +1077,7 @@
                                     <div class="card-body p-3 text-center">
                                         <h5 class="card-title mb-0">Laporan BUMDes</h5>
                                         <p class="mb-2">Generate laporan lengkap untuk diserahkan ke pemerintah desa.</p>
-                                        <button class="btn btn-primary btn-sm" onclick="generateReport()">
+                                        <button class="btn btn-primary btn-sm laporan-bumdes-btn" onclick="generateReport()">
                                             <i class="bx bx-file"></i> Generate Laporan PDF
                                         </button>
                                     </div>
@@ -1010,8 +1093,8 @@
                                 <script>
                                     document.write(new Date().getFullYear());
                                 </script>
-                                , made with 😎 by
-                                <a href="https://themeselection.com" target="_blank" class="footer-link fw-bolder">BUMDes Desa Pematang Duku Timur</a>
+                                , made with by
+                                <a href="https://themeselection.com" target="_blank" class="footer-link fw-bolder">iSewa Project Team 😎</a>
                             </div>
                             <div>
                             </div>
@@ -1057,7 +1140,7 @@
                 notificationItem.classList.add('bg-danger', 'text-white');
                 notificationItem.querySelectorAll('button').forEach(btn => btn.disabled = true);
                 // Show error notification
-                showToast('error', 'Permintaan telah ditolak!');
+                showToast('error', 'Permintaan telah ditolak! Silakan periksa alasan penolakan.');
             }
         }
 

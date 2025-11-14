@@ -7,9 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+// Tambahkan model-model berikut
+use App\Models\Barang; // Ganti dengan model yang sesuai jika berbeda
+use App\Models\Gas; // Ganti dengan model yang sesuai jika berbeda
+use App\Models\HasilPanen; // Ganti dengan model yang sesuai jika berbeda
+use App\Models\Pinjaman; // Ganti dengan model yang sesuai jika berbeda
 
 class DashboardController extends Controller
-{    
+{
     /**
      * Display Dashboard
      */
@@ -22,10 +27,20 @@ class DashboardController extends Controller
             'newUsers' => User::whereDate('created_at', '>=', now()->subMonth())->count(),
             'completedOrders' => 0, // Ganti dengan model Order nanti Order::where('status', 'completed')->count()
         ];
-        
+
+        // Ambil jumlah item untuk setiap unit layanan
+        // Ganti 'Per lengkapan Acara' dengan kategori yang sesuai jika berbeda
+        $data['unitPenyewaan'] = Barang::where('kategori', 'Per lengkapan Acara')->count();
+        $data['unitGas'] = Gas::count(); // Sesuaikan jika ada filter tertentu
+        $data['unitPertanian'] = HasilPanen::count(); // Sesuaikan jika ada filter tertentu
+        $data['unitSimpanPinjam'] = Pinjaman::count(); // Sesuaikan jika ada filter tertentu
+
+        // Kembalikan view dengan data tambahan
         return view('admin.dashboard.index', $data);
     }
 
+    // ... kode fungsi lainnya (profile, settings, dll) TIDAK BERUBAH ...
+    // (Sisanya dari kode Anda tetap sama)
     /**
      * Display Profile Page
      */
@@ -206,7 +221,7 @@ class DashboardController extends Controller
             return redirect()->route('admin.users.index')->with('error', 'You cannot delete your own account!');
         }
         $user->delete();
-                
+
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
     }
      /**
@@ -232,7 +247,7 @@ class DashboardController extends Controller
     {
         // Handle notification preferences update
         // You can save these preferences to database if needed
-        
+
         return back()->with('success', 'Notification preferences updated successfully!');
     }
     /**

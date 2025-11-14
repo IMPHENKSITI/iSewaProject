@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\Aktivitas\KemitraanController;
 use App\Http\Controllers\Admin\Laporan\LaporanController;
 use App\Http\Controllers\Admin\BumdesProfileController;
 use App\Http\Controllers\Admin\SettingController; // Gunakan SettingController yang baru untuk halaman setting utama
+use App\Http\Controllers\Admin\UnitPenyewaanController;
 
 // Welcome Page
 Route::get('/', function () {
@@ -103,12 +104,37 @@ Route::prefix('admin/laporan')->group(function () {
     Route::get('/log', [DashboardController::class, 'index'])->name('admin.laporan.log');
 });
 
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    // ... route lainnya ...
+
+    // Unit Penyewaan Alat - Tambahkan ini jika belum ada
+    Route::prefix('unit')->name('unit.')->group(function () {
+        Route::prefix('penyewaan')->name('penyewaan.')->group(function () {
+            Route::get('/', [UnitPenyewaanController::class, 'index'])->name('index'); // <-- Ini penting
+            Route::get('/create', [UnitPenyewaanController::class, 'create'])->name('create');
+            Route::post('/', [UnitPenyewaanController::class, 'store'])->name('store');
+            Route::get('/{id}', [UnitPenyewaanController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [UnitPenyewaanController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [UnitPenyewaanController::class, 'update'])->name('update');
+            Route::delete('/{id}', [UnitPenyewaanController::class, 'destroy'])->name('destroy');
+        });
+    });
+
+    // ... route lainnya ...
+});
+
+
 // Rute untuk Manajemen Pengguna (diperlukan oleh sidebar index.blade.php)
 // Sudah ada: Route::get('/admin/users', [DashboardController::class, 'usersList'])->name('admin.users.index');
 
 // Rute untuk Profil BUMDes (diperlukan oleh sidebar index.blade.php)
 Route::get('/admin/bumdes/profile', [DashboardController::class, 'profile'])->name('admin.bumdes.profile');
 // Rute untuk Profil iSewa (baru)
+Route::get('/admin/isewa/profile', [DashboardController::class, 'index'])->name('admin.isewa.profile');
+
+// Rute untuk Pengaturan (Selain akun) - Jika Anda ingin tautan ke pengaturan global di sidebar
+// Sudah ada: Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
+// ✅ INI YANG BARU — tambahkan DI BAWAHnya
 Route::get('/admin/isewa/profile', [DashboardController::class, 'index'])->name('admin.isewa.profile');
 
 // Rute untuk Pengaturan (Selain akun) - Jika Anda ingin tautan ke pengaturan global di sidebar
