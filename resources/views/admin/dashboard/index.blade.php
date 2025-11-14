@@ -98,7 +98,7 @@
                 </div>
                 <div class="col-12 mb-3">
                     <div class="card unit-card success animate-fade-in"
-                        onclick="window.location='{{ route('admin.unit.pertanian.index') }}'">
+                        onclick="window.location='{{ route('admin.unit.tanikebun.index') }}'">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="avatar flex-shrink-0 me-3" style="width: 60px; height: 60px;">

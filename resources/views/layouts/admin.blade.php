@@ -302,7 +302,7 @@
                                 </a>
                             </li>
                             <li class="menu-item">
-                                <a href="{{ route('admin.unit.pertanian.index') }}" class="menu-link">
+                                <a href="{{ route('admin.unit.tanikebun.index') }}" class="menu-link">
                              
                                     <div data-i18n="Unit Pertanian & Perkebunan">Pertanian & Perkebunan</div>
                                 </a>
@@ -323,7 +323,7 @@
                         </a>
                         <ul class="menu-sub">
                             <li class="menu-item">
-                                <a href="{{ route('admin.aktivitas.permintaan.index') }}" class="menu-link">
+                                <a href="{{ route('admin.aktivitas.kajian.index') }}" class="menu-link">
                                   
                                     <div data-i18n="Permintaan & Pengajuan">Permintaan & Pengajuan</div>
                                 </a>

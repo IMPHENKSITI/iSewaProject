@@ -85,13 +85,13 @@ Route::get('/admin/notifications', [DashboardController::class, 'notifications']
 Route::prefix('admin/unit')->group(function () {
     Route::get('/penyewaan', [DashboardController::class, 'index'])->name('admin.unit.penyewaan.index');
     Route::get('/gas', [DashboardController::class, 'index'])->name('admin.unit.gas.index');
-    Route::get('/pertanian', [DashboardController::class, 'index'])->name('admin.unit.pertanian.index');
+    Route::get('/tanikebun', [DashboardController::class, 'index'])->name('admin.unit.tanikebun.index');
     Route::get('/simpanpinjam', [DashboardController::class, 'index'])->name('admin.unit.simpanpinjam.index');
 });
 
 // Grup Rute untuk Aktivitas (diperlukan oleh sidebar index.blade.php)
 Route::prefix('admin/aktivitas')->group(function () {
-    Route::get('/permintaan', [DashboardController::class, 'index'])->name('admin.aktivitas.permintaan.index');
+    Route::get('/kajian', [DashboardController::class, 'index'])->name('admin.aktivitas.kajian.index');
     Route::get('/transaksi', [DashboardController::class, 'index'])->name('admin.aktivitas.transaksi.index');
     Route::get('/kemitraan', [DashboardController::class, 'index'])->name('admin.aktivitas.kemitraan.index');
 });
