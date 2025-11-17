@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="{{ asset('Admin/vendor/libs/apex-charts/apex-charts.css') }}" />
     <!-- Custom CSS for Styling -->
     <style>
+        /* ... (SEMUA CSS Anda tetap utuh, tidak diubah) ... */
         .card {
             transition: box-shadow 0.3s ease;
         }
@@ -316,18 +317,6 @@
     </style>
     <script src="{{ asset('Admin/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('Admin/js/config.js') }}"></script>
-    <link rel="stylesheet" href="{{ asset('Admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
-    <!-- Custom CSS for Styling -->
-    <style>
-        /* ... (CSS Anda sebelumnya) ... */
-    </style>
-
-    <!-- Croppie CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
-
-    <script src="{{ asset('Admin/vendor/js/helpers.js') }}"></script>
-    <script src="{{ asset('Admin/js/config.js') }}"></script>
-</head>
 </head>
 
 <body>
@@ -338,31 +327,34 @@
                 <div class="app-brand demo">
                     <a href="{{ route('admin.dashboard') }}" class="app-brand-link">
                         <span class="app-brand-logo demo">
-                            <img src="{{ asset('Admin/img/illustrations/isewalogo.png') }}" alt="Logo"
-                                width="130" height="130">
+                            <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" style="height: 32px;">
                         </span>
+                        <span class="app-brand-text demo menu-text fw-bolder ms-2">iSewa</span>
                     </a>
+
                     <a href="javascript:void(0);"
                         class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
                         <i class="bx bx-chevron-left bx-sm align-middle"></i>
                     </a>
                 </div>
+
                 <div class="menu-inner-shadow"></div>
+
                 <ul class="menu-inner py-1">
                     <!-- Dashboard -->
-                    <li class="menu-item ">
+                    <li class="menu-item {{ Route::currentRouteName() == 'admin.dashboard' ? 'active' : '' }}">
                         <a href="{{ route('admin.dashboard') }}" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-home-circle"></i>
                             <div data-i18n="Dashboard">Dashboard</div>
                         </a>
                     </li>
-                
+
                     <!-- Unit Layanan -->
                     <li
                         class="menu-item {{ request()->is('admin/unit/penyewaan*') || request()->is('admin/unit/gas*') || request()->is('admin/unit/tanikebun*') || request()->is('admin/unit/simpanpinjam*') ? 'open active show' : '' }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-collection"></i>
-                            <div data-i18n="Unit Layanan">Unit Layanan</div>
+                            <div>Unit Layanan</div>
                         </a>
                         <ul class="menu-sub">
                             <li class="menu-item {{ request()->is('admin/unit/penyewaan*') ? 'active' : '' }}">
@@ -387,96 +379,100 @@
                             </li>
                         </ul>
                     </li>
+
                     <!-- Aktivitas -->
-                    <li class="menu-item">
+                    <li
+                        class="menu-item {{ Str::startsWith(Route::currentRouteName(), 'admin.aktivitas.') ? 'open active' : '' }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-time"></i>
+                            <i class="menu-icon tf-icons bx bx-box"></i>
                             <div data-i18n="Aktivitas">Aktivitas</div>
                         </a>
                         <ul class="menu-sub">
-                            <li class="menu-item">
-                                <a href="{{ route('admin.aktivitas.kajian.index') }}" class="menu-link">
-
-                                    <div data-i18n="Permintaan & Pengajuan">Permintaan & Pengajuan</div>
+                            <li
+                                class="menu-item {{ Route::currentRouteName() == 'admin.aktivitas.kajian.index' ? 'active' : '' }}">
+                                <a href="#" class="menu-link">
+                                    <div data-i18n="Kajian">Kajian</div>
                                 </a>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ route('admin.aktivitas.transaksi.index') }}" class="menu-link">
-
-                                    <div data-i18n="Bukti Transaksi">Bukti Transaksi</div>
+                            <li
+                                class="menu-item {{ Route::currentRouteName() == 'admin.aktivitas.transaksi.index' ? 'active' : '' }}">
+                                <a href="#" class="menu-link">
+                                    <div data-i18n="Transaksi">Transaksi</div>
                                 </a>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ route('admin.aktivitas.kemitraan.index') }}" class="menu-link">
-
+                            <li
+                                class="menu-item {{ Route::currentRouteName() == 'admin.aktivitas.kemitraan.index' ? 'active' : '' }}">
+                                <a href="#" class="menu-link">
                                     <div data-i18n="Kemitraan">Kemitraan</div>
                                 </a>
                             </li>
                         </ul>
                     </li>
+
                     <!-- Data & Laporan -->
-                    <li class="menu-item">
+                    <li
+                        class="menu-item {{ Str::startsWith(Route::currentRouteName(), 'admin.laporan.') ? 'open active' : '' }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-bar-chart"></i>
+                            <i class="menu-icon tf-icons bx bx-chart"></i>
                             <div data-i18n="Data & Laporan">Data & Laporan</div>
                         </a>
                         <ul class="menu-sub">
-                            <li class="menu-item">
-                                <a href="{{ route('admin.laporan.transaksi') }}" class="menu-link">
-
-                                    <div data-i18n="Laporan Transaksi">Laporan Transaksi</div>
+                            <li
+                                class="menu-item {{ Route::currentRouteName() == 'admin.laporan.transaksi' ? 'active' : '' }}">
+                                <a href="#" class="menu-link">
+                                    <div data-i18n="Transaksi">Transaksi</div>
                                 </a>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ route('admin.laporan.panen') }}" class="menu-link">
-
-                                    <div data-i18n="Laporan Hasil Panen">Laporan Hasil Panen</div>
+                            <li
+                                class="menu-item {{ Route::currentRouteName() == 'admin.laporan.panen' ? 'active' : '' }}">
+                                <a href="#" class="menu-link">
+                                    <div data-i18n="Panen">Panen</div>
                                 </a>
                             </li>
-                            <li class="menu-item">
-                                <a href="{{ route('admin.laporan.pendapatan') }}" class="menu-link">
-
-                                    <div data-i18n="Laporan Pendapatan Total">Laporan Pendapatan</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="{{ route('admin.laporan.log') }}" class="menu-link">
-
-                                    <div data-i18n="Log Aktivitas">Log Aktivitas</div>
+                            <li
+                                class="menu-item {{ Route::currentRouteName() == 'admin.laporan.pendapatan' ? 'active' : '' }}">
+                                <a href="#" class="menu-link">
+                                    <div data-i18n="Pendapatan">Pendapatan</div>
                                 </a>
                             </li>
                         </ul>
                     </li>
+
                     <!-- Manajemen Pengguna -->
-                    <li class="menu-item">
+                    <li class="menu-item {{ Route::currentRouteName() == 'admin.users.index' ? 'active' : '' }}">
                         <a href="{{ route('admin.users.index') }}" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-user"></i>
                             <div data-i18n="Manajemen Pengguna">Manajemen Pengguna</div>
                         </a>
                     </li>
+
                     <!-- Notifikasi -->
-                    <li class="menu-item">
+                    <li
+                        class="menu-item {{ Route::currentRouteName() == 'admin.notifications.index' ? 'active' : '' }}">
                         <a href="{{ route('admin.notifications.index') }}" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-bell"></i>
                             <div data-i18n="Notifikasi">Notifikasi</div>
                         </a>
                     </li>
+
                     <!-- Profil iSewa -->
-                    <li class="menu-item">
+                    <li class="menu-item {{ Route::currentRouteName() == 'admin.isewa.profile' ? 'active' : '' }}">
                         <a href="{{ route('admin.isewa.profile') }}" class="menu-link">
-                            <i class="menu-icon tf-icons bx bx-info-circle"></i>
+                            <i class="menu-icon tf-icons bx bx-user-circle"></i>
                             <div data-i18n="Profil iSewa">Profil iSewa</div>
                         </a>
                     </li>
+
                     <!-- Profil BUMDes -->
-                    <li class="menu-item">
+                    <li class="menu-item {{ Route::currentRouteName() == 'admin.bumdes.profile' ? 'active' : '' }}">
                         <a href="{{ route('admin.bumdes.profile') }}" class="menu-link">
-                            <i class="menu-icon tf-icons bx bx-home-alt"></i>
+                            <i class="menu-icon tf-icons bx bx-buildings"></i>
                             <div data-i18n="Profil BUMDes">Profil BUMDes</div>
                         </a>
                     </li>
+
                     <!-- Pengaturan -->
-                    <li class="menu-item">
+                    <li class="menu-item {{ Route::currentRouteName() == 'admin.settings' ? 'active' : '' }}">
                         <a href="{{ route('admin.settings') }}" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-cog"></i>
                             <div data-i18n="Pengaturan">Pengaturan</div>
@@ -484,6 +480,8 @@
                     </li>
                 </ul>
             </aside>
+            <!-- /Sidebar -->
+
             <!-- Layout page -->
             <div class="layout-page">
                 <!-- Navbar -->
@@ -576,6 +574,7 @@
             <script async defer src="https://buttons.github.io/buttons.js"></script>
             <!-- Script for animations and functionality -->
             <script>
+                // ... (SEMUA JS Anda tetap utuh) ...
                 // Function to show details of a request
                 function showDetails(title, user, description) {
                     alert(`Detail Permintaan:\nJudul: ${title}\nUser: ${user}\nDeskripsi: ${description}`);

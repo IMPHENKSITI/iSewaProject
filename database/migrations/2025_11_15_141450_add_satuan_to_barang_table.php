@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class AddSatuanToBarangTable extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up()
+    {
+        Schema::table('barang', function (Blueprint $table) {
+            $table->string('satuan')->nullable()->after('stok');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down()
+    {
+        Schema::table('barang', function (Blueprint $table) {
+            $table->dropColumn('satuan');
+        });
+    }
+}

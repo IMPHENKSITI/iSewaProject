@@ -9,7 +9,7 @@ class Barang extends Model
 {
     use HasFactory;
 
-    protected $table = 'barang'; // Sesuaikan dengan nama tabel di database Anda
+    protected $table = 'barang';
 
     protected $fillable = [
         'nama_barang',
@@ -18,15 +18,14 @@ class Barang extends Model
         'stok',
         'status',
         'kategori',
-        'foto', // Asumsikan kolom ini menyimpan path gambar utama
-        'foto_2', // Kolom untuk gambar kedua
-        'foto_3', // Kolom untuk gambar ketiga
+        'foto',
+        'foto_2',
+        'foto_3',
         'lokasi',
+        'satuan', 
     ];
 
-    // Relasi jika diperlukan
-    public function transaksiSewa()
-    {
-        return $this->hasMany(TransaksiSewa::class, 'barang_id');
-    }
+    protected $casts = [
+        'harga_sewa' => 'decimal:2',
+    ];
 }

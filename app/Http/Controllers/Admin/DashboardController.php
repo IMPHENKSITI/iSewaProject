@@ -15,29 +15,29 @@ use App\Models\Pinjaman; // Ganti dengan model yang sesuai jika berbeda
 
 class DashboardController extends Controller
 {
-    /**
-     * Display Dashboard
-     */
-    public function index()
-    {
-        // Contoh data statistik
-        $data = [
-            'totalUsers' => User::count(),
-            'totalOrders' => 0, // Ganti dengan model Order nanti Order::count()
-            'newUsers' => User::whereDate('created_at', '>=', now()->subMonth())->count(),
-            'completedOrders' => 0, // Ganti dengan model Order nanti Order::where('status', 'completed')->count()
-        ];
+   /**
+ * Display Dashboard
+ */
+public function index()
+{
+    // Contoh data statistik
+    $data = [
+        'totalUsers' => User::count(),
+        'totalOrders' => 0, // Ganti dengan model Order nanti Order::count()
+        'newUsers' => User::whereDate('created_at', '>=', now()->subMonth())->count(),
+        'completedOrders' => 0, // Ganti dengan model Order nanti Order::where('status', 'completed')->count()
+    ];
 
-        // Ambil jumlah item untuk setiap unit layanan
-        // Ganti 'Per lengkapan Acara' dengan kategori yang sesuai jika berbeda
-        $data['unitPenyewaan'] = Barang::where('kategori', 'Per lengkapan Acara')->count();
-        $data['unitGas'] = Gas::count(); // Sesuaikan jika ada filter tertentu
-        $data['unitPertanian'] = HasilPanen::count(); // Sesuaikan jika ada filter tertentu
-        $data['unitSimpanPinjam'] = Pinjaman::count(); // Sesuaikan jika ada filter tertentu
+    // Ambil jumlah item untuk setiap unit layanan
+    // Gunakan TRIM untuk menghilangkan spasi ekstra di awal/akhir
+    $data['unitPenyewaan'] = Barang::count(); // Hitung SEMUA barang
+    $data['unitGas'] = Barang::whereRaw('TRIM(kategori) = ?', ['Penjualan Gas'])->count();
+    $data['unitPertanian'] = Barang::whereRaw('TRIM(kategori) = ?', ['Pertanian & Perkebunan'])->count();
+    $data['unitSimpanPinjam'] = Barang::whereRaw('TRIM(kategori) = ?', ['Simpan Pinjam'])->count();
 
-        // Kembalikan view dengan data tambahan
-        return view('admin.dashboard.index', $data);
-    }
+    // Kembalikan view dengan data tambahan
+    return view('admin.dashboard.index', $data);
+}
 
     // ... kode fungsi lainnya (profile, settings, dll) TIDAK BERUBAH ...
     // (Sisanya dari kode Anda tetap sama)
@@ -224,7 +224,7 @@ class DashboardController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
     }
-     /**
+    /**
      * Display Connections Page
      */
     public function connections()
