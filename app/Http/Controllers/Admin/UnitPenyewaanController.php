@@ -112,4 +112,76 @@ class UnitPenyewaanController extends Controller
 
         return redirect()->route('admin.unit.penyewaan.index')->with('success', 'Barang berhasil dihapus.');
     }
+
+    /**
+     * Memperbarui barang yang ada di database.
+     */
+    public function update(Request $request, $id)
+    {
+        // Validasi input — SAMA seperti store()
+        $validated = $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'harga_sewa' => 'required|string', // ✅ Terima sebagai string (untuk format Rupiah)
+            'stok' => 'required|integer',
+            'status' => 'required|in:tersedia,disewa,rusak',
+            'kategori' => 'required|string',
+            'lokasi' => 'required|string',
+            'satuan' => 'required|string',
+            'foto_utama' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'foto_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'foto_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        // Bersihkan harga (sama seperti store)
+        $hargaBersih = (int) preg_replace('/[^0-9]/', '', $request->harga_sewa);
+        if ($hargaBersih <= 0) {
+            return back()->withErrors(['harga_sewa' => 'Harga sewa harus angka valid dan lebih dari 0.'])->withInput();
+        }
+
+        // Cari barang
+        $barang = Barang::findOrFail($id);
+
+        // Siapkan data update
+        $data = [
+            'nama_barang' => $request->nama_barang,
+            'deskripsi' => $request->deskripsi,
+            'harga_sewa' => $hargaBersih,
+            'stok' => $request->stok,
+            'status' => $request->status,
+            'kategori' => $request->kategori,
+            'lokasi' => $request->lokasi,
+            'satuan' => $request->satuan,
+        ];
+
+        // Upload & ganti foto utama (jika diupload baru)
+        if ($request->hasFile('foto_utama')) {
+            if ($barang->foto) {
+                Storage::disk('public')->delete($barang->foto);
+            }
+            $data['foto'] = $request->file('foto_utama')->store('barang', 'public');
+        }
+
+        // Upload & ganti foto tambahan 1
+        if ($request->hasFile('foto_2')) {
+            if ($barang->foto_2) {
+                Storage::disk('public')->delete($barang->foto_2);
+            }
+            $data['foto_2'] = $request->file('foto_2')->store('barang', 'public');
+        }
+
+        // Upload & ganti foto tambahan 2
+        if ($request->hasFile('foto_3')) {
+            if ($barang->foto_3) {
+                Storage::disk('public')->delete($barang->foto_3);
+            }
+            $data['foto_3'] = $request->file('foto_3')->store('barang', 'public');
+        }
+
+        // Simpan perubahan
+        $barang->update($data);
+
+        return redirect()->route('admin.unit.penyewaan.index')
+                         ->with('success', 'Barang berhasil diperbarui.');
+    }
 }

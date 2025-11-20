@@ -3,14 +3,14 @@
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <!-- Breadcrumb -->
-        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Unit Layanan / Penyewaan Alat /</span> Tambah Alat</h4>
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Unit Layanan / Penjualan Gas /</span> Tambah Gas</h4>
 
         <!-- Form Card -->
         <div class="row">
             <div class="col-xl-12">
                 <div class="card mb-4 animate-fade-in">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Form Tambah Alat</h5>
+                        <h5 class="mb-0">Form Tambah Gas</h5>
                     </div>
                     <div class="card-body">
                         {{-- ✅ DITAMBAHKAN: Tampilan error validasi --}}
@@ -25,20 +25,20 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('admin.unit.penyewaan.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('admin.unit.penjualan_gas.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf <!-- ⚠️ Pastikan ini ada -->
                             <div class="mb-3">
-                                <label class="form-label" for="nama_barang">Nama Barang</label>
-                                <input type="text" class="form-control" id="nama_barang" name="nama_barang" required />
+                                <label class="form-label" for="jenis_gas">Jenis Gas</label>
+                                <input type="text" class="form-control" id="jenis_gas" name="jenis_gas" required />
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="deskripsi">Deskripsi</label>
                                 <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" required></textarea>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label" for="harga_sewa">Harga Sewa (per pakai)</label>
-                                <input type="text" class="form-control" id="harga_sewa" name="harga_sewa" required oninput="formatRupiah(this)" />
-                                <small class="form-text text-muted">Masukkan angka tanpa titik atau koma. Contoh: 150000</small>
+                                <label class="form-label" for="harga_satuan">Harga Satuan (Rp)</label>
+                                <input type="text" class="form-control" id="harga_satuan" name="harga_satuan" required oninput="formatRupiah(this)" />
+                                <small class="form-text text-muted">Masukkan angka tanpa titik atau koma. Contoh: 21000</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="stok">Stok Tersedia</label>
@@ -59,7 +59,7 @@
                                 <label class="form-label" for="status">Status</label>
                                 <select class="form-select" id="status" name="status" required>
                                     <option value="tersedia">Tersedia</option>
-                                    <option value="disewa">Disewa</option>
+                                    <option value="dipesan">Dipesan</option>
                                     <option value="rusak">Rusak</option>
                                 </select>
                             </div>
@@ -84,7 +84,7 @@
                             <div class="mb-3">
                                 <label class="form-label" for="foto">Foto Utama</label>
                                 <div class="input-group">
-                                    <input type="file" class="form-control" id="foto" name="foto_utama" accept="image/*" onchange="previewFile(this, 'preview_foto')" />
+                                    <input type="file" class="form-control" id="foto" name="foto" accept="image/*" onchange="previewFile(this, 'preview_foto')" />
                                     <button type="button" class="btn btn-outline-secondary" onclick="clearFile('foto', 'preview_foto')">Hapus</button>
                                 </div>
                                 <div id="preview_foto" class="mt-2" style="display:none;">
@@ -112,7 +112,7 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('admin.unit.penyewaan.index') }}" class="btn btn-secondary">Batal</a>
+                                <a href="{{ route('admin.unit.penjualan_gas.index') }}" class="btn btn-secondary">Batal</a>
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </form>

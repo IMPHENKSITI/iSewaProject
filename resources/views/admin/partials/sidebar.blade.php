@@ -3,7 +3,8 @@
     <div class="app-brand demo">
         <a href="{{ route('admin.dashboard') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
-                <img src="{{ asset('admin/img/favicon/isewalogo.png') }}" alt="Logo" style="width: 40px; height: 40px;">
+                <img src="{{ asset('admin/img/favicon/isewalogo.png') }}" alt="Logo"
+                    style="width: 40px; height: 40px;">
             </span>
             <span class="app-brand-text demo menu-text fw-bold ms-2">iSewa Admin</span>
         </a>
@@ -36,9 +37,9 @@
                         <div data-i18n="Penyewaan Alat">Penyewaan Alat</div>
                     </a>
                 </li>
-                <li class="menu-item {{ request()->routeIs('admin.unit.penjualan-gas.*') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
-                        <div data-i18n="Penjualan Gas">Penjualan Gas</div>
+                <li class="menu-item {{ request()->routeIs('admin.unit.penjualan_gas.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.unit.penjualan_gas.index') }}" class="menu-link">
+                        <div data-i18n="Penjualan Gas">Penjaulan Gas</div>
                     </a>
                 </li>
                 <li class="menu-item {{ request()->routeIs('admin.unit.pertanian.*') ? 'active' : '' }}">

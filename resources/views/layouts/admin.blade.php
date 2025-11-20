@@ -328,7 +328,6 @@
     <script src="{{ asset('Admin/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('Admin/js/config.js') }}"></script>
 </head>
-</head>
 
 <body>
     <div class="layout-wrapper layout-content-navbar">
@@ -356,7 +355,7 @@
                             <div data-i18n="Dashboard">Dashboard</div>
                         </a>
                     </li>
-                
+
                     <!-- Unit Layanan -->
                     <li
                         class="menu-item {{ request()->is('admin/unit/penyewaan*') || request()->is('admin/unit/gas*') || request()->is('admin/unit/tanikebun*') || request()->is('admin/unit/simpanpinjam*') ? 'open active show' : '' }}">
@@ -371,7 +370,7 @@
                                 </a>
                             </li>
                             <li class="menu-item {{ request()->is('admin/unit/gas*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.unit.gas.index') }}" class="menu-link">
+                                <a href="{{ route('admin.unit.penjualan_gas.index') }}" class="menu-link">
                                     <div data-i18n="Penjualan Gas">Penjualan Gas</div>
                                 </a>
                             </li>
@@ -396,19 +395,16 @@
                         <ul class="menu-sub">
                             <li class="menu-item">
                                 <a href="{{ route('admin.aktivitas.kajian.index') }}" class="menu-link">
-
                                     <div data-i18n="Permintaan & Pengajuan">Permintaan & Pengajuan</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.aktivitas.transaksi.index') }}" class="menu-link">
-
                                     <div data-i18n="Bukti Transaksi">Bukti Transaksi</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.aktivitas.kemitraan.index') }}" class="menu-link">
-
                                     <div data-i18n="Kemitraan">Kemitraan</div>
                                 </a>
                             </li>
@@ -423,25 +419,21 @@
                         <ul class="menu-sub">
                             <li class="menu-item">
                                 <a href="{{ route('admin.laporan.transaksi') }}" class="menu-link">
-
                                     <div data-i18n="Laporan Transaksi">Laporan Transaksi</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.laporan.panen') }}" class="menu-link">
-
                                     <div data-i18n="Laporan Hasil Panen">Laporan Hasil Panen</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.laporan.pendapatan') }}" class="menu-link">
-
                                     <div data-i18n="Laporan Pendapatan Total">Laporan Pendapatan</div>
                                 </a>
                             </li>
                             <li class="menu-item">
                                 <a href="{{ route('admin.laporan.log') }}" class="menu-link">
-
                                     <div data-i18n="Log Aktivitas">Log Aktivitas</div>
                                 </a>
                             </li>
@@ -477,7 +469,7 @@
                     </li>
                     <!-- Pengaturan -->
                     <li class="menu-item">
-                        <a href="{{ route('admin.settings') }}" class="menu-link">
+                        <a href="#" class="menu-link" onclick="alert('Halaman Pengaturan belum tersedia'); return false;">
                             <i class="menu-icon tf-icons bx bx-cog"></i>
                             <div data-i18n="Pengaturan">Pengaturan</div>
                         </a>
@@ -535,8 +527,9 @@
                                             <span class="align-middle">My Profile</span>
                                         </a>
                                     </li>
+                                    <!-- 🔧 DIPERBAIKI: Ganti link ke route('admin.settings') -->
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('admin.settings') }}">
+                                        <a class="dropdown-item" href="#" onclick="alert('Fitur pengaturan belum tersedia'); return false;">
                                             <i class="bx bx-cog me-2"></i>
                                             <span class="align-middle">Settings</span>
                                         </a>

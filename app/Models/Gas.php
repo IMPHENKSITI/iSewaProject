@@ -9,17 +9,28 @@ class Gas extends Model
 {
     use HasFactory;
 
-    // Tentukan nama tabel secara eksplisit
     protected $table = 'gas';
 
     protected $fillable = [
-        'user_id',
         'jenis_gas',
+        'deskripsi',
         'harga_satuan',
-        'jumlah_tabung',
-        'harga_total',
         'stok',
         'status',
+        'kategori', // Tambahkan jika ingin seperti penyewaan
         'foto',
+        'foto_2',
+        'foto_3',
+        'lokasi',
+        'satuan', // Tambahkan jika ingin seperti penyewaan
     ];
+
+    protected $casts = [
+        'harga_satuan' => 'integer',
+    ];
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
 }

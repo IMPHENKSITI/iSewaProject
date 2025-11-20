@@ -363,7 +363,7 @@
                                 </a>
                             </li>
                             <li class="menu-item {{ request()->is('admin/unit/gas*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.unit.gas.index') }}" class="menu-link">
+                                <a href="{{ route('admin.unit.penjualan_gas.index') }}" class="menu-link">
                                     <div data-i18n="Penjualan Gas">Penjualan Gas</div>
                                 </a>
                             </li>

@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\Laporan\LaporanController;
 use App\Http\Controllers\Admin\BumdesProfileController;
 use App\Http\Controllers\Admin\SettingController; // Gunakan SettingController yang baru untuk halaman setting utama
 use App\Http\Controllers\Admin\UnitPenyewaanController;
+use App\Http\Controllers\Admin\GasController; // ✅ Tambahkan ini
 
 // Welcome Page
 Route::get('/', function () {
@@ -43,7 +44,6 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('adm
 // ============================================
 Route::get('/admin/profile', [DashboardController::class, 'profile'])->name('admin.profile');
 Route::post('/admin/profile', [DashboardController::class, 'profileUpdate'])->name('admin.profile.update');
-
 // ============================================
 // SETTINGS ROUTES (Menggunakan SettingController yang baru)
 // ============================================
@@ -83,8 +83,33 @@ Route::get('/admin/notifications', [DashboardController::class, 'notifications']
 
 // Grup Rute untuk Unit Layanan (diperlukan oleh sidebar index.blade.php)
 Route::prefix('admin/unit')->group(function () {
-    Route::get('/penyewaan', [DashboardController::class, 'index'])->name('admin.unit.penyewaan.index');
-    Route::get('/gas', [DashboardController::class, 'index'])->name('admin.unit.gas.index');
+    // ✅ Route untuk Penyewaan Alat (Tetap seperti sebelumnya)
+    Route::get('/penyewaan', [UnitPenyewaanController::class, 'index'])->name('admin.unit.penyewaan.index');
+    Route::resource('penyewaan', UnitPenyewaanController::class)->names([
+        'index' => 'admin.unit.penyewaan.index',
+        'create' => 'admin.unit.penyewaan.create',
+        'store' => 'admin.unit.penyewaan.store',
+        'show' => 'admin.unit.penyewaan.show',
+        'edit' => 'admin.unit.penyewaan.edit',
+        'update' => 'admin.unit.penyewaan.update',
+        'destroy' => 'admin.unit.penyewaan.destroy',
+    ]);
+
+    // ✅ Route untuk Penjualan Gas (Baru ditambahkan)
+    Route::get('/gas', [GasController::class, 'index'])->name('admin.unit.penjualan_gas.index');
+    Route::resource('gas', GasController::class)
+    ->parameters(['gas' => 'id']) // ✅ Ubah parameter dari `ga` menjadi `id`
+    ->names([
+        'edit' => 'admin.unit.penjualan_gas.edit',
+        'index' => 'admin.unit.penjualan_gas.index',
+        'create' => 'admin.unit.penjualan_gas.create',
+        'store' => 'admin.unit.penjualan_gas.store',
+        'show' => 'admin.unit.penjualan_gas.show',
+        'update' => 'admin.unit.penjualan_gas.update',
+        'destroy' => 'admin.unit.penjualan_gas.destroy',
+    ]);
+
+    // ✅ Route untuk Tanikebun & Simpanpinjam (Tetap seperti sebelumnya)
     Route::get('/tanikebun', [DashboardController::class, 'index'])->name('admin.unit.tanikebun.index');
     Route::get('/simpanpinjam', [DashboardController::class, 'index'])->name('admin.unit.simpanpinjam.index');
 });
@@ -104,38 +129,12 @@ Route::prefix('admin/laporan')->group(function () {
     Route::get('/log', [DashboardController::class, 'index'])->name('admin.laporan.log');
 });
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    // ... route lainnya ...
-
-    // Unit Penyewaan Alat - Tambahkan ini jika belum ada
-    Route::prefix('unit')->name('unit.')->group(function () {
-        Route::prefix('penyewaan')->name('penyewaan.')->group(function () {
-            Route::get('/', [UnitPenyewaanController::class, 'index'])->name('index'); // <-- Ini penting
-            Route::get('/create', [UnitPenyewaanController::class, 'create'])->name('create');
-            Route::post('/', [UnitPenyewaanController::class, 'store'])->name('store');
-            Route::get('/{id}', [UnitPenyewaanController::class, 'show'])->name('show');
-            Route::get('/{id}/edit', [UnitPenyewaanController::class, 'edit'])->name('edit');
-            Route::put('/{id}', [UnitPenyewaanController::class, 'update'])->name('update');
-            Route::delete('/{id}', [UnitPenyewaanController::class, 'destroy'])->name('destroy');
-        });
-    });
-
-    // ... route lainnya ...
-});
-
-
-// Rute untuk Manajemen Pengguna (diperlukan oleh sidebar index.blade.php)
-// Sudah ada: Route::get('/admin/users', [DashboardController::class, 'usersList'])->name('admin.users.index');
+// ✅ Ini adalah route lama untuk penyewaan, tidak dihapus, hanya dipindahkan ke grup unit
+// Route::prefix('admin')->name('admin.')->group(function () { ... });
 
 // Rute untuk Profil BUMDes (diperlukan oleh sidebar index.blade.php)
 Route::get('/admin/bumdes/profile', [DashboardController::class, 'profile'])->name('admin.bumdes.profile');
 // Rute untuk Profil iSewa (baru)
 Route::get('/admin/isewa/profile', [DashboardController::class, 'index'])->name('admin.isewa.profile');
 
-// Rute untuk Pengaturan (Selain akun) - Jika Anda ingin tautan ke pengaturan global di sidebar
-// Sudah ada: Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
-// ✅ INI YANG BARU — tambahkan DI BAWAHnya
 Route::get('/admin/isewa/profile', [DashboardController::class, 'index'])->name('admin.isewa.profile');
-
-// Rute untuk Pengaturan (Selain akun) - Jika Anda ingin tautan ke pengaturan global di sidebar
-// Sudah ada: Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');

@@ -19,11 +19,11 @@ class CreateBarangTable extends Migration
             $table->decimal('harga_sewa', 12, 2);
             $table->integer('stok');
             $table->enum('status', ['tersedia', 'disewa', 'rusak']);
-            $table->string('kategori')->nullable(); // Misalnya: 'Per lengkapan Acara'
-            $table->string('foto')->nullable(); // Path gambar utama
-            $table->string('foto_2')->nullable(); // Path gambar kedua
-            $table->string('foto_3')->nullable(); // Path gambar ketiga
-            $table->string('lokasi')->nullable(); // Misalnya: 'Desa Pematang Duku Timur'
+            $table->string('kategori')->nullable(); 
+            $table->string('foto')->nullable();
+            $table->string('foto_2')->nullable(); 
+            $table->string('foto_3')->nullable(); 
+            $table->string('lokasi')->nullable(); 
             $table->timestamps();
         });
     }

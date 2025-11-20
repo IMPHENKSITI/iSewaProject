@@ -13,19 +13,18 @@ class CreateHasilPanenTable extends Migration
     {
         Schema::create('hasil_panen', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable(); // Relasi ke user petani
-            $table->string('jenis_hasil_panen'); // Misalnya: Padi, Jagung, Ubi, Sawit
-            $table->decimal('jumlah', 10, 2); // Dalam satuan ton, kg, dll
-            $table->string('satuan')->default('kg'); // Satuan ukuran
-            $table->decimal('harga_jual', 12, 2); // Harga total hasil panen
+            $table->unsignedBigInteger('user_id')->nullable(); 
+            $table->string('jenis_hasil_panen'); 
+            $table->decimal('jumlah', 10, 2); 
+            $table->string('satuan')->default('kg'); 
+            $table->decimal('harga_jual', 12, 2); 
             $table->date('tanggal_panen');
             $table->string('lokasi_lahan');
             $table->enum('status', ['tersedia', 'dijual', 'diproses'])->default('tersedia');
             $table->string('foto')->nullable(); // Gambar hasil panen
             $table->timestamps();
 
-            // Jika user_id digunakan, tambahkan foreign key
-            // $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            
         });
     }
 

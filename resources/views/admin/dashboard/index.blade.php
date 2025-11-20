@@ -59,7 +59,7 @@
             <div class="row mb-4">
                 <div class="col-12 mb-3">
                     <div class="card unit-card warning animate-fade-in"
-                        onclick="window.location='{{ route('admin.unit.penyewaan.index') }}'">
+                        onclick="window.location='{{ route('admin.unit.penjualan_gas.index') }}'">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="avatar flex-shrink-0 me-3" style="width: 60px; height: 60px;">
@@ -78,7 +78,7 @@
                 </div>
                 <div class="col-12 mb-3">
                     <div class="card unit-card danger animate-fade-in"
-                        onclick="window.location='{{ route('admin.unit.gas.index') }}'">
+                        onclick="window.location='{{ route('admin.unit.penjualan_gas.index') }}'">
                         <div class="card-body">
                             <div class="d-flex align-items-center">
                                 <div class="avatar flex-shrink-0 me-3" style="width: 60px; height: 60px;">
