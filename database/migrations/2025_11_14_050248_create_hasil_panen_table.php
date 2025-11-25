@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateHasilPanenTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('hasil_panen', function (Blueprint $table) {
@@ -28,9 +25,6 @@ class CreateHasilPanenTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('hasil_panen');

@@ -18,9 +18,11 @@ use App\Http\Controllers\Admin\GasController; // ✅ Tambahkan ini
 
 // Welcome Page
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('beranda');
 });
-
+Route::get('/beranda', function () {
+    return view('beranda.index');
+})->name('beranda');
 // ============================================
 // AUTH ROUTES (Tanpa Middleware)
 // ============================================
