@@ -1,282 +1,7 @@
-<!DOCTYPE html>
-<html lang="id">
+@extends('layouts.user')
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>iSewa</title>
-
-    @vite('resources/css/app.css')
-
-    <link rel="icon" type="image/x-icon" href="{{ asset('User/img/favicon/iSewa.ico') }}" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- ApexCharts -->
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <style>
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Gradient Radial untuk Background Tentang Kami */
-        .bg-gradient-radial {
-            background-image: radial-gradient(circle, var(--tw-gradient-stops));
-        }
-
-        /* Background Elements - kept as they require precise positioning */
-        .bg-element {
-            position: absolute;
-            pointer-events: none;
-            user-select: none;
-            object-fit: contain;
-        }
-
-        /* Area Carousel/Hero - TIDAK PAKAI BACKGROUND */
-
-        /* Area POPULER - Pakai 4.webp (BLUR) KIRI BESAR + KANAN BAWAH BESAR (KEMBAR) */
-        .bg-blur-left-populer {
-            top: 21%;
-            left: -220px;
-            width: 650px;
-            transform: rotate(-15deg) scaleX(1.2) scale(3.0);
-            opacity: 0.88;
-            z-index: 2;
-        }
-
-        /* KEMBARAN 4.webp di KANAN BAWAH - MIRROR HORIZONTAL */
-        .bg-blur-right-populer {
-            top: 27%;
-            right: -180px;
-            width: 680px;
-            transform: rotate(18deg) scaleX(-1.5) scale(3.0);
-            opacity: 0.90;
-            z-index: 2;
-        }
-
-        /* Bawah POPULER / Atas UNIT PELAYANAN - Pakai 2.webp (WAVE) BESAR */
-        .bg-wave-left-lower-populer {
-            top: 30%;
-            left: -140px;
-            width: 550px;
-            transform: rotate(-8deg);
-            opacity: 0.90;
-            z-index: 2;
-        }
-
-        /* Area UNIT PELAYANAN - Pakai 2.webp (WAVE) BESAR + 5.webp (GEOMETRIS) SUPER BESAR */
-        .bg-wave-right-unit {
-            top: 40%;
-            right: -150px;
-            width: 580px;
-            transform: rotate(15deg) scaleX(-1);
-            opacity: 0.92;
-            z-index: 2;
-        }
-
-        /* 5.webp DIPERBESAR LAGI - SUPER BESAR! */
-        .bg-squares-right-unit {
-            top: 35%;
-            right: -230px;
-            width: 580px;
-            transform: rotate(-100deg) scale(1.5);
-            opacity: 0.90;
-            z-index: 2;
-        }
-
-        /* Area GRAFIK UMUM - Pakai 3.webp (WAVE BESAR TENGAH) */
-        .bg-wave-center-grafik {
-            top: 45%;
-            left: 50%;
-            width: 115%;
-            transform: translateX(-50%) scale(1.1);
-            opacity: 0.95;
-            z-index: 1;
-        }
-
-        /* --- UNIT CAROUSEL STYLES (4 VISIBLE ITEMS) --- */
-        .unit-card {
-            width: 280px;
-            height: 280px;
-            position: absolute;
-            top: 45%;
-            transform-origin: center center;
-            /* Transisi halus saat tukar tempat */
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            will-change: transform, left, opacity;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .unit-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.15));
-        }
-
-        /* POSISI 0: KIRI */
-        .state-0 {
-            left: 15% !important;
-            transform: translate(-50%, -50%) scale(0.65) !important;
-            opacity: 0.8;
-            z-index: 20;
-            filter: grayscale(10%);
-        }
-
-        /* POSISI 1: (TENGAH FOKUS) */
-        .state-1 {
-            left: 50% !important;
-            transform: translate(-50%, -50%) scale(1.5) !important;
-            opacity: 1;
-            z-index: 50;
-            filter: grayscale(0%) drop-shadow(0 25px 35px rgba(0, 0, 0, 0.25));
-        }
-
-        /* POSISI 2: KANAN  */
-        .state-2 {
-            left: 80% !important;
-            transform: translate(-50%, -50%) scale(0.65) !important;
-            opacity: 0.8;
-            z-index: 20;
-            filter: grayscale(10%);
-        }
-
-        /* POSISI 3: KANAN UJUNG*/
-        .state-3 {
-            left: 100% !important;
-            /* Benar-benar di ujung kanan */
-            transform: translate(-50%, -50%) scale(0.5) !important;
-            opacity: 0.6;
-            z-index: 10;
-            filter: grayscale(30%);
-        }
-
-        /* RESPONSIVE MOBILE */
-        @media (max-width: 768px) {
-            .unit-card {
-                width: 160px;
-                height: 160px;
-            }
-
-            .state-0 {
-                left: 10% !important;
-                scale: 0.5 !important;
-            }
-
-            .state-1 {
-                left: 50% !important;
-                scale: 1.2 !important;
-            }
-
-            .state-2 {
-                left: 90% !important;
-                scale: 0.5 !important;
-            }
-
-            /* Di HP item ke-4 disembunyikan biar layar tidak penuh */
-            .state-3 {
-                left: 110% !important;
-                opacity: 0;
-            }
-        }
-    </style>
-</head>
-
-<body class="relative bg-white overflow-x-hidden min-h-screen font-sans flex flex-col">
-
-    {{-- NAV --}}<nav class="absolute top-0 left-0 w-full z-50 bg-white/10 backdrop-blur-sm shadow-sm">
-        <div class="max-w-screen-2xl mx-auto px-5 py-0">
-            <div class="flex items-center justify-between">
-                <div class="flex-shrink-0">
-                    <a href="/">
-                        <img src="{{ asset('User/img/logo/iSewa.png') }}" alt="iSewa Logo"
-                            class="h-30 w-auto object-contain">
-                    </a>
-                </div>
-
-                <div class="hidden md:flex items-center space-x-8 ml-auto">
-                    <a href="#beranda"
-                        class="text-gray-900 hover:text-blue-600 text-[15px] font-medium border-b-2 border-blue-500 pb-0,5 transition-colors duration-200">
-                        Beranda
-                    </a>
-                    <a href="#pelayanan"
-                        class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200">
-                        Pelayanan
-                    </a>
-                    <a href="#bumdes"
-                        class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200">
-                        BUMDes
-                    </a>
-                    <a href="#profil"
-                        class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200">
-                        Profil iSewa
-                    </a>
-
-                    <div class="flex items-center gap-3">
-                        <div class="relative inline-block group">
-                            <div
-                                class="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-amber-500 rounded-full opacity-70 group-hover:opacity-100 group-hover:blur-[2px] transition-all duration-300">
-                            </div>
-                            <a href="/login"
-                                class="relative inline-block px-10 py-2.5 text-blue-600 rounded-full text-[15px] font-medium bg-white hover:shadow-lg transition-all duration-300">
-                                Masuk
-                            </a>
-                        </div>
-
-                        <a href="/register"
-                            class="inline-block px-10 py-3 text-white rounded-full text-[15px] font-medium hover:shadow-lg transition-all duration-300"
-                            style="background: linear-gradient(to right, #7dc8f0 0%, #78c7f0 3%, #73c6f0 6%, #6ec5f0 9%, #69c4f0 12%, #64c3f0 15%, #5fc2f0 18%, #5ac1f0 21%, #55c0f0 24%, #50bff0 27%, #4bbef0 30%, #4abdf1 33%, #49bcf1 36%, #48bbf1 39%, #47baf1 42%, #46b9f1 45%, #45b8f2 48%, #45b7f2 51%, #45b6f2 54%, #45b5f2 57%, #45b4f2 60%, #45b3f2 63%, #45b2f2 66%, #45b1f2 69%, #45b0f2 72%, #45aff2 75%, #45aef2 78%, #45adf2 81%, #45acf2 84%, #45abf2 87%, #45aaf2 90%, #45aaf2 93%, #45aaf2 96%, #45aaf2 100%);">
-                            Daftar
-                        </a>
-                    </div>
-
-                    <div class="md:hidden">
-                        <button id="mobile-menu-button"
-                            class="text-gray-700 hover:text-blue-600 focus:outline-none transition-colors duration-200">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 space-y-3">
-                <a href="#beranda"
-                    class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors border-l-4 border-blue-500">
-                    Beranda
-                </a>
-                <a href="#pelayanan" class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors">
-                    Pelayanan
-                </a>
-                <a href="#bumdes" class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors">
-                    BUMDes
-                </a>
-                <a href="#profil" class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors">
-                    Profil iSewa
-                </a>
-                <div class="px-4 pt-4 border-t border-gray-200 space-y-3">
-                    <div class="relative group">
-                        <div class="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-blue-500 rounded-full">
-                        </div>
-                        <a href="/login"
-                            class="relative block text-center px-6 py-2.5 text-blue-600 rounded-full font-medium bg-white hover:bg-gray-50 transition-all">
-                            Masuk
-                        </a>
-                    </div>
-                    <a href="/register"
-                        class="block text-center px-6 py-2.5 text-white rounded-full font-medium hover:shadow-lg transition-all"
-                        style="background: linear-gradient(to right, #7dc8f0 0%, #45aaf2 100%);">
-                        Daftar
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+@section('page')
+{{-- NAV --}}
 
     <!-- Carousel Section -->
 
@@ -661,115 +386,185 @@
 
     </main>
 
-    {{-- FOOTER --}}<footer
-        class="relative z-10 bg-[#115789] text-white pt-10 pb-6 mt-auto border-t border-white/10">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-8 mb-0">
-
-                <div class="flex flex-col items-start -mt-20">
-                    <img src="{{ asset('User/img/logo/iSewaF.png') }}" alt="iSewa Logo"
-                        class="h-65 w-auto object-contain relative z-10">
-
-                    <img src="{{ asset('User/img/logo/bklss.png') }}" alt="Bengkalis Bermasa"
-                        class="h-65 w-auto object-contain -mt-12 relative z-0">
-                </div>
-
-                <div class="flex flex-col md:items-center md:pt-2">
-                    <div class="flex flex-col space-y-5">
-                        <a href="#pelayanan"
-                            class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
-                            Pelayanan
-                        </a>
-                        <a href="#bumdes"
-                            class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
-                            BUMDes
-                        </a>
-                        <a href="#profil"
-                            class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
-                            Profil iSewa
-                        </a>
-                    </div>
-                </div>
-
-                <div class="flex flex-col space-y-6 md:items-end md:pt-2">
-                    <div class="flex items-start gap-4 md:flex-row-reverse text-right group cursor-default">
-                        <div class="bg-white/10 p-2 rounded-full group-hover:bg-white/20 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </div>
-                        <span class="text-[15px] leading-relaxed mt-1.5">Bengkalis, Riau, Indonesia</span>
-                    </div>
-
-                    <div class="flex items-center gap-4 md:flex-row-reverse text-right group">
-                        <div class="bg-white/10 p-2 rounded-full group-hover:bg-white/20 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <a href="mailto:iSewa.digital@gmail.com"
-                            class="text-[15px] hover:text-blue-300 transition-colors mt-0.5">iSewa.digital@gmail.com</a>
-                    </div>
-
-                    <div class="flex items-center gap-4 md:flex-row-reverse text-right group">
-                        <div class="bg-white/10 p-2 rounded-full group-hover:bg-white/20 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                        </div>
-                        <a href="tel:+6281234567890"
-                            class="text-[15px] hover:text-blue-300 transition-colors mt-0.5">(+62) 812-3456-78910</a>
-                    </div>
-
-                    <div class="flex items-center gap-3 pt-2">
-                        <a href="#"
-                            class="bg-white text-[#115789] rounded-md p-2.5 hover:bg-blue-100 transition-all hover:-translate-y-1">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
-                            </svg>
-                        </a>
-                        <a href="#"
-                            class="bg-white text-[#115789] rounded-md p-2.5 hover:bg-blue-100 transition-all hover:-translate-y-1">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                            </svg>
-                        </a>
-                        <a href="#"
-                            class="bg-white text-[#115789] rounded-md p-2.5 hover:bg-blue-100 transition-all hover:-translate-y-1">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                            </svg>
-                        </a>
-                        <a href="#"
-                            class="bg-white text-[#115789] rounded-md p-2.5 hover:bg-blue-100 transition-all hover:-translate-y-1">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-t border-white/20 mb-8"></div>
-
-            <div class="text-center text-sm text-gray-100 font-medium tracking-wide">
-                <p>&copy; 2025 SISTEM PENYEWAAN ALAT DAN PROMOSI USAHA BUMDES BERBASIS DIGITAL</p>
-            </div>
-        </div>
-    </footer>
+    {{-- FOOTER --}}
 
     {{-- SCRIPT --}}
-    <script>
+@endsection
+
+
+@push('styles')
+<style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Gradient Radial untuk Background Tentang Kami */
+        .bg-gradient-radial {
+            background-image: radial-gradient(circle, var(--tw-gradient-stops));
+        }
+
+        /* Background Elements - kept as they require precise positioning */
+        .bg-element {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            object-fit: contain;
+        }
+
+        /* Area Carousel/Hero - TIDAK PAKAI BACKGROUND */
+
+        /* Area POPULER - Pakai 4.webp (BLUR) KIRI BESAR + KANAN BAWAH BESAR (KEMBAR) */
+        .bg-blur-left-populer {
+            top: 21%;
+            left: -220px;
+            width: 650px;
+            transform: rotate(-15deg) scaleX(1.2) scale(3.0);
+            opacity: 0.88;
+            z-index: 2;
+        }
+
+        /* KEMBARAN 4.webp di KANAN BAWAH - MIRROR HORIZONTAL */
+        .bg-blur-right-populer {
+            top: 27%;
+            right: -180px;
+            width: 680px;
+            transform: rotate(18deg) scaleX(-1.5) scale(3.0);
+            opacity: 0.90;
+            z-index: 2;
+        }
+
+        /* Bawah POPULER / Atas UNIT PELAYANAN - Pakai 2.webp (WAVE) BESAR */
+        .bg-wave-left-lower-populer {
+            top: 30%;
+            left: -140px;
+            width: 550px;
+            transform: rotate(-8deg);
+            opacity: 0.90;
+            z-index: 2;
+        }
+
+        /* Area UNIT PELAYANAN - Pakai 2.webp (WAVE) BESAR + 5.webp (GEOMETRIS) SUPER BESAR */
+        .bg-wave-right-unit {
+            top: 40%;
+            right: -150px;
+            width: 580px;
+            transform: rotate(15deg) scaleX(-1);
+            opacity: 0.92;
+            z-index: 2;
+        }
+
+        /* 5.webp DIPERBESAR LAGI - SUPER BESAR! */
+        .bg-squares-right-unit {
+            top: 35%;
+            right: -230px;
+            width: 580px;
+            transform: rotate(-100deg) scale(1.5);
+            opacity: 0.90;
+            z-index: 2;
+        }
+
+        /* Area GRAFIK UMUM - Pakai 3.webp (WAVE BESAR TENGAH) */
+        .bg-wave-center-grafik {
+            top: 45%;
+            left: 50%;
+            width: 115%;
+            transform: translateX(-50%) scale(1.1);
+            opacity: 0.95;
+            z-index: 1;
+        }
+
+        /* --- UNIT CAROUSEL STYLES (4 VISIBLE ITEMS) --- */
+        .unit-card {
+            width: 280px;
+            height: 280px;
+            position: absolute;
+            top: 45%;
+            transform-origin: center center;
+            /* Transisi halus saat tukar tempat */
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform, left, opacity;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .unit-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.15));
+        }
+
+        /* POSISI 0: KIRI */
+        .state-0 {
+            left: 15% !important;
+            transform: translate(-50%, -50%) scale(0.65) !important;
+            opacity: 0.8;
+            z-index: 20;
+            filter: grayscale(10%);
+        }
+
+        /* POSISI 1: (TENGAH FOKUS) */
+        .state-1 {
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(1.5) !important;
+            opacity: 1;
+            z-index: 50;
+            filter: grayscale(0%) drop-shadow(0 25px 35px rgba(0, 0, 0, 0.25));
+        }
+
+        /* POSISI 2: KANAN  */
+        .state-2 {
+            left: 80% !important;
+            transform: translate(-50%, -50%) scale(0.65) !important;
+            opacity: 0.8;
+            z-index: 20;
+            filter: grayscale(10%);
+        }
+
+        /* POSISI 3: KANAN UJUNG*/
+        .state-3 {
+            left: 100% !important;
+            /* Benar-benar di ujung kanan */
+            transform: translate(-50%, -50%) scale(0.5) !important;
+            opacity: 0.6;
+            z-index: 10;
+            filter: grayscale(30%);
+        }
+
+        /* RESPONSIVE MOBILE */
+        @media (max-width: 768px) {
+            .unit-card {
+                width: 160px;
+                height: 160px;
+            }
+
+            .state-0 {
+                left: 10% !important;
+                scale: 0.5 !important;
+            }
+
+            .state-1 {
+                left: 50% !important;
+                scale: 1.2 !important;
+            }
+
+            .state-2 {
+                left: 90% !important;
+                scale: 0.5 !important;
+            }
+
+            /* Di HP item ke-4 disembunyikan biar layar tidak penuh */
+            .state-3 {
+                left: 110% !important;
+                opacity: 0;
+            }
+        }
+    </style>
+@endpush
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
         // ========================================
         // CAROUSEL FUNCTIONALITY - FULL CODE
         // ========================================
@@ -1194,6 +989,4 @@
             });
         });
     </script>
-</body>
-
-</html>
+@endpush
