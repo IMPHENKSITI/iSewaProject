@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class CreatePinjamanTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pinjaman', function (Blueprint $table) {
@@ -31,10 +28,7 @@ class CreatePinjamanTable extends Migration
             // $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::dropIfExists('pinjaman');

@@ -46,3 +46,7 @@ Catatan yang perlu diperbaiki :
 - Pengembangan layout admin
 - Pemecahan index.blade.php nya admin
 - Catatan klo mau mengembangkan folder nya lebih lanjut sesuaikan di ```routes\web.php ``` dan ```layouts\admin.blade.php ``` untuk membuat Controllernya.
+
+## Version 0.3.1
+- Pembuatan bagian User (baru beranda, belum di pecah)
+- ``` npm run dev ``` Jalankan ini untuk lihat user
