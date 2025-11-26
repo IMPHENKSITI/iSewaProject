@@ -50,3 +50,7 @@ Catatan yang perlu diperbaiki :
 ## Version 0.3.1
 - Pembuatan bagian User (baru beranda, belum di pecah)
 - ``` npm run dev ``` Jalankan ini untuk lihat user
+
+## Version 0.3.2
+- Pemecahan bagian User Beranda
+- ```npm run dev ``` Jalankan ini untuk lihat user
