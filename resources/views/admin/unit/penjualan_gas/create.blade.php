@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.layouts.admin')
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -13,7 +13,7 @@
                         <h5 class="mb-0">Form Tambah Gas</h5>
                     </div>
                     <div class="card-body">
-                        {{-- ✅ DITAMBAHKAN: Tampilan error validasi --}}
+                        {{-- Tampilan error validasi --}}
                         @if ($errors->any())
                             <div class="alert alert-danger animate__animated animate__fadeIn">
                                 <strong>Perhatian!</strong>
@@ -26,7 +26,7 @@
                         @endif
 
                         <form action="{{ route('admin.unit.penjualan_gas.store') }}" method="POST" enctype="multipart/form-data">
-                            @csrf <!-- ⚠️ Pastikan ini ada -->
+                            @csrf 
                             <div class="mb-3">
                                 <label class="form-label" for="jenis_gas">Jenis Gas</label>
                                 <input type="text" class="form-control" id="jenis_gas" name="jenis_gas" required />
@@ -71,6 +71,7 @@
                                         <option value="Perlengkapan Acara">Perlengkapan Acara</option>
                                         <option value="Tenda Acara">Tenda Acara</option>
                                         <option value="Dekorasi">Dekorasi</option>
+                                        <option value="Dekorasi">Kebutuhan Rumah Tangga</option>
                                     </select>
                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
                                         <i class="bx bx-plus"></i> Tambah Kategori

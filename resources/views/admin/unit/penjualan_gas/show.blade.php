@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.layouts.admin')
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -40,7 +40,7 @@
                                             @endif
                                         </div>
 
-                                        <!-- Tombol Prev/Next (Diperbaiki sesuai gambar referensi) -->
+                                        <!-- Tombol Prev/Next -->
                                         <button class="carousel-control-prev" type="button"
                                             data-bs-target="#carouselExample{{ $gas->id }}" data-bs-slide="prev">
                                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
 
-                            <!-- Info Detail & Tombol Aksi (Diperluas ke kanan) -->
+                            <!-- Info Detail & Tombol Aksi -->
                             <div class="flex-grow-1" style="min-width: 0;"> <!-- Menambahkan min-width untuk mencegah kolaps -->
                                 <h5 class="card-title fw-semibold">{{ $gas->jenis_gas }}</h5>
                                 <p class="text-muted mb-4">{{ $gas->deskripsi }}</p>
@@ -79,7 +79,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Tombol Aksi (Dibuat sejajar dengan ujung bawah gambar) -->
+                                <!-- Tombol Aksi -->
                                 <div class="d-flex gap-2 align-items-end">
                                     <a href="{{ route('admin.unit.penjualan_gas.edit', $gas->id) }}"
                                         class="btn btn-warning btn-sm">Ubah</a>
@@ -103,7 +103,7 @@
 
 @push('styles')
 <style>
-    /* Elegan & bersih */
+    
     .card {
         transition: all 0.2s ease;
     }

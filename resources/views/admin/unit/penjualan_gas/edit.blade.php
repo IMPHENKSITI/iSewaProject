@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.layouts.admin')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -13,7 +13,7 @@
                     <h5 class="mb-0">Form Edit Gas</h5>
                 </div>
                 <div class="card-body">
-                    {{-- ✅ DITAMBAHKAN: Tampilan error validasi --}}
+                    {{-- Tampilan error validasi --}}
                     @if ($errors->any())
                         <div class="alert alert-danger animate__animated animate__fadeIn">
                             <strong>Perhatian!</strong>
@@ -25,7 +25,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.unit.penjualan_gas.update', $gas->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.unit.penjualan_gas.update', ['ga' => $gas->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -81,6 +81,7 @@
                                     <option value="Perlengkapan Acara" {{ old('kategori', $gas->kategori) == 'Perlengkapan Acara' ? 'selected' : '' }}>Perlengkapan Acara</option>
                                     <option value="Tenda Acara" {{ old('kategori', $gas->kategori) == 'Tenda Acara' ? 'selected' : '' }}>Tenda Acara</option>
                                     <option value="Dekorasi" {{ old('kategori', $gas->kategori) == 'Dekorasi' ? 'selected' : '' }}>Dekorasi</option>
+                                    <option value="Kebutuhan Rumah Tangga" {{ old('kategori', $gas->kategori) == 'Kebutuhan Rumah Tangga' ? 'selected' : '' }}>Kebutuhan Rumah Tangga</option>
                                 </select>
                                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
                                     <i class="bx bx-plus"></i> Tambah Kategori
@@ -209,7 +210,7 @@
     </div>
 </div>
 
-<!-- Script (COPIED langsung dari create.blade.php - 100% konsisten) -->
+<!-- Script -->
 <script>
 function formatRupiah(input) {
     let value = input.value.replace(/\D/g, '');

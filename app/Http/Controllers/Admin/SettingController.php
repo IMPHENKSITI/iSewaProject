@@ -1,18 +1,78 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request; // Tambahkan ini untuk type hinting jika perlu di update()
 
 class SettingController extends Controller
 {
+    /**
+     * Menampilkan halaman pengaturan umum.
+     */
     public function index()
     {
-        return view('settings.index'); // sesuaikan dengan lokasi view Anda
+        // Ganti 'settings.index' dengan view yang benar-benar Anda miliki untuk pengaturan umum
+        // Misalnya: return view('admin.settings.general');
+        return view('settings.index'); // Sesuaikan dengan view Anda
     }
 
-    public function update()
+    /**
+     * Menyimpan perubahan pengaturan umum.
+     */
+    public function update(Request $request) // Tambahkan Request $request untuk menangani input
     {
-        // handle update jika diperlukan
+        // Tambahkan logika validasi dan update di sini jika diperlukan
+        // Misalnya:
+        // $request->validate([...]);
+        // Simpan ke database atau config...
+
         return back()->with('success', 'Pengaturan berhasil disimpan.');
+    }
+
+    /**
+     * Menampilkan halaman Profil iSewa (profil sistem)
+     */
+    public function showIsewaProfile()
+    {
+        // Ini akan memanggil view yang sudah kita buat
+        return view('admin.isewa.profile');
+    }
+
+    /**
+     * Menampilkan halaman Profil Pengembang
+     */
+    public function showDeveloperProfile($name)
+    {
+        $developers = [
+            'wahid' => [
+                'name' => 'Wahid Riono',
+                'prodi' => 'D4 Information System Security',
+                'jurusan' => 'Teknik Informatika',
+                'kampus' => 'Politeknik Negeri Bengkalis',
+                'image' => 'wahid.jpg'
+            ],
+            'mushlihul' => [
+                'name' => 'Mushlihul Arif',
+                'prodi' => 'D4 Information System Security',
+                'jurusan' => 'Teknik Informatika',
+                'kampus' => 'Politeknik Negeri Bengkalis',
+                'image' => 'mushlihul.jpg'
+            ],
+            'safika' => [
+                'name' => 'Safika',
+                'prodi' => 'D4 Information System Security',
+                'jurusan' => 'Teknik Informatika',
+                'kampus' => 'Politeknik Negeri Bengkalis',
+                'image' => 'safika.jpg'
+            ]
+        ];
+
+        if (!isset($developers[$name])) {
+            abort(404, 'Pengembang tidak ditemukan.');
+        }
+
+        $currentDeveloper = $developers[$name];
+        return view('admin.isewa.developer.profile', compact('currentDeveloper', 'name'));
     }
 }

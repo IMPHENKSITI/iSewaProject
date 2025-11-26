@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.layouts.admin')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -13,7 +13,7 @@
                     <h5 class="mb-0">Form Edit Alat</h5>
                 </div>
                 <div class="card-body">
-                    {{-- ✅ DITAMBAHKAN: Tampilan error validasi --}}
+                    {{-- Tampilan error validasi --}}
                     @if ($errors->any())
                         <div class="alert alert-danger animate__animated animate__fadeIn">
                             <strong>Perhatian!</strong>
@@ -209,7 +209,7 @@
     </div>
 </div>
 
-<!-- Script (COPIED langsung dari create.blade.php - 100% konsisten) -->
+<!-- Script -->
 <script>
 function formatRupiah(input) {
     let value = input.value.replace(/\D/g, '');

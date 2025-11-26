@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.layouts.admin')
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -13,7 +13,7 @@
                         <h5 class="mb-0">Form Tambah Alat</h5>
                     </div>
                     <div class="card-body">
-                        {{-- ✅ DITAMBAHKAN: Tampilan error validasi --}}
+                        {{-- Tampilan error validasi --}}
                         @if ($errors->any())
                             <div class="alert alert-danger animate__animated animate__fadeIn">
                                 <strong>Perhatian!</strong>
@@ -26,7 +26,7 @@
                         @endif
 
                         <form action="{{ route('admin.unit.penyewaan.store') }}" method="POST" enctype="multipart/form-data">
-                            @csrf <!-- ⚠️ Pastikan ini ada -->
+                            @csrf 
                             <div class="mb-3">
                                 <label class="form-label" for="nama_barang">Nama Barang</label>
                                 <input type="text" class="form-control" id="nama_barang" name="nama_barang" required />

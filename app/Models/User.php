@@ -4,7 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable; // Tetap gunakan ini untuk login
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -18,9 +18,14 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'username',
         'name',
         'email',
-        'password',
+        'password', // Harus bisa diisi saat register
+        'phone',
+        'address',
+        'gender',
+        'status', // Tambahkan status ke fillable
     ];
 
     /**
@@ -43,6 +48,19 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'status' => 'string', // Pastikan status di-cast ke string
         ];
+    }
+
+    // Relasi ke transaksi penyewaan (contoh)
+    public function rentalTransactions()
+    {
+        return $this->hasMany(RentalTransaction::class, 'user_id');
+    }
+
+    // Relasi ke transaksi gas (contoh)
+    public function gasTransactions()
+    {
+        return $this->hasMany(GasTransaction::class, 'user_id');
     }
 }

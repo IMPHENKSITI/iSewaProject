@@ -7,11 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-// Tambahkan model-model berikut
-use App\Models\Barang; // Ganti dengan model yang sesuai jika berbeda
-use App\Models\Gas; // Ganti dengan model yang sesuai jika berbeda
-use App\Models\HasilPanen; // Ganti dengan model yang sesuai jika berbeda
-use App\Models\Pinjaman; // Ganti dengan model yang sesuai jika berbeda
+use App\Models\Barang; 
+use App\Models\Gas; 
 
 class DashboardController extends Controller
 {
@@ -31,16 +28,12 @@ public function index()
     // Ambil jumlah item untuk setiap unit layanan
     // Gunakan TRIM untuk menghilangkan spasi ekstra di awal/akhir
     $data['unitPenyewaan'] = Barang::count(); // Hitung SEMUA barang
-    $data['unitGas'] = Barang::whereRaw('TRIM(kategori) = ?', ['Penjualan Gas'])->count();
-    $data['unitPertanian'] = Barang::whereRaw('TRIM(kategori) = ?', ['Pertanian & Perkebunan'])->count();
-    $data['unitSimpanPinjam'] = Barang::whereRaw('TRIM(kategori) = ?', ['Simpan Pinjam'])->count();
+    $data['unitGas'] = Gas::count();
 
     // Kembalikan view dengan data tambahan
     return view('admin.dashboard.index', $data);
 }
 
-    // ... kode fungsi lainnya (profile, settings, dll) TIDAK BERUBAH ...
-    // (Sisanya dari kode Anda tetap sama)
     /**
      * Display Profile Page
      */
@@ -160,7 +153,7 @@ public function index()
             'password' => Hash::make($validated['password']),
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
+        return redirect()->route('admin.manajemen-pengguna.index')->with('success', 'User created successfully!');
     }
 
     /**
@@ -206,7 +199,7 @@ public function index()
 
         $user->update($validated);
 
-        return redirect()->route('admin.users.index')->with('success', 'User updated successfully!');
+        return redirect()->route('admin.manajemen-pengguna.index')->with('success', 'User updated successfully!');
     }
 
     /**
@@ -218,11 +211,11 @@ public function index()
 
         // Prevent deleting own account
         if ($user->id === Auth::id()) {
-            return redirect()->route('admin.users.index')->with('error', 'You cannot delete your own account!');
+            return redirect()->route('admin.manajemen-pengguna.index')->with('error', 'You cannot delete your own account!');
         }
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
+        return redirect()->route('admin.manajemen-pengguna.index')->with('success', 'User deleted successfully!');
     }
     /**
      * Display Connections Page

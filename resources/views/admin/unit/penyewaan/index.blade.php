@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.layouts.admin')
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -73,7 +73,7 @@
             @endforeach
         </div>
 
-        <!-- ✅ Pagination: Bahasa Indonesia, tanpa teks gangguan -->
+        <!-- Pagination -->
         @if ($barangs->hasPages())
             <div class="mt-4 d-flex justify-content-center">
                 <nav>
@@ -108,7 +108,7 @@
 
 @push('styles')
 <style>
-    /* ✅ Elegan & bersih — tidak alay */
+    
     .card {
         transition: transform 0.2s ease;
         border-radius: 0.5rem;

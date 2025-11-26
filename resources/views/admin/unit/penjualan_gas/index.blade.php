@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('admin.layouts.admin')
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -53,7 +53,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="badge bg-primary">Rp.
                                     {{ number_format($gas->harga_satuan, 0, ',', '.') }}</span>
-                                <span class="badge bg-success">{{ $gas->stok }} {{ $gas->satuan }}</span>
+                                <span class="badge bg-success">{{ $gas->stok }} {{ Str::upper($gas->satuan) }}</span>
                             </div>
                             <div class="mt-3 d-flex gap-2">
                                 <a href="{{ route('admin.unit.penjualan_gas.show', $gas->id) }}"
@@ -73,7 +73,7 @@
             @endforeach
         </div>
 
-        <!-- ✅ Pagination: Bahasa Indonesia, tanpa teks gangguan -->
+        <!-- Pagination: Bahasa Indonesia -->
         @if ($gases->hasPages())
             <div class="mt-4 d-flex justify-content-center">
                 <nav>
@@ -103,60 +103,12 @@
                 </nav>
             </div>
         @endif
-
-        <!-- Riwayat Pembelian Warga -->
-        <div class="mt-5">
-            <h4 class="fw-bold">Riwayat Pembelian Warga</h4>
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Warga</th>
-                                    <th>Produk Gas</th>
-                                    <th>Jumlah</th>
-                                    <th>Total Harga</th>
-                                    <th>Tanggal Pembelian</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($purchaseHistory as $index => $purchase)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $purchase->resident->name ?? 'Warga Tidak Dikenal' }}</td>
-                                        <td>{{ $purchase->gas->jenis_gas ?? 'Produk Tidak Ditemukan' }}</td>
-                                        <td>{{ $purchase->quantity }} unit</td>
-                                        <td>Rp. {{ number_format($purchase->total_price, 0, ',', '.') }}</td>
-                                        <td>{{ $purchase->created_at->format('d M Y H:i') }}</td>
-                                        <td>
-                                            <span class="badge {{ $purchase->status == 'selesai' ? 'bg-success' : 'bg-warning' }}">
-                                                {{ ucfirst($purchase->status) }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted">Belum ada riwayat pembelian.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="d-flex justify-content-end mt-3">
-                        {{ $purchaseHistory->links() }}
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 @endsection
 
 @push('styles')
 <style>
-    /* ✅ Elegan & bersih — tidak alay */
+    
     .card {
         transition: transform 0.2s ease;
         border-radius: 0.5rem;

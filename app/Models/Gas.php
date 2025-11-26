@@ -28,9 +28,4 @@ class Gas extends Model
     protected $casts = [
         'harga_satuan' => 'integer',
     ];
-
-    public function purchases()
-    {
-        return $this->hasMany(Purchase::class);
-    }
 }

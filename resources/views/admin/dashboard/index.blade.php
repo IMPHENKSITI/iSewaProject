@@ -1,7 +1,8 @@
-@extends('layouts.admin')
+@extends('admin.layouts.admin')
 @section('content')
     <div class="content-wrapper">
         <div class="container-xxl flex-grow-1 container-p-y">
+            
             <!-- Welcome Card & Unit Cards -->
             <div class="row mb-2">
                 <div class="col-lg-8">
@@ -12,8 +13,7 @@
                                     <h5 class="card-title text-primary fw-bold">Selamat Datang di iSewa 🏛️</h5>
                                     <p class="mb-2">Sistem Penyewaan Alat dan Promosi Usaha BUMDes berbasis Digital <span
                                             class="fw-bold">Desa Pematang Duku Timur</span></p>
-                                    <a href="{{ route('admin.bumdes.profile') }}"
-                                        class="btn btn-sm btn-outline-primary">Profil BUMDes</a>
+                                    <a href="{{ route('admin.isewa.profil.bumdes') }}" class="btn btn-outline-primary">Profil BUMDes</a>
                                 </div>
                             </div>
                             <div class="col-sm-5 text-center text-sm-left">
@@ -55,6 +55,8 @@
             <ul></ul>
             <div></div>
 
+            
+
             <!-- Unit Cards - SATU PER BARIS -->
             <div class="row mb-4">
                 <div class="col-12 mb-3">
@@ -69,9 +71,7 @@
                                     <span class="fw-semibold d-block mb-1 text-muted">Unit Penyewaan Alat</span>
                                     <h4 class="card-title mb-0">{{ $unitPenyewaan ?? 45 }} Item</h4>
                                 </div>
-                                <div class="text-end">
-                                    <h5 class="text-success mb-0"><i class="bx bx-up-arrow-alt"></i> +72.80%</h5>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -87,52 +87,9 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <span class="fw-semibold d-block mb-1 text-muted">Unit Penjualan Gas</span>
-                                    <h4 class="card-title mb-0">{{ $unitGas ?? 320 }} Tabung</h4>
+                                    <h4 class="card-title mb-0">{{ $unitGas ?? 320 }} Jenis Tabung</h4>
                                 </div>
-                                <div class="text-end">
-                                    <h5 class="text-success mb-0"><i class="bx bx-up-arrow-alt"></i> +28.42%</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 mb-3">
-                    <div class="card unit-card success animate-fade-in"
-                        onclick="window.location='{{ route('admin.unit.tanikebun.index') }}'">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar flex-shrink-0 me-3" style="width: 60px; height: 60px;">
-                                    <img src="{{ asset('Admin/img/icons/unicons/4.png') }}" alt=""
-                                        class="rounded w-100" />
-                                </div>
-                                <div class="flex-grow-1">
-                                    <span class="fw-semibold d-block mb-1 text-muted">Unit Pertanian dan Perkebunan</span>
-                                    <h4 class="card-title mb-0">{{ $unitPertanian ?? 28 }} Produk</h4>
-                                </div>
-                                <div class="text-end">
-                                    <h5 class="text-danger mb-0"><i class="bx bx-down-arrow-alt"></i> -14.82%</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 mb-3">
-                    <div class="card unit-card info animate-fade-in"
-                        onclick="window.location='{{ route('admin.unit.simpanpinjam.index') }}'">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar flex-shrink-0 me-3" style="width: 60px; height: 60px;">
-                                    <img src="{{ asset('Admin/img/icons/unicons/isewa.png') }}" alt=""
-                                        class="rounded w-100" />
-                                </div>
-                                <div class="flex-grow-1">
-                                    <span class="fw-semibold d-block mb-1 text-muted">Unit Simpan Pinjam</span>
-                                    <h4 class="card-title mb-0">{{ $unitSimpanPinjam ?? 156 }} Anggota</h4>
-                                </div>
-                                <div class="text-end">
-                                    <h5 class="text-success mb-0"><i class="bx bx-up-arrow-alt"></i> +26.14%</h5>
-
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -174,58 +131,6 @@
                                                 <i class="bx bx-check"></i> Terima
                                             </button>
                                             <button class="btn btn-sm btn-danger" onclick="rejectRequest(1)">
-                                                <i class="bx bx-x"></i> Tolak
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="list-group-item d-flex align-items-center p-2 notification-item"
-                                        id="notification2">
-                                        <div class="avatar flex-shrink-0 me-2">
-                                            <span class="avatar-initial rounded bg-label-success">S</span>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="mb-2">
-                                                <span class="badge bg-info me-2">Simpan Pinjam</span>
-                                                <small class="text-muted">5 jam yang lalu</small>
-                                            </div>
-                                            <h6 class="mb-1">User B mengajukan pinjaman sebesar Rp 5.000.000</h6>
-                                            <p class="text-muted mb-0 small">Untuk modal usaha toko kelontong</p>
-                                        </div>
-                                        <div class="d-flex gap-2 ms-3">
-                                            <button class="btn btn-sm btn-outline-primary"
-                                                onclick="showDetails('Pinjaman Modal Usaha', 'User B', 'Untuk modal usaha toko kelontong')">
-                                                <i class="bx bx-show"></i> Detail
-                                            </button>
-                                            <button class="btn btn-sm btn-success" onclick="acceptRequest(2)">
-                                                <i class="bx bx-check"></i> Terima
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" onclick="rejectRequest(2)">
-                                                <i class="bx bx-x"></i> Tolak
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="list-group-item d-flex align-items-center p-2 notification-item"
-                                        id="notification3">
-                                        <div class="avatar flex-shrink-0 me-2">
-                                            <span class="avatar-initial rounded bg-label-warning">K</span>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="mb-2">
-                                                <span class="badge bg-success me-2">Kemitraan</span>
-                                                <small class="text-muted">1 hari yang lalu</small>
-                                            </div>
-                                            <h6 class="mb-1">User C mengajukan pendaftaran gabung kemitraan</h6>
-                                            <p class="text-muted mb-0 small">Bidang pertanian dan perkebunan sawit</p>
-                                        </div>
-                                        <div class="d-flex gap-2 ms-3">
-                                            <button class="btn btn-sm btn-outline-primary"
-                                                onclick="showDetails('Pendaftaran Kemitraan', 'User C', 'Bidang pertanian dan perkebunan sawit')">
-                                                <i class="bx bx-show"></i> Detail
-                                            </button>
-                                            <button class="btn btn-sm btn-success" onclick="acceptRequest(3)">
-                                                <i class="bx bx-check"></i> Terima
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" onclick="rejectRequest(3)">
                                                 <i class="bx bx-x"></i> Tolak
                                             </button>
                                         </div>
@@ -402,7 +307,7 @@
                         <div class="col-12">
                             <div class="card animate-fade-in">
                                 <div class="card-header p-3">
-                                    <h5 class="card-title mb-0">Produk Populer</h5>
+                                    <h5 class="card-title mb-0">Populer</h5>
                                 </div>
                                 <div class="card-body p-3">
                                     <div class="row g-3">
@@ -494,148 +399,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 product-item">
-                                            <div class="card h-100 product-card">
-                                                <div class="card-body p-2">
-                                                    <div class="d-flex align-items-center mb-2">
-                                                        <div class="avatar flex-shrink-0 me-3">
-                                                            <img src="{{ asset('Admin/img/icons/unicons/mitra.png') }}"
-                                                                alt="" class="product-image" />
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            <h6 class="mb-0">Bermitra</h6>
-                                                            <small class="text-muted">Unit Pertanian</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between">
-                                                        <div></div>
-                                                        <div class="user-progress">
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 product-item">
-                                            <div class="card h-100 product-card">
-                                                <div class="card-body p-2">
-                                                    <div class="d-flex align-items-center mb-2">
-                                                        <div class="avatar flex-shrink-0 me-3">
-                                                            <img src="{{ asset('Admin/img/icons/unicons/sp.png') }}"
-                                                                alt="" class="product-image" />
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            <h6 class="mb-0">Pengajuan Pinjaman</h6>
-                                                            <small class="text-muted">Unit Simpan Pinjam</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between">
-                                                        <div></div>
-                                                        <div class="user-progress">
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Partnership Section -->
-                    <div class="row mb-2 section-gap">
-                        <div class="col-12">
-                            <div class="card animate-fade-in">
-                                <div class="card-header p-3">
-                                    <h5 class="card-title mb-0">Kemitraan</h5>
-                                </div>
-                                <div class="card-body p-3">
-                                    <div class="row g-3">
-                                        <div class="col-md-4">
-                                            <div class="card h-100 partnership-card">
-                                                <div class="card-body p-3">
-                                                    <div class="d-flex align-items-center mb-3">
-                                                        <div class="avatar flex-shrink-0 me-3 bg-success text-white">
-                                                            H
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            <h6 class="card-title mb-0">Heri</h6>
-                                                            <small class="text-muted">Petani</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mt-2">
-                                                        <p class="mb-1"><strong>Jenis Hasil Panen:</strong> Ubi</p>
-                                                        <p class="mb-1"><strong>Jumlah:</strong> 5 Ton</p>
-                                                        <p class="mb-1"><strong>Harga Jual:</strong> Rp 5.000.000</p>
-                                                        <p class="mb-0"><strong>Lokasi Lahan:</strong> RW 03 Desa
-                                                            Pematang Duku Timur</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="card h-100 partnership-card">
-                                                <div class="card-body p-3">
-                                                    <div class="d-flex align-items-center mb-3">
-                                                        <div class="avatar flex-shrink-0 me-3 bg-info text-white">
-                                                            S
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            <h6 class="card-title mb-0">Siti</h6>
-                                                            <small class="text-muted">Petani</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mt-2">
-                                                        <p class="mb-1"><strong>Jenis Hasil Panen:</strong> Sayur-sayuran
-                                                        </p>
-                                                        <p class="mb-1"><strong>Jumlah:</strong> 10 Ton</p>
-                                                        <p class="mb-1"><strong>Harga Jual:</strong> Rp 15.000.000</p>
-                                                        <p class="mb-0"><strong>Lokasi Lahan:</strong> RW 05 Desa
-                                                            Pematang Duku Timur</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="card h-100 partnership-card">
-                                                <div class="card-body p-3">
-                                                    <div class="d-flex align-items-center mb-3">
-                                                        <div class="avatar flex-shrink-0 me-3 bg-warning text-white">
-                                                            B
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            <h6 class="card-title mb-0">Budi</h6>
-                                                            <small class="text-muted">Petani</small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mt-2">
-                                                        <p class="mb-1"><strong>Jenis Hasil Panen:</strong> Padi</p>
-                                                        <p class="mb-1"><strong>Jumlah:</strong> 2 Ton</p>
-                                                        <p class="mb-1"><strong>Harga Jual:</strong> Rp 3.000.000</p>
-                                                        <p class="mb-0"><strong>Lokasi Lahan:</strong> RW 02 Desa
-                                                            Pematang Duku Timur</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Generate Report Button -->
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <div class="card animate-fade-in">
-                                <div class="card-body p-3 text-center">
-                                    <h5 class="card-title mb-0">Laporan BUMDes</h5>
-                                    <p class="mb-2">Generate laporan lengkap untuk diserahkan ke pemerintah desa.</p>
-                                    <button class="btn btn-primary btn-sm laporan-bumdes-btn" onclick="generateReport()">
-                                        <i class="bx bx-file"></i> Generate Laporan PDF
-                                    </button>
                                 </div>
                             </div>
                         </div>

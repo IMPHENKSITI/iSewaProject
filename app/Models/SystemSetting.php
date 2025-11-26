@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class SystemSetting extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'location_name',
+        'latitude',
+        'longitude',
+        'address',
+        'bank_name',
+        'bank_account_number',
+        'bank_account_holder',
+        'payment_methods',
+        'whatsapp_number',
+        'office_address',
+        'operating_hours',
+    ];
+
+    protected $casts = [
+        'payment_methods' => 'array', // Cast ke array agar bisa handle JSON
+    ];
+}

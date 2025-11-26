@@ -4,26 +4,33 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Gas;
-use App\Models\Purchase;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class GasController extends Controller
 {
+    // ===========================
+    // INDEX
+    // ===========================
     public function index()
     {
-        $gases = Gas::orderBy('created_at', 'desc')->paginate(6);
-        $purchaseHistory = Purchase::with(['gas', 'resident'])->orderBy('created_at', 'desc')->paginate(6);
+        $gases = Gas::orderBy('created_at', 'desc')->paginate(9);
 
-        return view('admin.unit.penjualan_gas.index', compact('gases', 'purchaseHistory'));
+        return view('admin.unit.penjualan_gas.index', compact('gases'));
     }
 
+
+    // ===========================
+    // CREATE
+    // ===========================
     public function create()
     {
         return view('admin.unit.penjualan_gas.create');
     }
 
+    // ===========================
+    // STORE
+    // ===========================
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -71,18 +78,18 @@ class GasController extends Controller
         return redirect()->route('admin.unit.penjualan_gas.index')->with('success', 'Gas berhasil ditambahkan.');
     }
 
-    public function show(Gas $gas)
+    // ===========================
+    // EDIT
+    // ===========================
+    public function edit($id)
     {
-        $purchaseHistories = $gas->purchases()->with('resident')->orderBy('created_at', 'desc')->get();
-
-        return view('admin.unit.penjualan_gas.show', compact('gas', 'purchaseHistories'));
-    }
-
-    public function edit(Gas $gas)
-    {
+        $gas = Gas::findOrFail($id);
         return view('admin.unit.penjualan_gas.edit', compact('gas'));
     }
 
+    // ===========================
+    // UPDATE
+    // ===========================
     public function update(Request $request, Gas $gas)
     {
         $validated = $request->validate([
@@ -99,31 +106,39 @@ class GasController extends Controller
             'foto_3' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        // Bersihkan harga dari karakter non-angka
+        // Bersihkan harga
         $hargaBersih = (int) preg_replace('/[^0-9]/', '', $request->harga_satuan);
         if ($hargaBersih <= 0) {
             return back()->withErrors(['harga_satuan' => 'Harga satuan harus angka valid dan lebih dari 0.'])->withInput();
         }
 
-        $gas->jenis_gas = $validated['jenis_gas'];
-        $gas->deskripsi = $validated['deskripsi'];
-        $gas->harga_satuan = $hargaBersih;
-        $gas->stok = $validated['stok'];
-        $gas->status = $validated['status'];
-        $gas->kategori = $validated['kategori'];
-        $gas->lokasi = $validated['lokasi'];
-        $gas->satuan = $validated['satuan'];
+        $gas->update([
+            'jenis_gas' => $validated['jenis_gas'],
+            'deskripsi' => $validated['deskripsi'],
+            'harga_satuan' => $hargaBersih,
+            'stok' => $validated['stok'],
+            'status' => $validated['status'],
+            'kategori' => $validated['kategori'],
+            'lokasi' => $validated['lokasi'],
+            'satuan' => $validated['satuan'],
+        ]);
 
+        // Foto
         if ($request->hasFile('foto')) {
-            if ($gas->foto) Storage::disk('public')->delete($gas->foto);
+            if ($gas->foto)
+                Storage::disk('public')->delete($gas->foto);
             $gas->foto = $request->file('foto')->store('gas', 'public');
         }
+
         if ($request->hasFile('foto_2')) {
-            if ($gas->foto_2) Storage::disk('public')->delete($gas->foto_2);
+            if ($gas->foto_2)
+                Storage::disk('public')->delete($gas->foto_2);
             $gas->foto_2 = $request->file('foto_2')->store('gas', 'public');
         }
+
         if ($request->hasFile('foto_3')) {
-            if ($gas->foto_3) Storage::disk('public')->delete($gas->foto_3);
+            if ($gas->foto_3)
+                Storage::disk('public')->delete($gas->foto_3);
             $gas->foto_3 = $request->file('foto_3')->store('gas', 'public');
         }
 
@@ -132,11 +147,17 @@ class GasController extends Controller
         return redirect()->route('admin.unit.penjualan_gas.index')->with('success', 'Gas berhasil diubah.');
     }
 
+    // ===========================
+    // DESTROY
+    // ===========================
     public function destroy(Gas $gas)
     {
-        if ($gas->foto) Storage::disk('public')->delete($gas->foto);
-        if ($gas->foto_2) Storage::disk('public')->delete($gas->foto_2);
-        if ($gas->foto_3) Storage::disk('public')->delete($gas->foto_3);
+        if ($gas->foto)
+            Storage::disk('public')->delete($gas->foto);
+        if ($gas->foto_2)
+            Storage::disk('public')->delete($gas->foto_2);
+        if ($gas->foto_3)
+            Storage::disk('public')->delete($gas->foto_3);
 
         $gas->delete();
 
