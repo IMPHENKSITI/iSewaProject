@@ -2,19 +2,19 @@
         <div class="max-w-screen-2xl mx-auto px-5 py-0">
             <div class="flex items-center justify-between">
                 <div class="flex-shrink-0">
-                    <a href="/">
+                    <a href="{{ route('beranda') }}">
                         <img src="{{ asset('User/img/logo/iSewa.png') }}" alt="iSewa Logo"
                             class="h-30 w-auto object-contain">
                     </a>
                 </div>
 
                 <div class="hidden md:flex items-center space-x-8 ml-auto">
-                    <a href="#beranda"
-                        class="text-gray-900 hover:text-blue-600 text-[15px] font-medium border-b-2 border-blue-500 pb-0,5 transition-colors duration-200">
+                    <a href="{{ route('beranda') }}"
+                        class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200 {{ request()->routeIs('beranda') ? 'border-b-2 border-blue-500 pb-0.5' : '' }}">
                         Beranda
                     </a>
-                    <a href="#pelayanan"
-                        class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200">
+                    <a href="{{ route('pelayanan') }}"
+                        class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200 {{ request()->routeIs('pelayanan') ? 'border-b-2 border-blue-500 pb-0.5' : '' }}">
                         Pelayanan
                     </a>
                     <a href="#bumdes"
@@ -57,11 +57,12 @@
             </div>
 
             <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 space-y-3">
-                <a href="#beranda"
-                    class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors border-l-4 border-blue-500">
+                <a href="{{ route('beranda') }}"
+                    class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors {{ request()->routeIs('beranda') ? 'border-l-4 border-blue-500' : '' }}">
                     Beranda
                 </a>
-                <a href="#pelayanan" class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors">
+                <a href="{{ route('pelayanan') }}" 
+                    class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors {{ request()->routeIs('pelayanan') ? 'border-l-4 border-blue-500' : '' }}">
                     Pelayanan
                 </a>
                 <a href="#bumdes" class="block text-gray-900 hover:text-blue-600 px-4 py-2 transition-colors">

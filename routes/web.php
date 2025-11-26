@@ -22,6 +22,11 @@ Route::get('/', function () {
 Route::get('/beranda', function () {
     return view('beranda.index');
 })->name('beranda');
+
+// User Pages
+Route::get('/pelayanan', function () {
+    return view('users.pelayanan');
+})->name('pelayanan');
 // ============================================
 // AUTH ROUTES (Tanpa Middleware)
 // ============================================
