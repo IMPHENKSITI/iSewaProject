@@ -22,6 +22,9 @@ return new class extends Migration
             $table->text('address')->nullable();  // Alamat
             $table->enum('gender', ['laki-laki', 'perempuan'])->nullable(); // Jenis Kelamin
             $table->enum('status', ['aktif', 'non_aktif'])->default('aktif'); // Status akun
+            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->string('otp_code', 6)->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

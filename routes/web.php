@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 // ===============================
 // IMPORT CONTROLLERS
 // ===============================
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UnitPenyewaanController;
 use App\Http\Controllers\Admin\GasController;
@@ -27,6 +27,27 @@ Route::get('/beranda', function () {
 Route::get('/pelayanan', function () {
     return view('users.pelayanan');
 })->name('pelayanan');
+
+// BUMDes Routes
+Route::get('/bumdes/profil-layanan', function () {
+    return view('users.bumdes-profil');
+})->name('bumdes.profil');
+
+Route::get('/bumdes/laporan', function () {
+    return view('users.bumdes-laporan');
+})->name('bumdes.laporan');
+
+// ============================================
+// USER AUTH ROUTES 
+// ============================================
+Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
+Route::post('/auth/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.verify-otp');
+Route::post('/auth/resend-otp', [AuthController::class, 'resendOtp'])->name('auth.resend-otp');
+Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
+Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgot-password');
+Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])->name('auth.reset-password');
+
 // ============================================
 // AUTH ROUTES (Tanpa Middleware)
 // ============================================

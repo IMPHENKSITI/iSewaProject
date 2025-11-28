@@ -25,7 +25,10 @@ class User extends Authenticatable
         'phone',
         'address',
         'gender',
+        'role',
         'status', // Tambahkan status ke fillable
+        'otp_code',
+        'otp_expires_at',
     ];
 
     /**
@@ -47,8 +50,10 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'otp_expired_at' => 'datetime',
             'password' => 'hashed',
             'status' => 'string', // Pastikan status di-cast ke string
+            'role' => 'string',
         ];
     }
 

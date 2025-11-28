@@ -966,6 +966,18 @@
             });
         }
 
+        // Mobile BUMDes Dropdown
+        const mobileBumdesToggle = document.getElementById('mobile-bumdes-toggle');
+        const mobileBumdesMenu = document.getElementById('mobile-bumdes-menu');
+        const mobileBumdesArrow = document.getElementById('mobile-bumdes-arrow');
+
+        if (mobileBumdesToggle && mobileBumdesMenu) {
+            mobileBumdesToggle.addEventListener('click', () => {
+                mobileBumdesMenu.classList.toggle('hidden');
+                mobileBumdesArrow.classList.toggle('rotate-180');
+            });
+        }
+
         // ========================================
         // SMOOTH SCROLLING
         // ========================================

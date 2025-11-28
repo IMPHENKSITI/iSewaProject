@@ -10,4 +10,12 @@
 
     {{-- USER FOOTER --}}
     @include('partials.footer')
+
+    {{-- AUTH MODALS --}}
+    @include('auth.modals')
+
 @endsection
+
+@push('scripts')
+    @include('auth.scripts')
+@endpush
