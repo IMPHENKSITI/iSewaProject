@@ -79,6 +79,15 @@ class GasController extends Controller
     }
 
     // ===========================
+    // SHOW
+    // ===========================
+    public function show($id)
+    {
+        $gas = Gas::findOrFail($id);
+        return view('admin.unit.penjualan_gas.show', compact('gas'));
+    }
+
+    // ===========================
     // EDIT
     // ===========================
     public function edit($id)
@@ -150,17 +159,26 @@ class GasController extends Controller
     // ===========================
     // DESTROY
     // ===========================
-    public function destroy(Gas $gas)
+    // ===========================
+    // DESTROY
+    // ===========================
+    public function destroy($id)
     {
-        if ($gas->foto)
-            Storage::disk('public')->delete($gas->foto);
-        if ($gas->foto_2)
-            Storage::disk('public')->delete($gas->foto_2);
-        if ($gas->foto_3)
-            Storage::disk('public')->delete($gas->foto_3);
+        try {
+            $gas = Gas::findOrFail($id);
 
-        $gas->delete();
+            if ($gas->foto)
+                Storage::disk('public')->delete($gas->foto);
+            if ($gas->foto_2)
+                Storage::disk('public')->delete($gas->foto_2);
+            if ($gas->foto_3)
+                Storage::disk('public')->delete($gas->foto_3);
 
-        return redirect()->route('admin.unit.penjualan_gas.index')->with('success', 'Gas berhasil dihapus.');
+            $gas->delete();
+
+            return redirect()->route('admin.unit.penjualan_gas.index')->with('success', 'Gas berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.unit.penjualan_gas.index')->with('error', 'Gagal menghapus gas: ' . $e->getMessage());
+        }
     }
 }

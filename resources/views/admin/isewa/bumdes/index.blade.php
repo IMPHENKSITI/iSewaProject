@@ -78,7 +78,7 @@
         });
 
         // Sidebar Active
-        const sidebarLink = document.querySelector('a[href="{{ route("admin.isewa.profil.bumdes") }}"]');
+        const sidebarLink = document.querySelector('a[href="{{ route("admin.isewa.profile-bumdes") }}"]');
         if (sidebarLink) {
             const listItem = sidebarLink.closest('li');
             if (listItem) {

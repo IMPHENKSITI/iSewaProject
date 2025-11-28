@@ -349,7 +349,7 @@
                 <div class="menu-inner-shadow"></div>
                 <ul class="menu-inner py-1">
                     <!-- Dashboard -->
-                    <li class="menu-item {{ request()->routeis('admin.dashboard.*') ? 'active' : '' }}">
+                    <li class="menu-item {{ request()->is('admin/dashboard') ? 'active' : '' }}">
                         <a href="{{ route('admin.dashboard') }}" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-home-circle"></i>
                             <div data-i18n="Dashboard">Dashboard</div>
@@ -445,15 +445,16 @@
                     </a>
                 </li>
                 <!-- Profil iSewa -->
-                <li class="menu-item {{ request()->routeIs('admin/isewa/profile*') ? 'active' : '' }}">
+                <li class="menu-item {{ request()->is('admin/isewa/profile*') || request()->is('admin/isewa/developer*') ? 'active' : '' }}">
                     <a href="{{ route('admin.isewa.profile') }}" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-info-circle"></i>
                         <div data-i18n="Profil iSewa">Profil iSewa</div>
                     </a>
                 </li>
                 <!-- Profil BUMDes -->
-                <li class="menu-item {{ request()->routeIs('admin.isewa.profil.bumdes.*') ? 'active' : '' }}">
-                    <a href="{{ route('admin.isewa.profil.bumdes') }}" class="menu-link">
+                <!-- Profil BUMDes -->
+                <li class="menu-item {{ request()->routeIs('admin.isewa.profile-bumdes') || request()->routeIs('admin.isewa.bumdes.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.isewa.profile-bumdes') }}" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-buildings"></i>
                         <div data-i18n="Profil BUMDes">Profil BUMDes</div>
                     </a>
@@ -462,6 +463,10 @@
             </aside>
             <!-- Layout page -->
             <div class="layout-page">
+                <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Helpers -->
                 <!-- Navbar -->
                 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
                     id="layout-navbar">
@@ -546,32 +551,8 @@
             <script async defer src="https://buttons.github.io/buttons.js"></script>
             <!-- Script for animations and functionality -->
             <script>
-                // Function to show details of a request
-                function showDetails(title, user, description) {
-                    alert(`Detail Permintaan:\nJudul: ${title}\nUser: ${user}\nDeskripsi: ${description}`);
-                }
-
-                // Function to accept a request
-                function acceptRequest(id) {
-                    const notificationItem = document.getElementById(`notification${id}`);
-                    if (notificationItem) {
-                        notificationItem.classList.add('bg-success', 'text-white');
-                        notificationItem.querySelectorAll('button').forEach(btn => btn.disabled = true);
-                        // Show success notification
-                        showToast('success', 'Permintaan telah diterima!');
-                    }
-                }
-
-                // Function to reject a request
-                function rejectRequest(id) {
-                    const notificationItem = document.getElementById(`notification${id}`);
-                    if (notificationItem) {
-                        notificationItem.classList.add('bg-danger', 'text-white');
-                        notificationItem.querySelectorAll('button').forEach(btn => btn.disabled = true);
-                        // Show error notification
-                        showToast('error', 'Permintaan telah ditolak! Silakan periksa alasan penolakan.');
-                    }
-                }
+                // Notification functions are now defined in dashboard/index.blade.php
+                // using SweetAlert2 for better UX
 
                 // Function to generate report
                 function generateReport() {

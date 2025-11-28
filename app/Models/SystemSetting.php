@@ -18,12 +18,13 @@ class SystemSetting extends Model
         'bank_account_number',
         'bank_account_holder',
         'payment_methods',
+        'card_background_image',
         'whatsapp_number',
         'office_address',
         'operating_hours',
     ];
 
     protected $casts = [
-        'payment_methods' => 'array', // Cast ke array agar bisa handle JSON
+        'payment_methods' => 'array',
     ];
 }

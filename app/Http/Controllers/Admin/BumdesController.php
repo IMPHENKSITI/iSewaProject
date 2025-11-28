@@ -13,13 +13,15 @@ class BumdesController extends Controller
     {
         $members = BumdesMember::orderBy('order')->get();
         $whatsapp = env('BUMDES_WHATSAPP', '+6283846078693');
-        return view('admin.isewa.bumdes.index', compact('members', 'whatsapp'));
+        return view('admin.isewa.profile-bumdes', compact('members', 'whatsapp'));
     }
 
     public function create()
     {
         return view('admin.isewa.bumdes.create');
     }
+
+
 
     public function store(Request $request)
     {

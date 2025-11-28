@@ -11,12 +11,46 @@ use App\Models\Notification;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rentalPayments = RentalRequest::whereNotNull('proof_of_payment')->orderByDesc('updated_at')->get();
-        $gasPayments = GasOrder::whereNotNull('proof_of_payment')->orderByDesc('updated_at')->get();
+        // Get filter parameters
+        $category = $request->get('category', 'all');
+        $paymentMethod = $request->get('payment_method', 'all');
 
-        return view('admin.aktivitas.transactions', compact('rentalPayments', 'gasPayments'));
+        // Build queries
+        $rentalQuery = RentalRequest::with('user')->whereNotNull('proof_of_payment');
+        $gasQuery = GasOrder::with('user')->whereNotNull('proof_of_payment');
+
+        // Filter by payment method
+        if ($paymentMethod !== 'all') {
+            $rentalQuery->where('payment_method', $paymentMethod);
+            $gasQuery->where('payment_method', $paymentMethod);
+        }
+
+        // Get results based on category filter
+        if ($category === 'rental') {
+            $rentalPayments = $rentalQuery->orderByDesc('updated_at')->get();
+            $gasPayments = collect();
+        } elseif ($category === 'gas') {
+            $rentalPayments = collect();
+            $gasPayments = $gasQuery->orderByDesc('updated_at')->get();
+        } else {
+            $rentalPayments = $rentalQuery->orderByDesc('updated_at')->get();
+            $gasPayments = $gasQuery->orderByDesc('updated_at')->get();
+        }
+
+        // Count statistics
+        $stats = [
+            'total' => RentalRequest::whereNotNull('proof_of_payment')->count() + GasOrder::whereNotNull('proof_of_payment')->count(),
+            'rental_total' => RentalRequest::whereNotNull('proof_of_payment')->count(),
+            'gas_total' => GasOrder::whereNotNull('proof_of_payment')->count(),
+            'transfer_total' => RentalRequest::where('payment_method', 'transfer')->whereNotNull('proof_of_payment')->count() + 
+                               GasOrder::where('payment_method', 'transfer')->whereNotNull('proof_of_payment')->count(),
+            'cash_total' => RentalRequest::where('payment_method', 'tunai')->whereNotNull('proof_of_payment')->count() + 
+                           GasOrder::where('payment_method', 'tunai')->whereNotNull('proof_of_payment')->count(),
+        ];
+
+        return view('admin.aktivitas.transactions', compact('rentalPayments', 'gasPayments', 'stats', 'category', 'paymentMethod'));
     }
 
     public function verify(Request $request, $id, $type)

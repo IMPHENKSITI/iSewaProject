@@ -11,12 +11,47 @@ use App\Models\Notification;
 
 class RequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $rentalRequests = RentalRequest::where('status', 'pending')->orderByDesc('created_at')->get();
-        $gasOrders = GasOrder::where('status', 'pending')->orderByDesc('created_at')->get();
+        // Get filter parameters
+        $status = $request->get('status', 'all');
+        $category = $request->get('category', 'all');
 
-        return view('admin.aktivitas.requests', compact('rentalRequests', 'gasOrders'));
+        // Build queries for rental requests
+        $rentalQuery = RentalRequest::with('user');
+        if ($status !== 'all') {
+            $rentalQuery->where('status', $status);
+        }
+
+        // Build queries for gas orders
+        $gasQuery = GasOrder::with('user');
+        if ($status !== 'all') {
+            $gasQuery->where('status', $status);
+        }
+
+        // Get results based on category filter
+        if ($category === 'rental') {
+            $rentalRequests = $rentalQuery->orderByDesc('created_at')->get();
+            $gasOrders = collect();
+        } elseif ($category === 'gas') {
+            $rentalRequests = collect();
+            $gasOrders = $gasQuery->orderByDesc('created_at')->get();
+        } else {
+            $rentalRequests = $rentalQuery->orderByDesc('created_at')->get();
+            $gasOrders = $gasQuery->orderByDesc('created_at')->get();
+        }
+
+        // Count statistics
+        $stats = [
+            'total' => RentalRequest::count() + GasOrder::count(),
+            'pending' => RentalRequest::where('status', 'pending')->count() + GasOrder::where('status', 'pending')->count(),
+            'approved' => RentalRequest::where('status', 'approved')->count() + GasOrder::where('status', 'approved')->count(),
+            'rejected' => RentalRequest::where('status', 'rejected')->count() + GasOrder::where('status', 'rejected')->count(),
+            'rental_total' => RentalRequest::count(),
+            'gas_total' => GasOrder::count(),
+        ];
+
+        return view('admin.aktivitas.requests', compact('rentalRequests', 'gasOrders', 'stats', 'status', 'category'));
     }
 
     public function show($id, $type)

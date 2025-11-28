@@ -3,93 +3,119 @@
 @section('title', 'Profil Saya')
 
 @section('content')
-    <div class="container-fluid">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Pengaturan Akun /</span> Profil Saya</h4>
+
         <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="card-title mb-0">Profil Saya</h4>
-                        <a href="#" class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('Yakin ingin keluar?')">
-                            <i class="bx bx-log-out"></i> Keluar
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <form action="{{ route('admin.profile.update') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            @method('PUT')
+            <div class="col-md-12">
+                <form id="formAccountSettings" method="POST" action="{{ route('admin.profile.update') }}"
+                    enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
 
+                    <div class="card mb-4">
+                        <h5 class="card-header">Detail Profil</h5>
+                        <!-- Account -->
+                        <div class="card-body">
+                            <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                <img src="{{ $user && $user->avatar ? asset('storage/' . $user->avatar) : asset('Admin/img/avatars/hamizulf.jpg') }}"
+                                    alt="user-avatar" class="d-block rounded" height="100" width="100"
+                                    id="uploadedAvatar" style="object-fit: cover;" />
+                                <div class="button-wrapper">
+                                    <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
+                                        <span class="d-none d-sm-block">Upload foto baru</span>
+                                        <i class="bx bx-upload d-block d-sm-none"></i>
+                                        <input type="file" id="upload" class="account-file-input" hidden
+                                            name="avatar" accept="image/png, image/jpeg" />
+                                    </label>
+                                    <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
+                                        <i class="bx bx-reset d-block d-sm-none"></i>
+                                        <span class="d-none d-sm-block">Reset</span>
+                                    </button>
+
+                                    <p class="text-muted mb-0">Diizinkan JPG, GIF atau PNG. Ukuran maksimal 800K</p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-0" />
+                        <div class="card-body">
                             <div class="row">
-                                <!-- Foto Profil -->
-                                <div class="col-md-4">
-                                    <div class="text-center mb-4">
-                                        <img src="{{ $user && $user->avatar ? asset('storage/' . $user->avatar) : asset('Admin/img/avatars/hamizulf.jpg') }}"
-                                            alt="Foto Profil" class="rounded-circle img-fluid"
-                                            style="width: 150px; height: 150px; object-fit: cover;">
-                                        <label for="avatar" class="form-label">Pilih File</label>
-                                        <input type="file" class="form-control" id="avatar" name="avatar"
-                                            accept="image/*">
-                                        @if ($user && $user->avatar)
-                                            <a href="{{ asset('storage/' . $user->avatar) }}" download
-                                                class="mt-2 d-block">Unduh Foto</a>
-                                        @endif
+                                <div class="mb-3 col-md-6">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input class="form-control" type="text" id="username" name="username"
+                                        value="{{ $user?->username ?? 'admin_user' }}" disabled />
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="email" class="form-label">E-mail</label>
+                                    <input class="form-control" type="text" id="email" name="email"
+                                        value="{{ old('email', $user?->email ?? 'admin@example.com') }}"
+                                        placeholder="john.doe@example.com" />
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="firstName" class="form-label">Nama Lengkap</label>
+                                    <input class="form-control" type="text" id="firstName" name="name"
+                                        value="{{ old('name', $user?->name ?? 'Admin Nama') }}" autofocus />
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="organization" class="form-label">Perusahaan / Organisasi</label>
+                                    <input type="text" class="form-control" id="organization" name="organization"
+                                        value="BUMDes Pematang Duku Timur" disabled />
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="phoneNumber">Nomor Telepon</label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text">ID (+62)</span>
+                                        <input type="text" id="phoneNumber" name="phone" class="form-control"
+                                            value="{{ old('phone', $user?->phone ?? '081234567890') }}"
+                                            placeholder="812 3456 7890" />
                                     </div>
                                 </div>
-
-                                <!-- Data Profil -->
-                                <div class="col-md-8">
-                                    <div class="mb-3">
-                                        <label for="username" class="form-label">Username</label>
-                                        <input type="text" class="form-control" id="username"
-                                            value="{{ $user?->username ?? 'admin_user' }}" disabled>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="name" class="form-label">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="name" name="name"
-                                            value="{{ old('name', $user?->name ?? 'Admin Nama') }}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" name="email"
-                                            value="{{ old('email', $user?->email ?? 'admin@example.com') }}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="phone" class="form-label">No Telepon</label>
-                                        <input type="text" class="form-control" id="phone" name="phone"
-                                            value="{{ old('phone', $user?->phone ?? '081234567890') }}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="gender" class="form-label">Jenis Kelamin</label>
-                                        <select class="form-select" id="gender" name="gender">
-                                            <option value="">Pilih Jenis Kelamin</option>
-                                            <option value="laki-laki"
-                                                {{ old('gender', $user?->gender ?? '') == 'laki-laki' ? 'selected' : '' }}>
-                                                Laki-laki</option>
-                                            <option value="perempuan"
-                                                {{ old('gender', $user?->gender ?? '') == 'perempuan' ? 'selected' : '' }}>
-                                                Perempuan</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="address" class="form-label">Alamat</label>
-                                        <textarea class="form-control" id="address" name="address" rows="3">{{ old('address', $user?->address ?? 'Jl. Admin No. 1') }}</textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Kata Sandi</label>
-                                        <input type="password" class="form-control" id="password" value="********"
-                                            disabled>
-                                        <a href="#" id="changePasswordBtn" class="mt-2 d-block">Ubah Sandi</a>
-                                    </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="address" class="form-label">Alamat</label>
+                                    <input type="text" class="form-control" id="address" name="address"
+                                        value="{{ old('address', $user?->address ?? 'Jl. Admin No. 1') }}"
+                                        placeholder="Alamat Lengkap" />
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="state" class="form-label">Jenis Kelamin</label>
+                                    <select id="state" class="select2 form-select" name="gender">
+                                        <option value="">Pilih Jenis Kelamin</option>
+                                        <option value="laki-laki"
+                                            {{ old('gender', $user?->gender ?? '') == 'laki-laki' ? 'selected' : '' }}>
+                                            Laki-laki</option>
+                                        <option value="perempuan"
+                                            {{ old('gender', $user?->gender ?? '') == 'perempuan' ? 'selected' : '' }}>
+                                            Perempuan</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="zipCode" class="form-label">Jabatan</label>
+                                    <input type="text" class="form-control" id="zipCode" name="zipCode"
+                                        value="Direktur BUMDES" disabled />
                                 </div>
                             </div>
-
-                            <div class="mt-4">
-                                <button type="submit" class="btn btn-primary">Simpan</button>
-                                <a href="{{ route('admin.profile') }}" class="btn btn-secondary">Keluar</a>
+                            <div class="mt-2">
+                                <button type="submit" class="btn btn-primary me-2">Simpan Perubahan</button>
+                                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">Batal</a>
                             </div>
-                        </form>
+                        </div>
+                        <!-- /Account -->
                     </div>
-                </div>
+                    <div class="card">
+                        <h5 class="card-header">Keamanan Akun</h5>
+                        <div class="card-body">
+                            <div class="mb-3 col-12 mb-0">
+                                <div class="alert alert-warning">
+                                    <h6 class="alert-heading fw-bold mb-1">Apakah Anda ingin mengubah kata sandi?</h6>
+                                    <p class="mb-0">Disarankan untuk mengganti kata sandi secara berkala demi keamanan akun
+                                        Anda.</p>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger deactivate-account" id="changePasswordBtn">Ubah
+                                Kata Sandi</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -106,7 +132,7 @@
                 <div class="modal-body">
                     <form id="changePasswordForm">
                         @csrf
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label for="current_password" class="form-label">Kata Sandi Lama</label>
                             <input type="password" class="form-control" id="current_password" name="current_password"
                                 required>
@@ -114,14 +140,14 @@
                                 style="position: absolute; right: 10px; top: 35px; cursor: pointer;"><i
                                     class="bx bx-show"></i></span>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label for="new_password" class="form-label">Kata Sandi Baru</label>
                             <input type="password" class="form-control" id="new_password" name="new_password" required>
                             <span class="toggle-password"
                                 style="position: absolute; right: 10px; top: 35px; cursor: pointer;"><i
                                     class="bx bx-show"></i></span>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label for="new_password_confirmation" class="form-label">Konfirmasi Kata Sandi Baru</label>
                             <input type="password" class="form-control" id="new_password_confirmation"
                                 name="new_password_confirmation" required>
@@ -207,6 +233,27 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Update/Reset User Image
+            let accountUserImage = document.getElementById('uploadedAvatar');
+            const fileInput = document.querySelector('.account-file-input'),
+                resetFileInput = document.querySelector('.account-image-reset');
+
+            if (accountUserImage) {
+                const resetImage = accountUserImage.src;
+
+                fileInput.onchange = () => {
+                    if (fileInput.files[0]) {
+                        accountUserImage.src = window.URL.createObjectURL(fileInput.files[0]);
+                    }
+                };
+
+                resetFileInput.onclick = () => {
+                    fileInput.value = '';
+                    accountUserImage.src = resetImage;
+                };
+            }
+
+            // Modal & Password Logic
             const changePasswordBtn = document.getElementById('changePasswordBtn');
             const changePasswordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
             const otpVerificationModal = new bootstrap.Modal(document.getElementById('otpVerificationModal'));
@@ -227,13 +274,13 @@
             });
 
             // Move focus between OTP inputs
-            function moveToNext(currentInput, nextId) {
+            window.moveToNext = function(currentInput, nextId) {
                 if (currentInput.value.length === 1) {
                     document.getElementById(nextId).focus();
                 }
             }
 
-            function moveToPrev(currentInput, prevId) {
+            window.moveToPrev = function(currentInput, prevId) {
                 if (currentInput.value.length === 0 && currentInput.id !== 'otp_1') {
                     document.getElementById(prevId).focus();
                 }
@@ -334,8 +381,7 @@
             // Close success modal and redirect to login or refresh page
             document.getElementById('closeSuccessModalBtn').addEventListener('click', function() {
                 successModal.hide();
-                // alert('Password berhasil diubah!');
-                window.location.reload(); // atau ganti dengan redirect ke halaman login nanti
+                window.location.reload();
             });
         });
     </script>

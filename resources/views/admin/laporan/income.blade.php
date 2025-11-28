@@ -3,430 +3,463 @@
 @section('title', 'Laporan Pendapatan')
 
 @section('content')
-    <div class="container-fluid py-4">
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10">
-                <!-- HEADER -->
-                <h2 class="text-primary fw-bold mb-4">Laporan Pendapatan</h2>
-                <p class="text-muted mb-4">Total pendapatan dari penyewaan alat dan pembelian gas.</p>
+    <div class="container-xxl flex-grow-1 container-p-y">
+        
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-bold py-3 mb-0">
+                            <span class="text-muted fw-light">Laporan /</span> Pendapatan
+                        </h4>
+                        <p class="text-muted mb-0">Ringkasan pendapatan dan analisis keuangan BUMDes.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bx bx-calendar me-1"></i> 2025
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="javascript:void(0);">2025</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);">2024</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);">2023</a></li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="window.print()">
+                            <i class="bx bx-printer me-1"></i> Cetak Laporan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <!-- TOTAL PENDAPATAN -->
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <div class="card shadow-sm border-0 rounded-4 p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <span class="avatar-initial rounded bg-label-primary">P</span>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="fw-bold mb-1">Total Pendapatan</h6>
-                                    <h4 class="mb-0">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h4>
-                                </div>
+        <!-- Summary Cards -->
+        <div class="row g-4 mb-4">
+            <!-- Total Pendapatan -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar avatar-md me-3">
+                                <span class="avatar-initial rounded-circle bg-label-primary">
+                                    <i class='bx bx-wallet fs-4'></i>
+                                </span>
+                            </div>
+                            <div>
+                                <span class="d-block text-muted text-uppercase fs-7 fw-bold">Total Pendapatan</span>
+                                <h4 class="mb-0 fw-bold text-primary">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h4>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card shadow-sm border-0 rounded-4 p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <span class="avatar-initial rounded bg-label-success">A</span>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="fw-bold mb-1">Pendapatan Penyewaan</h6>
-                                    <h4 class="mb-0">Rp {{ number_format($totalPenyewaan, 0, ',', '.') }}</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card shadow-sm border-0 rounded-4 p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="avatar flex-shrink-0 me-3">
-                                    <span class="avatar-initial rounded bg-label-info">G</span>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="fw-bold mb-1">Pendapatan Gas</h6>
-                                    <h4 class="mb-0">Rp {{ number_format($totalGas, 0, ',', '.') }}</h4>
-                                </div>
-                            </div>
+                        <div class="d-flex align-items-center small">
+                            <span class="badge bg-label-success me-2"><i class="bx bx-up-arrow-alt"></i> +12.5%</span>
+                            <span class="text-muted">dari bulan lalu</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- CHARTS -->
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <div class="card shadow-sm border-0 rounded-4">
-                            <div class="card-header bg-white border-bottom">
-                                <h5 class="mb-0">Pendapatan Per Bulan</h5>
+            <!-- Pendapatan Penyewaan -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar avatar-md me-3">
+                                <span class="avatar-initial rounded-circle bg-label-warning">
+                                    <i class='bx bx-wrench fs-4'></i>
+                                </span>
                             </div>
-                            <div class="card-body p-3">
-                                <div id="monthlyIncomeChart" style="height: 300px;"></div>
+                            <div>
+                                <span class="d-block text-muted text-uppercase fs-7 fw-bold">Unit Penyewaan</span>
+                                <h4 class="mb-0 fw-bold text-warning">Rp {{ number_format($totalPenyewaan, 0, ',', '.') }}</h4>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card shadow-sm border-0 rounded-4">
-                            <div class="card-header bg-white border-bottom">
-                                <h5 class="mb-0">Perbandingan Pendapatan</h5>
-                            </div>
-                            <div class="card-body p-3">
-
-                                <head>
-                                    <script>
-                                        window.onload = function() {
-
-                                            var totalVisitors = 883000;
-                                            var visitorsData = {
-                                                "New vs Returning Visitors": [{
-                                                    click: visitorsChartDrilldownHandler,
-                                                    cursor: "pointer",
-                                                    explodeOnClick: false,
-                                                    innerRadius: "75%",
-                                                    legendMarkerType: "square",
-                                                    name: "New vs Returning Visitors",
-                                                    radius: "100%",
-                                                    showInLegend: true,
-                                                    startAngle: 90,
-                                                    type: "doughnut",
-                                                    dataPoints: [{
-                                                            y: 519960,
-                                                            name: "New Visitors",
-                                                            color: "#E7823A"
-                                                        },
-                                                        {
-                                                            y: 363040,
-                                                            name: "Returning Visitors",
-                                                            color: "#546BC1"
-                                                        }
-                                                    ]
-                                                }],
-                                                "New Visitors": [{
-                                                    color: "#E7823A",
-                                                    name: "New Visitors",
-                                                    type: "column",
-                                                    dataPoints: [{
-                                                            x: new Date("1 Jan 2015"),
-                                                            y: 33000
-                                                        },
-                                                        {
-                                                            x: new Date("1 Feb 2015"),
-                                                            y: 35960
-                                                        },
-                                                        {
-                                                            x: new Date("1 Mar 2015"),
-                                                            y: 42160
-                                                        },
-                                                        {
-                                                            x: new Date("1 Apr 2015"),
-                                                            y: 42240
-                                                        },
-                                                        {
-                                                            x: new Date("1 May 2015"),
-                                                            y: 43200
-                                                        },
-                                                        {
-                                                            x: new Date("1 Jun 2015"),
-                                                            y: 40600
-                                                        },
-                                                        {
-                                                            x: new Date("1 Jul 2015"),
-                                                            y: 42560
-                                                        },
-                                                        {
-                                                            x: new Date("1 Aug 2015"),
-                                                            y: 44280
-                                                        },
-                                                        {
-                                                            x: new Date("1 Sep 2015"),
-                                                            y: 44800
-                                                        },
-                                                        {
-                                                            x: new Date("1 Oct 2015"),
-                                                            y: 48720
-                                                        },
-                                                        {
-                                                            x: new Date("1 Nov 2015"),
-                                                            y: 50840
-                                                        },
-                                                        {
-                                                            x: new Date("1 Dec 2015"),
-                                                            y: 51600
-                                                        }
-                                                    ]
-                                                }],
-                                                "Returning Visitors": [{
-                                                    color: "#546BC1",
-                                                    name: "Returning Visitors",
-                                                    type: "column",
-                                                    dataPoints: [{
-                                                            x: new Date("1 Jan 2015"),
-                                                            y: 22000
-                                                        },
-                                                        {
-                                                            x: new Date("1 Feb 2015"),
-                                                            y: 26040
-                                                        },
-                                                        {
-                                                            x: new Date("1 Mar 2015"),
-                                                            y: 25840
-                                                        },
-                                                        {
-                                                            x: new Date("1 Apr 2015"),
-                                                            y: 23760
-                                                        },
-                                                        {
-                                                            x: new Date("1 May 2015"),
-                                                            y: 28800
-                                                        },
-                                                        {
-                                                            x: new Date("1 Jun 2015"),
-                                                            y: 29400
-                                                        },
-                                                        {
-                                                            x: new Date("1 Jul 2015"),
-                                                            y: 33440
-                                                        },
-                                                        {
-                                                            x: new Date("1 Aug 2015"),
-                                                            y: 37720
-                                                        },
-                                                        {
-                                                            x: new Date("1 Sep 2015"),
-                                                            y: 35200
-                                                        },
-                                                        {
-                                                            x: new Date("1 Oct 2015"),
-                                                            y: 35280
-                                                        },
-                                                        {
-                                                            x: new Date("1 Nov 2015"),
-                                                            y: 31160
-                                                        },
-                                                        {
-                                                            x: new Date("1 Dec 2015"),
-                                                            y: 34400
-                                                        }
-                                                    ]
-                                                }]
-                                            };
-
-                                            var newVSReturningVisitorsOptions = {
-                                                animationEnabled: true,
-                                                theme: "light2",
-                                                title: {
-                                                    text: "New VS Returning Visitors"
-                                                },
-                                                subtitles: [{
-                                                    text: "Click on Any Segment to Drilldown",
-                                                    backgroundColor: "#2eacd1",
-                                                    fontSize: 16,
-                                                    fontColor: "white",
-                                                    padding: 5
-                                                }],
-                                                legend: {
-                                                    fontFamily: "calibri",
-                                                    fontSize: 14,
-                                                    itemTextFormatter: function(e) {
-                                                        return e.dataPoint.name + ": " + Math.round(e.dataPoint.y / totalVisitors * 100) + "%";
-                                                    }
-                                                },
-                                                data: []
-                                            };
-
-                                            var visitorsDrilldownedChartOptions = {
-                                                animationEnabled: true,
-                                                theme: "light2",
-                                                axisX: {
-                                                    labelFontColor: "#717171",
-                                                    lineColor: "#a2a2a2",
-                                                    tickColor: "#a2a2a2"
-                                                },
-                                                axisY: {
-                                                    gridThickness: 0,
-                                                    includeZero: false,
-                                                    labelFontColor: "#717171",
-                                                    lineColor: "#a2a2a2",
-                                                    tickColor: "#a2a2a2",
-                                                    lineThickness: 1
-                                                },
-                                                data: []
-                                            };
-
-                                            var chart = new CanvasJS.Chart("chartContainer", );
-                                            chart.options.data = visitorsData["New vs Returning Visitors"];
-                                            chart.render();
-
-                                            function visitorsChartDrilldownHandler(e) {
-                                                chart = new CanvasJS.Chart("chartContainer", visitorsDrilldownedChartOptions);
-                                                chart.options.data = visitorsData[e.dataPoint.name];
-                                                chart.options.title = {
-                                                    text: e.dataPoint.name
-                                                }
-                                                chart.render();
-                                                $("#backButton").toggleClass("invisible");
-                                            }
-
-                                            $("#backButton").click(function() {
-                                                $(this).toggleClass("invisible");
-                                                chart = new CanvasJS.Chart("chartContainer", newVSReturningVisitorsOptions);
-                                                chart.options.data = visitorsData["New vs Returning Visitors"];
-                                                chart.render();
-                                            });
-
-                                        }
-                                    </script>
-                                    <style>
-                                        #backButton {
-                                            border-radius: 4px;
-                                            padding: 8px;
-                                            border: none;
-                                            font-size: 16px;
-                                            background-color: #2eacd1;
-                                            color: white;
-                                            position: absolute;
-                                            top: 10px;
-                                            right: 10px;
-                                            cursor: pointer;
-                                        }
-
-                                        .invisible {
-                                            display: none;
-                                        }
-                                    </style>
-                                </head>
-
-                                <body>
-
-                                    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
-                                    <button class="btn invisible" id="backButton">
-                                        < Back</button>
-                                            <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
-                                            <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
-                            </div>
+                        <div class="d-flex align-items-center small">
+                            <span class="badge bg-label-success me-2"><i class="bx bx-up-arrow-alt"></i> +8.2%</span>
+                            <span class="text-muted">dari bulan lalu</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- PENDAPATAN PER UNIT -->
-                <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0">Detail Pendapatan Per Unit</h5>
-                    </div>
-                    <div class="card-body p-3">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Unit</th>
-                                        <th>Total Pendapatan</th>
-                                        <th>Jumlah Transaksi</th>
-                                        <th>Rata-rata Per Transaksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Penyewaan Alat</td>
-                                        <td>Rp {{ number_format($totalPenyewaan, 0, ',', '.') }}</td>
-                                        <td>{{ $rentalRequests->count() }}</td>
-                                        <td>Rp
-                                            {{ number_format($totalPenyewaan / max(1, $rentalRequests->count()), 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Pembelian Gas</td>
-                                        <td>Rp {{ number_format($totalGas, 0, ',', '.') }}</td>
-                                        <td>{{ $gasOrders->count() }}</td>
-                                        <td>Rp {{ number_format($totalGas / max(1, $gasOrders->count()), 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Total</strong></td>
-                                        <td><strong>Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</strong></td>
-                                        <td><strong>{{ $rentalRequests->count() + $gasOrders->count() }}</strong></td>
-                                        <td><strong>Rp
-                                                {{ number_format($totalPendapatan / max(1, $rentalRequests->count() + $gasOrders->count()), 0, ',', '.') }}</strong>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <!-- Pendapatan Gas -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar avatar-md me-3">
+                                <span class="avatar-initial rounded-circle bg-label-info">
+                                    <i class='bx bx-cylinder fs-4'></i>
+                                </span>
+                            </div>
+                            <div>
+                                <span class="d-block text-muted text-uppercase fs-7 fw-bold">Unit Gas</span>
+                                <h4 class="mb-0 fw-bold text-info">Rp {{ number_format($totalGas, 0, ',', '.') }}</h4>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center small">
+                            <span class="badge bg-label-danger me-2"><i class="bx bx-down-arrow-alt"></i> -2.4%</span>
+                            <span class="text-muted">dari bulan lalu</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Filters & Kinerja Chart -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold">Kinerja Keuangan BUMDes</h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" style="width: 150px;">
+                                <option value="all">Semua Metode</option>
+                                <option value="tunai">Tunai</option>
+                                <option value="transfer">Transfer</option>
+                            </select>
+                            <select class="form-select form-select-sm" style="width: 120px;">
+                                <option>Bulanan</option>
+                                <option>Mingguan</option>
+                                <option>Harian</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="kinerjaChart" style="min-height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Charts Row -->
+        <div class="row mb-4">
+            <!-- Pendapatan dan Pengeluaran -->
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0 fs-6 fw-bold">Pendapatan & Pengeluaran</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                2025
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="javascript:void(0);">2024</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">2023</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="totalRevenueChart" class="px-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Perbandingan Transaksi -->
+            <div class="col-md-4 mb-4 mb-md-0">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0 fs-6 fw-bold">Perbandingan Transaksi</h5>
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <h2 class="mb-1 fw-bold">{{ $rentalRequests->count() + $gasOrders->count() }}</h2>
+                        <span class="text-muted mb-3">Total Transaksi</span>
+                        <div id="orderStatisticsChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaksi dan Pendapatan -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0 fs-6 fw-bold">Transaksi & Pendapatan</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar p-2 me-2 rounded bg-label-success">
+                                <i class="bx bx-dollar fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Pendapatan</h6>
+                                <small class="text-muted">+42.9% dari minggu lalu</small>
+                            </div>
+                        </div>
+                        <div id="incomeChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unit Populer Chart -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0 fw-bold">Statistik Unit Populer</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="unitChart" style="min-height: 350px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm border-0 overflow-hidden">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
+                        <h5 class="mb-0 fw-bold">Detail Pendapatan Per Unit</h5>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="bx bx-download me-1"></i> Unduh Data
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-3 ps-4 text-uppercase fs-7 fw-bold text-muted">Unit Layanan</th>
+                                    <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Total Pendapatan</th>
+                                    <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Jumlah Transaksi</th>
+                                    <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Rata-rata / Transaksi</th>
+                                    <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Status Target</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border-top-0">
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-md me-3">
+                                                <span class="avatar-initial rounded-circle bg-label-warning bg-opacity-10 text-warning">
+                                                    <i class='bx bx-wrench fs-4'></i>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="fw-bold text-dark d-block">Penyewaan Alat</span>
+                                                <small class="text-muted">Layanan penyewaan peralatan</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-bold text-primary">Rp {{ number_format($totalPenyewaan, 0, ',', '.') }}</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="badge bg-label-secondary rounded-pill px-3">{{ $rentalRequests->count() }} Transaksi</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="text-dark">Rp {{ number_format($totalPenyewaan / max(1, $rentalRequests->count()), 0, ',', '.') }}</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="badge bg-success bg-opacity-75 px-3 py-2 rounded-pill">Tercapai</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-md me-3">
+                                                <span class="avatar-initial rounded-circle bg-label-info bg-opacity-10 text-info">
+                                                    <i class='bx bx-cylinder fs-4'></i>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="fw-bold text-dark d-block">Penjualan Gas</span>
+                                                <small class="text-muted">Layanan distribusi gas LPG</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-bold text-info">Rp {{ number_format($totalGas, 0, ',', '.') }}</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="badge bg-label-secondary rounded-pill px-3">{{ $gasOrders->count() }} Transaksi</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="text-dark">Rp {{ number_format($totalGas / max(1, $gasOrders->count()), 0, ',', '.') }}</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="badge bg-warning bg-opacity-75 px-3 py-2 rounded-pill">Perlu Peningkatan</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="bg-light border-top">
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <span class="fw-bold text-uppercase text-dark">Total Keseluruhan</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-bolder text-dark fs-6">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-bold text-dark">{{ $rentalRequests->count() + $gasOrders->count() }} Transaksi</span>
+                                    </td>
+                                    <td class="py-3">
+                                        <span class="fw-bold text-dark">Rp {{ number_format($totalPendapatan / max(1, $rentalRequests->count() + $gasOrders->count()), 0, ',', '.') }}</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Export Button -->
-    <div class="mt-4 text-center">
-        <a href="#" class="btn btn-outline-primary" onclick="exportExcel()">
-            <i class="bx bx-download"></i> Export Excel
-        </a>
-        <a href="#" class="btn btn-outline-secondary" onclick="exportPDF()">
-            <i class="bx bx-file"></i> Export PDF
-        </a>
-    </div>
+    <!-- Styles for Hover Effects -->
+    <style>
+        .hover-lift {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+        .avatar-initial {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 
-@endsection
-
-@section('scripts')
-    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+    <!-- Scripts for Charts -->
     <script>
-        // Monthly Income Chart
-        var monthlyIncomeChart = new CanvasJS.Chart("monthlyIncomeChart", {
-            animationEnabled: true,
-            theme: "light2",
-            title: {
-                text: "Pendapatan Per Bulan"
-            },
-            axisX: {
-                title: "Bulan"
-            },
-            axisY: {
-                title: "Pendapatan (Rp)",
-                valueFormatString: "Rp #,##0"
-            },
-            data: [{
-                type: "line",
-                dataPoints: @json($dataPoints)
-            }]
-        });
-        monthlyIncomeChart.render();
-
-        // Income Comparison Chart
-        var incomeComparisonChart = new CanvasJS.Chart("incomeComparisonChart", {
-            animationEnabled: true,
-            theme: "light2",
-            title: {
-                text: "Perbandingan Pendapatan"
-            },
-            data: [{
-                type: "pie",
-                startAngle: 25,
-                toolTipContent: "<b>{label}</b>: {y}%",
-                showInLegend: "true",
-                legendText: "{label}",
-                indexLabelFontSize: 16,
-                indexLabel: "{label} - {y}%",
-                dataPoints: [{
-                        y: {{ $totalPenyewaan }},
-                        label: "Penyewaan Alat"
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // ========================================
+            // GRAFIK KINERJA BUMDES (AREA CHART)
+            // ========================================
+            const kinerjaElement = document.querySelector("#kinerjaChart");
+            if (kinerjaElement) {
+                const kinerjaOptions = {
+                    series: [{
+                        name: 'Kinerja',
+                        data: [25, 20.8, 17.6, 20.2, 19.8, 22.5]
+                    }],
+                    chart: {
+                        type: 'area',
+                        height: 350,
+                        toolbar: { show: false },
+                        zoom: { enabled: false }
                     },
-                    {
-                        y: {{ $totalGas }},
-                        label: "Pembelian Gas"
+                    colors: ['#f59e0b'],
+                    stroke: {
+                        curve: 'smooth',
+                        width: 3
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.45,
+                            opacityTo: 0.05,
+                            stops: [0, 90, 100]
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    markers: {
+                        size: 0,
+                        hover: { size: 5 }
+                    },
+                    xaxis: {
+                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
+                        labels: {
+                            style: { colors: '#374151', fontSize: '12px' }
+                        },
+                        axisBorder: { show: false },
+                        axisTicks: { show: false }
+                    },
+                    yaxis: {
+                        labels: {
+                            formatter: function(val) { return val.toFixed(1); },
+                            style: { colors: '#6b7280', fontSize: '11px' }
+                        }
+                    },
+                    grid: {
+                        borderColor: '#e5e7eb',
+                        strokeDashArray: 3,
+                        xaxis: { lines: { show: true } },
+                        yaxis: { lines: { show: true } },
+                        padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                    },
+                    tooltip: {
+                        y: { formatter: function(val) { return val.toFixed(1); } }
                     }
-                ]
-            }]
+                };
+                const kinerjaChart = new ApexCharts(kinerjaElement, kinerjaOptions);
+                kinerjaChart.render();
+            }
+
+            // ========================================
+            // GRAFIK UNIT POPULER (BAR CHART)
+            // ========================================
+            const unitElement = document.querySelector("#unitChart");
+            if (unitElement) {
+                const unitOptions = {
+                    series: [{
+                            name: 'Unit Penyewaan Alat',
+                            data: [20, 15, 30, 22, 17]
+                        },
+                        {
+                            name: 'Unit Penjualan Gas',
+                            data: [16, 17, 18, 20, 10]
+                        },
+                        {
+                            name: 'Unit Pertanian dan Perkebunan',
+                            data: [18, 10, 16, 20, 19]
+                        },
+                        {
+                            name: 'Unit Simpan Pinjam',
+                            data: [30, 12, 15, 10, 5]
+                        }
+                    ],
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        toolbar: { show: false },
+                        stacked: false,
+                        background: 'transparent'
+                    },
+                    colors: ['#f59e0b', '#3b82f6', '#10b981', '#d1d5db'],
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '55%',
+                            borderRadius: 4,
+                            dataLabels: { position: 'top' }
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    xaxis: {
+                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
+                        labels: {
+                            style: { colors: '#374151', fontSize: '12px', fontWeight: 500 }
+                        },
+                        axisBorder: { show: false },
+                        axisTicks: { show: false }
+                    },
+                    yaxis: {
+                        labels: {
+                            style: { colors: '#6b7280', fontSize: '11px' }
+                        }
+                    },
+                    grid: {
+                        borderColor: '#e5e7eb',
+                        strokeDashArray: 3,
+                        padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        horizontalAlign: 'center',
+                        offsetY: 5
+                    },
+                    tooltip: {
+                        shared: true,
+                        intersect: false
+                    }
+                };
+                const unitChart = new ApexCharts(unitElement, unitOptions);
+                unitChart.render();
+            }
         });
-        incomeComparisonChart.render();
-
-        function exportExcel() {
-            alert('Fitur export Excel belum tersedia. Silakan hubungi developer.');
-        }
-
-        function exportPDF() {
-            alert('Fitur export PDF belum tersedia. Silakan hubungi developer.');
-        }
     </script>
 @endsection

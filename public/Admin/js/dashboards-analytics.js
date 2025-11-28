@@ -427,9 +427,9 @@
         width: 130,
         type: 'donut'
       },
-      labels: ['Electronic', 'Sports', 'Decor', 'Fashion'],
-      series: [85, 15, 50, 50],
-      colors: [config.colors.primary, config.colors.secondary, config.colors.info, config.colors.success],
+      labels: ['Pendapatan', 'Pengeluaran'],
+      series: [65, 35],
+      colors: ['#28C76F', '#EA5455'], // Hijau dan Merah saja
       stroke: {
         width: 5,
         colors: cardColor
@@ -455,29 +455,7 @@
           donut: {
             size: '75%',
             labels: {
-              show: true,
-              value: {
-                fontSize: '1.5rem',
-                fontFamily: 'Public Sans',
-                color: headingColor,
-                offsetY: -15,
-                formatter: function (val) {
-                  return parseInt(val) + '%';
-                }
-              },
-              name: {
-                offsetY: 20,
-                fontFamily: 'Public Sans'
-              },
-              total: {
-                show: true,
-                fontSize: '0.8125rem',
-                color: axisColor,
-                label: 'Weekly',
-                formatter: function (w) {
-                  return '38%';
-                }
-              }
+              show: false
             }
           }
         }

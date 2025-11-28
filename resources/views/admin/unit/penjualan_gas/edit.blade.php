@@ -25,7 +25,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.unit.penjualan_gas.update', ['ga' => $gas->id]) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.unit.penjualan_gas.update', ['gas' => $gas->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 

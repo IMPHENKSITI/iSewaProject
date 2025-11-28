@@ -89,7 +89,7 @@ Route::prefix('admin/unit')->group(function () {
         'destroy' => 'admin.unit.penyewaan.destroy',
     ]);
 
-    Route::resource('gas', GasController::class)->names([
+    Route::resource('gas', GasController::class)->parameters(['gas' => 'gas'])->names([
         'index' => 'admin.unit.penjualan_gas.index',
         'create' => 'admin.unit.penjualan_gas.create',
         'store' => 'admin.unit.penjualan_gas.store',
@@ -130,7 +130,7 @@ Route::get('/admin/isewa/profile', [\App\Http\Controllers\Admin\SettingControlle
 Route::get('/admin/isewa/developer/{name}', [\App\Http\Controllers\Admin\SettingController::class, 'showDeveloperProfile'])->name('admin.isewa.developer.profile');
 
 // Profil & Manajemen BUMDes
-Route::get('/admin/isewa/profil-bumdes', [\App\Http\Controllers\Admin\BumdesController::class, 'index'])->name('admin.isewa.profil.bumdes');
+Route::get('/admin/isewa/profil-bumdes', [\App\Http\Controllers\Admin\BumdesController::class, 'index'])->name('admin.isewa.profile-bumdes');
 Route::prefix('admin/isewa/bumdes')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\BumdesController::class, 'index'])->name('admin.isewa.bumdes.index');
     Route::get('/create', [\App\Http\Controllers\Admin\BumdesController::class, 'create'])->name('admin.isewa.bumdes.create');
