@@ -57,5 +57,12 @@ Catatan yang perlu diperbaiki :
 
 ## Version 0.4.5
 - Advance Fitur Admin
-- Penambahan Fitur Login
+- Penambahan Fitur Login (Beta)
 - Jembatan Login Terintegrasi User dan Admin
+
+Catatan yang perlu diperbaikii:
+- Belum dilengkapi middleware dan bootsrap/api.php
+- Belum bisa reset password dan login akun google , fb , dll
+- Memilih ``` php artisan migrate ``` untuk keep datamu atau ``` php artisan migrate:fresh ``` + ``` php artisan db:seed``` untuk dapat akun sampelnya
+- ```user@test.com``` password123
+- ```admin@isewa.com``` admin123
