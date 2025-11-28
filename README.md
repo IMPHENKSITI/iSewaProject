@@ -54,3 +54,8 @@ Catatan yang perlu diperbaiki :
 ## Version 0.3.2
 - Pemecahan bagian User Beranda
 - ```npm run dev ``` Jalankan ini untuk lihat user
+
+## Version 0.4.5
+- Advance Fitur Admin
+- Penambahan Fitur Login
+- Jembatan Login Terintegrasi User dan Admin
