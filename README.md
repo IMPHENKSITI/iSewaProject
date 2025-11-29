@@ -66,3 +66,6 @@ Catatan yang perlu diperbaikii:
 - Memilih ``` php artisan migrate ``` untuk keep datamu atau ``` php artisan migrate:fresh ``` + ``` php artisan db:seed``` untuk dapat akun sampelnya
 - ```user@test.com``` password123
 - ```admin@isewa.com``` admin123
+
+## Version 0.4.6
+- Fix Minor
