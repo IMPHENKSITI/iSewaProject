@@ -69,3 +69,5 @@ Catatan yang perlu diperbaikii:
 
 ## Version 0.4.6
 - Fix Minor
+- Fix Minor Space Kosong
+- Navigasi Footer Smooth (Beta) 
