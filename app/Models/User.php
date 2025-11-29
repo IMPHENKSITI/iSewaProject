@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable; // Tetap gunakan ini untuk login
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -21,14 +19,15 @@ class User extends Authenticatable
         'username',
         'name',
         'email',
-        'password', // Harus bisa diisi saat register
+        'password',
         'phone',
         'address',
         'gender',
-        'role',
-        'status', // Tambahkan status ke fillable
-        'otp_code',
-        'otp_expires_at',
+        'status',
+        'role',                    // ✅ TAMBAH INI
+        'email_verified_at',       // ✅ TAMBAH INI (PENTING!)
+        'otp_code',                // ✅ TAMBAH INI
+        'otp_expires_at',          // ✅ TAMBAH INI
     ];
 
     /**
@@ -39,6 +38,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'otp_code',               // ✅ TAMBAH INI (jangan expose OTP)
     ];
 
     /**
@@ -50,20 +50,19 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'otp_expired_at' => 'datetime',
+            'otp_expires_at' => 'datetime',    // ✅ TAMBAH INI
             'password' => 'hashed',
-            'status' => 'string', // Pastikan status di-cast ke string
-            'role' => 'string',
+            'status' => 'string',
         ];
     }
 
-    // Relasi ke transaksi penyewaan (contoh)
+    // Relasi ke transaksi penyewaan
     public function rentalTransactions()
     {
         return $this->hasMany(RentalTransaction::class, 'user_id');
     }
 
-    // Relasi ke transaksi gas (contoh)
+    // Relasi ke transaksi gas
     public function gasTransactions()
     {
         return $this->hasMany(GasTransaction::class, 'user_id');

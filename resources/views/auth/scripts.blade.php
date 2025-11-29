@@ -10,13 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // UTILITY FUNCTIONS
     // ========================================
     function openModal(modal) {
-        // Hide all modals first
         document.querySelectorAll('.modal-content').forEach(m => {
             m.classList.add('hidden');
             m.classList.remove('scale-100', 'opacity-100');
         });
 
-        // Show overlay
         overlay.classList.remove('hidden');
         setTimeout(() => {
             overlay.classList.add('show');
@@ -38,11 +36,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     }
 
+    // ⭐ FIX: SMOOTH MODAL SWITCH (Tanpa Hilang)
+    function switchModal(fromModal, toModal) {
+        fromModal.classList.remove('scale-100', 'opacity-100');
+        fromModal.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            fromModal.classList.add('hidden');
+            toModal.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toModal.classList.remove('scale-95', 'opacity-0');
+                toModal.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        }, 200);
+    }
+
     function showError(form, field, message) {
         const errorSpan = form.querySelector(`[data-error="${field}"]`);
         if (errorSpan) {
             errorSpan.textContent = message;
             errorSpan.classList.remove('hidden');
+            
+            // ⭐ FIX: Auto-hide setelah 3 detik
+            setTimeout(() => {
+                errorSpan.classList.add('opacity-0');
+                setTimeout(() => {
+                    errorSpan.classList.add('hidden');
+                    errorSpan.classList.remove('opacity-0');
+                }, 300);
+            }, 3000);
         }
     }
 
@@ -69,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showToast(message, type = 'success') {
-        // Simple toast notification
         const toast = document.createElement('div');
         toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-[60] transform transition-all duration-300 translate-x-full ${
             type === 'success' ? 'bg-green-500' : 'bg-red-500'
@@ -77,10 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toast.textContent = message;
         document.body.appendChild(toast);
 
-        setTimeout(() => {
-            toast.classList.remove('translate-x-full');
-        }, 100);
-
+        setTimeout(() => toast.classList.remove('translate-x-full'), 100);
         setTimeout(() => {
             toast.classList.add('translate-x-full');
             setTimeout(() => toast.remove(), 300);
@@ -90,59 +109,34 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================
     // MODAL TRIGGERS
     // ========================================
-    // Desktop buttons
     document.getElementById('btn-open-login')?.addEventListener('click', () => openModal(modalLogin));
     document.getElementById('btn-open-register')?.addEventListener('click', () => openModal(modalRegister));
     
-    // Mobile buttons
     document.getElementById('btn-open-login-mobile')?.addEventListener('click', () => {
-        document.getElementById('mobile-sidebar')?.classList.remove('translate-x-0');
         document.getElementById('mobile-sidebar')?.classList.add('-translate-x-full');
-        document.getElementById('sidebar-overlay')?.classList.add('hidden');
         setTimeout(() => openModal(modalLogin), 300);
     });
     
     document.getElementById('btn-open-register-mobile')?.addEventListener('click', () => {
-        document.getElementById('mobile-sidebar')?.classList.remove('translate-x-0');
         document.getElementById('mobile-sidebar')?.classList.add('-translate-x-full');
-        document.getElementById('sidebar-overlay')?.classList.add('hidden');
         setTimeout(() => openModal(modalRegister), 300);
     });
 
-    // Close buttons
     document.querySelectorAll('.modal-close').forEach(btn => {
         btn.addEventListener('click', closeModal);
     });
 
-    // Close on overlay click
     overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) {
-            closeModal();
-        }
+        if (e.target === overlay) closeModal();
     });
 
     // ========================================
-    // TAB SWITCHING
+    // TAB SWITCHING - ⭐ SMOOTH!
     // ========================================
-    document.getElementById('tab-login')?.addEventListener('click', () => {
-        closeModal();
-        setTimeout(() => openModal(modalLogin), 300);
-    });
-
-    document.getElementById('tab-register')?.addEventListener('click', () => {
-        closeModal();
-        setTimeout(() => openModal(modalRegister), 300);
-    });
-
-    document.getElementById('tab-login-2')?.addEventListener('click', () => {
-        closeModal();
-        setTimeout(() => openModal(modalLogin), 300);
-    });
-
-    document.getElementById('tab-register-2')?.addEventListener('click', () => {
-        closeModal();
-        setTimeout(() => openModal(modalRegister), 300);
-    });
+    document.getElementById('tab-login')?.addEventListener('click', () => switchModal(modalRegister, modalLogin));
+    document.getElementById('tab-register')?.addEventListener('click', () => switchModal(modalLogin, modalRegister));
+    document.getElementById('tab-login-2')?.addEventListener('click', () => switchModal(modalRegister, modalLogin));
+    document.getElementById('tab-register-2')?.addEventListener('click', () => switchModal(modalLogin, modalRegister));
 
     // ========================================
     // PASSWORD TOGGLE
@@ -193,11 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 showToast(data.message, 'success');
                 closeModal();
-                
-                // Redirect after 1 second
-                setTimeout(() => {
-                    window.location.href = data.redirect;
-                }, 1000);
+                setTimeout(() => window.location.href = data.redirect, 1000);
             } else {
                 if (data.errors) {
                     Object.keys(data.errors).forEach(field => {
@@ -209,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Login error:', error);
-            showToast('Terjadi kesalahan. Silakan coba lagi.', 'error');
+            showToast('Terjadi kesalahan', 'error');
         } finally {
             setButtonLoading(submitBtn, false);
         }
@@ -242,19 +232,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                registeredUserId = data.data.user_id;
+                registeredUserId = data.data.temp_user_id;
                 document.getElementById('otp-user-id').value = registeredUserId;
                 
-                // ⭐ TAMBAHKAN INI (DEV ONLY):
                 alert('🔑 OTP Anda: ' + data.data.otp);
                 showToast(data.message, 'success');
                 
-                // Show OTP modal after 500ms
                 setTimeout(() => {
-                    closeModal();
-                    setTimeout(() => openModal(modalOtp), 300);
-                    
-                    // Focus first OTP input
+                    switchModal(modalRegister, modalOtp);
                     document.querySelector('.otp-input[data-index="0"]')?.focus();
                 }, 500);
             } else {
@@ -268,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Register error:', error);
-            showToast('Terjadi kesalahan. Silakan coba lagi.', 'error');
+            showToast('Terjadi kesalahan', 'error');
         } finally {
             setButtonLoading(submitBtn, false);
         }
@@ -280,38 +265,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const otpInputs = document.querySelectorAll('.otp-input');
     
     otpInputs.forEach((input, index) => {
-        // Auto-focus next input
         input.addEventListener('input', function(e) {
             const value = e.target.value;
-            
-            // Only allow numbers
             if (!/^\d*$/.test(value)) {
                 e.target.value = '';
                 return;
             }
-
             if (value.length === 1 && index < otpInputs.length - 1) {
                 otpInputs[index + 1].focus();
             }
         });
 
-        // Handle backspace
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Backspace' && !e.target.value && index > 0) {
                 otpInputs[index - 1].focus();
             }
         });
 
-        // Handle paste
         input.addEventListener('paste', function(e) {
             e.preventDefault();
             const pasteData = e.clipboardData.getData('text').trim();
-            
             if (/^\d{4}$/.test(pasteData)) {
                 pasteData.split('').forEach((char, i) => {
-                    if (otpInputs[i]) {
-                        otpInputs[i].value = char;
-                    }
+                    if (otpInputs[i]) otpInputs[i].value = char;
                 });
                 otpInputs[3].focus();
             }
@@ -326,13 +302,12 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
 
         const otp = Array.from(otpInputs).map(input => input.value).join('');
-        
         if (otp.length !== 4) {
-            showToast('Silakan masukkan kode OTP 4 digit', 'error');
+            showToast('Kode OTP harus 4 digit', 'error');
             return;
         }
 
-        const userId = document.getElementById('otp-user-id').value;
+        const tempUserId = document.getElementById('otp-user-id').value;
         const submitBtn = this.querySelector('button[type="submit"]');
         setButtonLoading(submitBtn, true);
 
@@ -345,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json',
                 },
                 body: JSON.stringify({
-                    user_id: userId,
+                    temp_user_id: tempUserId,
                     otp: otp
                 })
             });
@@ -354,19 +329,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 showToast(data.message, 'success');
-                
-                // Show success modal
-                closeModal();
-                setTimeout(() => openModal(modalSuccess), 300);
+                switchModal(modalOtp, modalSuccess);
             } else {
-                showToast(data.message || 'Verifikasi OTP gagal', 'error');
-                // Clear OTP inputs
+                showToast(data.message || 'Verifikasi gagal', 'error');
                 otpInputs.forEach(input => input.value = '');
                 otpInputs[0].focus();
             }
         } catch (error) {
-            console.error('OTP verification error:', error);
-            showToast('Terjadi kesalahan. Silakan coba lagi.', 'error');
+            console.error('OTP error:', error);
+            showToast('Terjadi kesalahan', 'error');
         } finally {
             setButtonLoading(submitBtn, false);
         }
@@ -376,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // RESEND OTP
     // ========================================
     document.getElementById('btn-resend-otp')?.addEventListener('click', async function() {
-        const userId = document.getElementById('otp-user-id').value;
+        const tempUserId = document.getElementById('otp-user-id').value;
         this.disabled = true;
 
         try {
@@ -387,21 +358,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ user_id: userId })
+                body: JSON.stringify({ temp_user_id: tempUserId })
             });
 
             const data = await response.json();
 
             if (response.ok) {
                 showToast(data.message, 'success');
+                if (data.data && data.data.otp) {
+                    alert('🔑 OTP Baru: ' + data.data.otp);
+                }
+                otpInputs.forEach(input => input.value = '');
+                otpInputs[0].focus();
             } else {
-                showToast(data.message || 'Gagal mengirim ulang OTP', 'error');
+                showToast(data.message || 'Gagal kirim OTP', 'error');
             }
         } catch (error) {
-            console.error('Resend OTP error:', error);
-            showToast('Terjadi kesalahan. Silakan coba lagi.', 'error');
+            console.error('Resend error:', error);
+            showToast('Terjadi kesalahan', 'error');
         } finally {
-            this.disabled = false;
+            setTimeout(() => this.disabled = false, 30000);
         }
     });
 
@@ -410,10 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================
     document.getElementById('btn-confirm-success')?.addEventListener('click', function() {
         closeModal();
-        // Reload or redirect to home
-        setTimeout(() => {
-            window.location.href = '{{ route('beranda') }}';
-        }, 300);
+        setTimeout(() => window.location.href = '{{ route('beranda') }}', 300);
     });
 });
 </script>

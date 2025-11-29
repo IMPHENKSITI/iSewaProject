@@ -18,7 +18,7 @@ return new class extends Migration
              }
 
              if (!Schema::hasColumn('users', 'otp_code')) {
-                $table->string('otp_code', 6)->nullable()->after('role');
+                $table->string('otp_code', 4)->nullable()->after('password');
             }
             
             if (!Schema::hasColumn('users', 'otp_expires_at')) {
