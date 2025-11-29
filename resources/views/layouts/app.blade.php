@@ -17,7 +17,7 @@
     {{-- Page-specific styles --}}
     @stack('styles')
 </head>
-<body class="antialiased text-gray-900 bg-white min-h-screen">
+<body class="antialiased text-gray-900 bg-white min-h-screen overflow-x-hidden">
 
     {{-- Main content --}}
     @yield('content')
