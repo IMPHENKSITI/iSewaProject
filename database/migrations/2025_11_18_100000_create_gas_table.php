@@ -13,22 +13,15 @@ return new class extends Migration
     {
         Schema::create('gas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('jenis_gas');
             $table->text('deskripsi')->nullable();
             $table->decimal('harga_satuan', 12, 2);
             $table->integer('stok')->default(0);
             $table->enum('status', ['tersedia', 'dipesan', 'rusak'])->default('tersedia');
-            $table->string('kategori')->nullable();
-            $table->string('satuan')->nullable();
-            $table->string('lokasi')->nullable();
             $table->string('foto')->nullable();
             $table->string('foto_2')->nullable();
             $table->string('foto_3')->nullable();
             $table->timestamps();
-
-            // Foreign key constraint (optional)
-            // $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
