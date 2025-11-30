@@ -129,7 +129,7 @@
                                                 <td class="py-3">
                                                     <div class="mb-1">
                                                         <span class="badge bg-label-warning me-2">
-                                                            <i class="bx bx-calendar"></i>Penyewaan Alat
+                                                            <i class=""></i>Penyewaan Alat
                                                         </span>
                                                         <small class="text-muted">2 jam lalu</small>
                                                     </div>
@@ -669,10 +669,11 @@
                                         <h5 class="card-title mb-0">Perbandingan Transaksi</h5>
                                     </div>
                                     <div class="card-body d-flex flex-column justify-content-center align-items-center"
-                                        style="height: 320px;">
-                                        <h2 class="mb-1">500</h2>
-                                        <span class="text-muted mb-2">Total Transaksi</span>
-                                        <div id="orderStatisticsChart" style="width: 130px; height: 280px;"></div>
+                                        style="min-height: 400px; padding: 2rem;">
+                                        <h2 class="mb-2">500</h2>
+                                        <span class="text-muted mb-4">Total Transaksi</span>
+                                        <!-- Large donut chart will be rendered here by inline script -->
+                                        <div id="transactionDonutChart" style="width: 100%; max-width: 300px;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -1093,15 +1094,15 @@
                     console.error('Error rendering kinerja chart:', error);
                 }
 
-                // Donut Chart untuk Transaksi
-                const orderChartElement = document.querySelector("#orderStatisticsChart");
+                // Donut Chart untuk Transaksi (Large centered chart)
+                const orderChartElement = document.querySelector("#transactionDonutChart");
                 if (orderChartElement) {
                     var optionsOrder = {
                         series: [58, 82],
                         chart: {
                             type: "donut",
-                            width: 280,
-                            height: 280,
+                            width: 300,
+                            height: 300,
                         },
                         labels: ["Weekly", "Others"],
                         colors: ["#28C76F", "#00CFE8"],

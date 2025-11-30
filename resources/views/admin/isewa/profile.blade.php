@@ -137,16 +137,6 @@
 
         </div>
     </section>
-
-    <!-- PARTNERS -->
-    <section class="section kerjasama container-xxl">
-        <h2 class="section-title">Kerjasama <span class="accent">& Kolaborasi</span></h2>
-
-        <div class="partners-row">
-            <div class="partner-card"><img src="{{ asset('http://isewaproject.test/Admin/img/avatars/polbeng.png') }}" alt=""></div>
-            <div class="partner-card wide"><img src="{{ asset('http://isewaproject.test/Admin/img/avatars/bermasapr.png') }}" alt=""></div>
-        </div>
-    </section>
 </div>
 @endsection
 

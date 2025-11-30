@@ -95,6 +95,15 @@
                                             </div>
                                             <div class="col-md-7">
                                                 <label class="form-label fw-semibold mb-2">Preview Peta (Satelit)</label>
+                                                
+                                                <!-- Search Box for Location -->
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" id="map_search" placeholder="Cari lokasi (contoh: Jl. Sudirman Jakarta, atau nama desa/kota)">
+                                                    <button class="btn btn-primary" type="button" onclick="searchLocation()">
+                                                        <i class="bx bx-search-alt"></i> Cari
+                                                    </button>
+                                                </div>
+                                                
                                                 <div id="map" class="rounded-3 shadow-sm border" style="height: 450px; width: 100%;"></div>
                                             </div>
                                         </div>
@@ -455,6 +464,10 @@
 
         var marker = L.marker([lat, lng], {draggable: true}).addTo(map);
 
+        // Store map and marker globally for search function
+        window.mapInstance = map;
+        window.markerInstance = marker;
+
         marker.on('dragend', function(e) {
             var position = marker.getLatLng();
             document.getElementById('latitude').value = position.lat.toFixed(7);
@@ -478,7 +491,65 @@
         @if($setting->card_background_image)
             setCardBackgroundImage("{{ asset('storage/' . $setting->card_background_image) }}");
         @endif
+
+        // Enable Enter key for search
+        var searchInput = document.getElementById('map_search');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchLocation();
+                }
+            });
+        }
     });
+
+    // Search Location Function using Nominatim Geocoding
+    function searchLocation() {
+        var query = document.getElementById('map_search').value;
+        if (!query) {
+            alert('Silakan masukkan alamat atau nama lokasi yang ingin dicari');
+            return;
+        }
+
+        // Show loading state
+        var searchBtn = event.target;
+        var originalText = searchBtn.innerHTML;
+        searchBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Mencari...';
+        searchBtn.disabled = true;
+
+        // Use Nominatim API for geocoding
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
+            .then(response => response.json())
+            .then(data => {
+                searchBtn.innerHTML = originalText;
+                searchBtn.disabled = false;
+
+                if (data && data.length > 0) {
+                    var lat = parseFloat(data[0].lat);
+                    var lon = parseFloat(data[0].lon);
+                    
+                    // Update map view and marker
+                    window.mapInstance.setView([lat, lon], 16);
+                    window.markerInstance.setLatLng([lat, lon]);
+                    
+                    // Update form fields
+                    document.getElementById('latitude').value = lat.toFixed(7);
+                    document.getElementById('longitude').value = lon.toFixed(7);
+                    
+                    // Show success message
+                    alert(`Lokasi ditemukan: ${data[0].display_name}`);
+                } else {
+                    alert('Lokasi tidak ditemukan. Coba gunakan kata kunci yang lebih spesifik.');
+                }
+            })
+            .catch(error => {
+                searchBtn.innerHTML = originalText;
+                searchBtn.disabled = false;
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mencari lokasi. Silakan coba lagi.');
+            });
+    }
 
     function updateCardPreview() {
         var bankName = document.getElementById('bank_name').value || 'BANK NAME';

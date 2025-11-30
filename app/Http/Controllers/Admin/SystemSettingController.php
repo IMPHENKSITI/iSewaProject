@@ -38,38 +38,6 @@ class SystemSettingController extends Controller
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'address' => 'nullable|string',
-            'bank_name' => 'nullable|string|max:255',
-            'bank_account_number' => 'nullable|string|max:255',
-            'bank_account_holder' => 'nullable|string|max:255',
-            'payment_methods' => 'nullable|array',
-            'card_background_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'whatsapp_number' => 'nullable|string|max:20',
-            'office_address' => 'nullable|string',
-            'operating_hours' => 'nullable|string|max:255',
-        ]);
-
-        $setting = SystemSetting::first();
-
-        $paymentMethods = $request->input('payment_methods', []);
-        $paymentMethods['tunai_to'] = $request->input('tunai_to');
-        $paymentMethods['card_style'] = $request->input('card_style');
-
-        // Handle card background image upload
-        $cardBackgroundImage = $setting->card_background_image;
-        if ($request->hasFile('card_background_image')) {
-            // Delete old image if exists
-            if ($cardBackgroundImage && \Storage::disk('public')->exists($cardBackgroundImage)) {
-                \Storage::disk('public')->delete($cardBackgroundImage);
-            }
-            
-            // Store new image
-            $cardBackgroundImage = $request->file('card_background_image')->store('card_backgrounds', 'public');
-        }
-
-        $setting->update([
-            'location_name' => $request->input('location_name'),
-            'latitude' => $request->input('latitude'),
-            'longitude' => $request->input('longitude'),
             'address' => $request->input('address'),
             'bank_name' => $request->input('bank_name'),
             'bank_account_number' => $request->input('bank_account_number'),

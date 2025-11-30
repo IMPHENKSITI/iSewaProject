@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
-        
+
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-12">
@@ -46,7 +46,8 @@
                             </div>
                             <div>
                                 <span class="d-block text-muted text-uppercase fs-7 fw-bold">Total Pendapatan</span>
-                                <h4 class="mb-0 fw-bold text-primary">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h4>
+                                <h4 class="mb-0 fw-bold text-primary">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
+                                </h4>
                             </div>
                         </div>
                         <div class="d-flex align-items-center small">
@@ -69,7 +70,8 @@
                             </div>
                             <div>
                                 <span class="d-block text-muted text-uppercase fs-7 fw-bold">Unit Penyewaan</span>
-                                <h4 class="mb-0 fw-bold text-warning">Rp {{ number_format($totalPenyewaan, 0, ',', '.') }}</h4>
+                                <h4 class="mb-0 fw-bold text-warning">Rp {{ number_format($totalPenyewaan, 0, ',', '.') }}
+                                </h4>
                             </div>
                         </div>
                         <div class="d-flex align-items-center small">
@@ -138,7 +140,8 @@
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0 fs-6 fw-bold">Pendapatan & Pengeluaran</h5>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown">
                                 2025
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -154,15 +157,17 @@
             </div>
 
             <!-- Perbandingan Transaksi -->
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0 fs-6 fw-bold">Perbandingan Transaksi</h5>
+            <div class="dashboard-stats-col">
+                <div class="card animate-fade-in">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Perbandingan Transaksi</h5>
                     </div>
-                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                        <h2 class="mb-1 fw-bold">{{ $rentalRequests->count() + $gasOrders->count() }}</h2>
-                        <span class="text-muted mb-3">Total Transaksi</span>
-                        <div id="orderStatisticsChart"></div>
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center"
+                        style="min-height: 400px; padding: 2rem;">
+                        <h2 class="mb-2">500</h2>
+                        <span class="text-muted mb-4">Total Transaksi</span>
+                        <!-- Large donut chart will be rendered here by inline script -->
+                        <div id="transactionDonutChart" style="width: 100%; max-width: 300px;"></div>
                     </div>
                 </div>
             </div>
@@ -229,7 +234,8 @@
                                     <td class="ps-4 py-3">
                                         <div class="d-flex align-items-center">
                                             <div class="avatar avatar-md me-3">
-                                                <span class="avatar-initial rounded-circle bg-label-warning bg-opacity-10 text-warning">
+                                                <span
+                                                    class="avatar-initial rounded-circle bg-label-warning bg-opacity-10 text-warning">
                                                     <i class='bx bx-wrench fs-4'></i>
                                                 </span>
                                             </div>
@@ -240,13 +246,17 @@
                                         </div>
                                     </td>
                                     <td class="py-3">
-                                        <span class="fw-bold text-primary">Rp {{ number_format($totalPenyewaan, 0, ',', '.') }}</span>
+                                        <span class="fw-bold text-primary">Rp
+                                            {{ number_format($totalPenyewaan, 0, ',', '.') }}</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="badge bg-label-secondary rounded-pill px-3">{{ $rentalRequests->count() }} Transaksi</span>
+                                        <span
+                                            class="badge bg-label-secondary rounded-pill px-3">{{ $rentalRequests->count() }}
+                                            Transaksi</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="text-dark">Rp {{ number_format($totalPenyewaan / max(1, $rentalRequests->count()), 0, ',', '.') }}</span>
+                                        <span class="text-dark">Rp
+                                            {{ number_format($totalPenyewaan / max(1, $rentalRequests->count()), 0, ',', '.') }}</span>
                                     </td>
                                     <td class="py-3">
                                         <span class="badge bg-success bg-opacity-75 px-3 py-2 rounded-pill">Tercapai</span>
@@ -256,7 +266,8 @@
                                     <td class="ps-4 py-3">
                                         <div class="d-flex align-items-center">
                                             <div class="avatar avatar-md me-3">
-                                                <span class="avatar-initial rounded-circle bg-label-info bg-opacity-10 text-info">
+                                                <span
+                                                    class="avatar-initial rounded-circle bg-label-info bg-opacity-10 text-info">
                                                     <i class='bx bx-cylinder fs-4'></i>
                                                 </span>
                                             </div>
@@ -267,16 +278,20 @@
                                         </div>
                                     </td>
                                     <td class="py-3">
-                                        <span class="fw-bold text-info">Rp {{ number_format($totalGas, 0, ',', '.') }}</span>
+                                        <span class="fw-bold text-info">Rp
+                                            {{ number_format($totalGas, 0, ',', '.') }}</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="badge bg-label-secondary rounded-pill px-3">{{ $gasOrders->count() }} Transaksi</span>
+                                        <span class="badge bg-label-secondary rounded-pill px-3">{{ $gasOrders->count() }}
+                                            Transaksi</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="text-dark">Rp {{ number_format($totalGas / max(1, $gasOrders->count()), 0, ',', '.') }}</span>
+                                        <span class="text-dark">Rp
+                                            {{ number_format($totalGas / max(1, $gasOrders->count()), 0, ',', '.') }}</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="badge bg-warning bg-opacity-75 px-3 py-2 rounded-pill">Perlu Peningkatan</span>
+                                        <span class="badge bg-warning bg-opacity-75 px-3 py-2 rounded-pill">Perlu
+                                            Peningkatan</span>
                                     </td>
                                 </tr>
                             </tbody>
@@ -286,13 +301,17 @@
                                         <span class="fw-bold text-uppercase text-dark">Total Keseluruhan</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="fw-bolder text-dark fs-6">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</span>
+                                        <span class="fw-bolder text-dark fs-6">Rp
+                                            {{ number_format($totalPendapatan, 0, ',', '.') }}</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="fw-bold text-dark">{{ $rentalRequests->count() + $gasOrders->count() }} Transaksi</span>
+                                        <span
+                                            class="fw-bold text-dark">{{ $rentalRequests->count() + $gasOrders->count() }}
+                                            Transaksi</span>
                                     </td>
                                     <td class="py-3">
-                                        <span class="fw-bold text-dark">Rp {{ number_format($totalPendapatan / max(1, $rentalRequests->count() + $gasOrders->count()), 0, ',', '.') }}</span>
+                                        <span class="fw-bold text-dark">Rp
+                                            {{ number_format($totalPendapatan / max(1, $rentalRequests->count() + $gasOrders->count()), 0, ',', '.') }}</span>
                                     </td>
                                     <td></td>
                                 </tr>
@@ -310,10 +329,12 @@
         .hover-lift {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
         .hover-lift:hover {
             transform: translateY(-5px);
-            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
         }
+
         .avatar-initial {
             display: flex;
             align-items: center;
@@ -324,7 +345,7 @@
     <!-- Scripts for Charts -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
+
             // ========================================
             // GRAFIK KINERJA BUMDES (AREA CHART)
             // ========================================
@@ -338,8 +359,12 @@
                     chart: {
                         type: 'area',
                         height: 350,
-                        toolbar: { show: false },
-                        zoom: { enabled: false }
+                        toolbar: {
+                            show: false
+                        },
+                        zoom: {
+                            enabled: false
+                        }
                     },
                     colors: ['#f59e0b'],
                     stroke: {
@@ -355,34 +380,67 @@
                             stops: [0, 90, 100]
                         }
                     },
-                    dataLabels: { enabled: false },
+                    dataLabels: {
+                        enabled: false
+                    },
                     markers: {
                         size: 0,
-                        hover: { size: 5 }
+                        hover: {
+                            size: 5
+                        }
                     },
                     xaxis: {
                         categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
                         labels: {
-                            style: { colors: '#374151', fontSize: '12px' }
+                            style: {
+                                colors: '#374151',
+                                fontSize: '12px'
+                            }
                         },
-                        axisBorder: { show: false },
-                        axisTicks: { show: false }
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        }
                     },
                     yaxis: {
                         labels: {
-                            formatter: function(val) { return val.toFixed(1); },
-                            style: { colors: '#6b7280', fontSize: '11px' }
+                            formatter: function(val) {
+                                return val.toFixed(1);
+                            },
+                            style: {
+                                colors: '#6b7280',
+                                fontSize: '11px'
+                            }
                         }
                     },
                     grid: {
                         borderColor: '#e5e7eb',
                         strokeDashArray: 3,
-                        xaxis: { lines: { show: true } },
-                        yaxis: { lines: { show: true } },
-                        padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                        xaxis: {
+                            lines: {
+                                show: true
+                            }
+                        },
+                        yaxis: {
+                            lines: {
+                                show: true
+                            }
+                        },
+                        padding: {
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            left: 10
+                        }
                     },
                     tooltip: {
-                        y: { formatter: function(val) { return val.toFixed(1); } }
+                        y: {
+                            formatter: function(val) {
+                                return val.toFixed(1);
+                            }
+                        }
                     }
                 };
                 const kinerjaChart = new ApexCharts(kinerjaElement, kinerjaOptions);
@@ -415,7 +473,9 @@
                     chart: {
                         type: 'bar',
                         height: 350,
-                        toolbar: { show: false },
+                        toolbar: {
+                            show: false
+                        },
                         stacked: false,
                         background: 'transparent'
                     },
@@ -425,27 +485,47 @@
                             horizontal: false,
                             columnWidth: '55%',
                             borderRadius: 4,
-                            dataLabels: { position: 'top' }
+                            dataLabels: {
+                                position: 'top'
+                            }
                         }
                     },
-                    dataLabels: { enabled: false },
+                    dataLabels: {
+                        enabled: false
+                    },
                     xaxis: {
                         categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
                         labels: {
-                            style: { colors: '#374151', fontSize: '12px', fontWeight: 500 }
+                            style: {
+                                colors: '#374151',
+                                fontSize: '12px',
+                                fontWeight: 500
+                            }
                         },
-                        axisBorder: { show: false },
-                        axisTicks: { show: false }
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        }
                     },
                     yaxis: {
                         labels: {
-                            style: { colors: '#6b7280', fontSize: '11px' }
+                            style: {
+                                colors: '#6b7280',
+                                fontSize: '11px'
+                            }
                         }
                     },
                     grid: {
                         borderColor: '#e5e7eb',
                         strokeDashArray: 3,
-                        padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                        padding: {
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            left: 10
+                        }
                     },
                     legend: {
                         position: 'bottom',

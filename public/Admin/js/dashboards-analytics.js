@@ -418,8 +418,9 @@
     profileReportChart.render();
   }
 
-  // Order Statistics Chart
+  // Order Statistics Chart - DISABLED (Removed small red-green donut chart)
   // --------------------------------------------------------------------
+  /* 
   const chartOrderStatistics = document.querySelector('#orderStatisticsChart'),
     orderChartConfig = {
       chart: {
@@ -465,6 +466,8 @@
     const statisticsChart = new ApexCharts(chartOrderStatistics, orderChartConfig);
     statisticsChart.render();
   }
+  */
+
 
   // Income Chart - Area chart
   // --------------------------------------------------------------------
