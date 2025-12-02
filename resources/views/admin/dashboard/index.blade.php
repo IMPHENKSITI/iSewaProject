@@ -677,44 +677,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Right Column: Anggota Mitra Aktif & Total Transaksi -->
-                            <div class="dashboard-stats-col">
-                                <div class="card animate-fade-in">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Transaksi dan Pendapatan</h5>
-                                        <div class="card-body">
-                                            <div class="tab-content p-0">
-                                                <div class="tab-pane fade show active" id="navs-tabs-line-card-income"
-                                                    role="tabpanel"></div>
-                                                <div>
-                                                    <small class="text-muted d-block">Pendapatan</small>
-                                                    <div class="d-flex align-items-center">
-                                                        <h6 class="mb-0 me-1">$459.10</h6>
-                                                        <small class="text-success fw-semibold">
-                                                            <i class="bx bx-chevron-up"></i>
-                                                            42.9%
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="incomeChart"></div>
-                                            <div class="d-flex justify-content-center pt-4 gap-2">
-                                                <div class="flex-shrink-0">
-                                                    <div id="expensesOfWeek"></div>
-                                                </div>
-                                                <div>
-                                                    <p class="mb-n1 mt-1">Minggu ini</p>
-                                                    <small class="text-muted">Transaksi dan Pendapatan</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="chart-wrapper">
-                                        <div id="transactionChart" class="px-2"></div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -1103,11 +1065,30 @@
                             type: "donut",
                             width: 300,
                             height: 300,
+                            events: {
+                                dataPointSelection: function(event, chartContext, config) {
+                                    // Prevent default behavior on click
+                                    event.preventDefault();
+                                }
+                            }
                         },
-                        labels: ["Weekly", "Others"],
-                        colors: ["#28C76F", "#00CFE8"],
+                        labels: ["Unit Penyewaan Alat 58 Transaksi", "Gas 82 Transaksi"],
+                        colors: ["#FFC107", "#EA5455"],
                         legend: {
-                            show: false
+                            show: true,
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            markers: {
+                                width: 10,
+                                height: 10,
+                                radius: 12
+                            },
+                            itemMargin: {
+                                horizontal: 10,
+                                vertical: 5
+                            }
                         },
                         dataLabels: {
                             enabled: false
@@ -1119,19 +1100,16 @@
                                     labels: {
                                         show: true,
                                         name: {
-                                            show: true,
-                                            fontSize: "16px",
-                                            color: "#6e6b7b",
-                                            offsetY: 20,
+                                            show: false
                                         },
                                         value: {
                                             show: true,
                                             fontSize: "30px",
                                             fontWeight: 600,
                                             color: "#5e5873",
-                                            offsetY: -10,
+                                            offsetY: 5,
                                             formatter: function() {
-                                                return "38%";
+                                                return "140";
                                             },
                                         },
                                         total: {
@@ -1139,11 +1117,40 @@
                                             label: "2025",
                                             fontSize: "16px",
                                             color: "#6e6b7b",
+                                            offsetY: 25,
                                         },
                                     },
                                 },
                             },
                         },
+                        tooltip: {
+                            enabled: true,
+                            y: {
+                                formatter: function(value, { seriesIndex, dataPointIndex, w }) {
+                                    // Return empty string to hide the value, only show label
+                                    return '';
+                                },
+                                title: {
+                                    formatter: function(seriesName) {
+                                        // Return only the label name without any value
+                                        return seriesName;
+                                    }
+                                }
+                            },
+                            custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                                // Custom tooltip to show only the label name
+                                return '<div class="apexcharts-tooltip-custom" style="padding: 8px 12px; background: #fff; border: 1px solid #e3e3e3; border-radius: 4px;">' +
+                                    '<span style="font-weight: 500; color: #333;">' + w.config.labels[seriesIndex] + '</span>' +
+                                    '</div>';
+                            }
+                        },
+                        states: {
+                            active: {
+                                filter: {
+                                    type: 'none'
+                                }
+                            }
+                        }
                     };
 
                     try {
