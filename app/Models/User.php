@@ -28,6 +28,8 @@ class User extends Authenticatable
         'email_verified_at',       // ✅ TAMBAH INI (PENTING!)
         'otp_code',                // ✅ TAMBAH INI
         'otp_expires_at',          // ✅ TAMBAH INI
+        'reset_token',            // ✅ TAMBAH INI
+        'reset_token_expires_at',  // ✅ TAMBAH INI
     ];
 
     /**
@@ -51,11 +53,20 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'otp_expires_at' => 'datetime',    // ✅ TAMBAH INI
+            'reset_token_expires_at' => 'datetime', // ✅ TAMBAH INI
             'password' => 'hashed',
             'status' => 'string',
         ];
     }
 
+    /**
+     * Polymorphic relation to files (untuk avatar)
+     */
+    public function file()
+    {
+        return $this->morphOne(File::class, 'fileable');
+    }
+    
     // Relasi ke transaksi penyewaan
     public function rentalTransactions()
     {

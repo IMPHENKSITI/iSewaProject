@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\GasController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\SystemSettingController;
-use App\Http\Controllers\Admin\ProfileController; // Sudah di-import di sini
+use App\Http\Controllers\Admin\ProfileController; 
 
 // Welcome Page
 Route::get('/', function () {
@@ -46,7 +46,26 @@ Route::post('/auth/resend-otp', [AuthController::class, 'resendOtp'])->name('aut
 Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgot-password');
-Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])->name('auth.reset-password');
+Route::post('/auth/forgot-password/verify-otp', [AuthController::class, 'verifyForgotPasswordOtp'])->name('auth.forgot-password.verify-otp');
+Route::post('/auth/forgot-password/reset', [AuthController::class, 'resetForgotPassword'])->name('auth.forgot-password.reset');
+Route::post('/auth/forgot-password/resend-otp', [AuthController::class, 'resendForgotPasswordOtp'])->name('auth.forgot-password.resend-otp');
+
+// ============================================
+// USER PROFILE ROUTES (Manual auth check di controller)
+// ============================================
+Route::get('/profile', [App\Http\Controllers\User\ProfileController::class, 'index'])->name('profile');
+Route::put('/profile', [App\Http\Controllers\User\ProfileController::class, 'update'])->name('profile.update');
+Route::post('/profile/change-password', [App\Http\Controllers\User\ProfileController::class, 'changePassword'])->name('profile.change-password');
+// ============================================
+// USER PROFILE ROUTES
+// ============================================
+Route::get('/profile', [App\Http\Controllers\User\ProfileController::class, 'index'])->name('profile');
+Route::put('/profile', [App\Http\Controllers\User\ProfileController::class, 'update'])->name('profile.update');
+
+// Profile Password Change Flow (3 steps dengan OTP)
+Route::post('/profile/change-password', [App\Http\Controllers\User\ProfileController::class, 'changePassword'])->name('profile.change-password');
+Route::post('/profile/verify-otp', [App\Http\Controllers\User\ProfileController::class, 'verifyOtp'])->name('profile.verify-otp');
+Route::post('/profile/resend-otp', [App\Http\Controllers\User\ProfileController::class, 'resendOtp'])->name('profile.resend-otp');
 
 // ============================================
 // AUTH ROUTES (Tanpa Middleware)
@@ -60,6 +79,14 @@ Route::post('/admin/forgot-password', [AuthController::class, 'forgotPassword'])
 Route::get('/admin/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('admin.reset-password');
 Route::post('/admin/reset-password', [AuthController::class, 'resetPassword'])->name('admin.reset-password.post');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+
+// ============================================
+// FILE ACCESS ROUTES (Public)
+// ============================================
+Route::get('/files/{id}/{action}', function ($id, $action) {
+    $file = \App\Models\File::findOrFail($id);
+    return $file->handleAction($action);
+})->name('files.action')->where('action', 'stream|download');
 
 // ============================================
 // DASHBOARD ROUTES (Tanpa Middleware)
