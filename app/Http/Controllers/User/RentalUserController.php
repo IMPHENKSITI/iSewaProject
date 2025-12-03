@@ -16,4 +16,15 @@ class RentalUserController extends Controller
         
         return view('users.rental-equipment', compact('items'));
     }
+
+    public function show($id)
+    {
+        // Fetch specific rental item
+        $item = Barang::findOrFail($id);
+        
+        // Fetch system settings for location
+        $setting = \App\Models\SystemSetting::first();
+        
+        return view('users.rental-detail', compact('item', 'setting'));
+    }
 }

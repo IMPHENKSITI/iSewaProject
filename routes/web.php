@@ -43,6 +43,8 @@ Route::get('/bumdes/laporan', function () {
 // Rental Equipment Route
 Route::get('/unit-penyewaan-alat', [App\Http\Controllers\User\RentalUserController::class, 'index'])
     ->name('rental.equipment');
+Route::get('/unit-penyewaan-alat/{id}', [App\Http\Controllers\User\RentalUserController::class, 'show'])
+    ->name('rental.equipment.show');
 
 // ============================================
 // USER AUTH ROUTES 

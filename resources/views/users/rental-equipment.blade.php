@@ -60,6 +60,7 @@
             @if($items->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16 max-w-4xl mx-auto">
                     @foreach($items as $item)
+                    <a href="{{ route('rental.equipment.show', $item->id) }}" class="block">
                     <div class="product-card bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 mx-auto w-full max-w-[380px]">
                         <!-- Product Image -->
                         <div class="product-image-wrapper mb-6 relative aspect-[4/3] overflow-hidden rounded-2xl">
@@ -75,6 +76,7 @@
                             </h3>
                         </div>
                     </div>
+                    </a>
                     @endforeach
                 </div>
             @else

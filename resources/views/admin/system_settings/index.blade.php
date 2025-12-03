@@ -94,7 +94,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-7">
-                                                <label class="form-label fw-semibold mb-2">Preview Peta (Satelit)</label>
+                                                <label class="form-label fw-semibold mb-2">Preview Peta</label>
                                                 
                                                 <!-- Search Box for Location -->
                                                 <div class="input-group mb-3">
@@ -458,8 +458,9 @@
         
         var map = L.map('map').setView([lat, lng], 16);
 
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri'
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{y}/{x}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
         }).addTo(map);
 
         var marker = L.marker([lat, lng], {draggable: true}).addTo(map);
