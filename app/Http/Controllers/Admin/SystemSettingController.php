@@ -38,16 +38,55 @@ class SystemSettingController extends Controller
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'address' => 'nullable|string',
-            'address' => $request->input('address'),
-            'bank_name' => $request->input('bank_name'),
-            'bank_account_number' => $request->input('bank_account_number'),
-            'bank_account_holder' => $request->input('bank_account_holder'),
-            'payment_methods' => $paymentMethods,
-            'card_background_image' => $cardBackgroundImage,
-            'whatsapp_number' => $request->input('whatsapp_number'),
-            'office_address' => $request->input('office_address'),
-            'operating_hours' => $request->input('operating_hours'),
+            'bank_name' => 'nullable|string|max:255',
+            'bank_account_number' => 'nullable|string|max:255',
+            'bank_account_holder' => 'nullable|string|max:255',
+            'card_background_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'whatsapp_number' => 'nullable|string|max:20',
+            'office_address' => 'nullable|string',
+            'operating_hours' => 'nullable|string',
         ]);
+
+        $setting = SystemSetting::first();
+        if (!$setting) {
+            $setting = new SystemSetting();
+        }
+
+        // Update basic fields
+        $setting->location_name = $request->input('location_name');
+        $setting->latitude = $request->input('latitude');
+        $setting->longitude = $request->input('longitude');
+        $setting->address = $request->input('address');
+        $setting->bank_name = $request->input('bank_name');
+        $setting->bank_account_number = $request->input('bank_account_number');
+        $setting->bank_account_holder = $request->input('bank_account_holder');
+        $setting->whatsapp_number = $request->input('whatsapp_number');
+        $setting->office_address = $request->input('office_address');
+        $setting->operating_hours = $request->input('operating_hours');
+
+        // Handle payment methods (checkbox array)
+        $paymentMethods = [];
+        if ($request->has('payment_transfer')) {
+            $paymentMethods[] = 'transfer';
+        }
+        if ($request->has('payment_cash')) {
+            $paymentMethods[] = 'tunai';
+        }
+        $setting->payment_methods = $paymentMethods;
+
+        // Handle card background image upload
+        if ($request->hasFile('card_background_image')) {
+            // Delete old image if exists
+            if ($setting->card_background_image && \Storage::disk('public')->exists($setting->card_background_image)) {
+                \Storage::disk('public')->delete($setting->card_background_image);
+            }
+            
+            // Store new image
+            $path = $request->file('card_background_image')->store('system', 'public');
+            $setting->card_background_image = $path;
+        }
+
+        $setting->save();
 
         return redirect()->back()->with('success', 'Pengaturan sistem berhasil disimpan.');
     }

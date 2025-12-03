@@ -33,9 +33,16 @@ Route::get('/bumdes/profil-layanan', function () {
     return view('users.bumdes-profil');
 })->name('bumdes.profil');
 
+Route::get('/bumdes/desa-pematang-duku-timur', [App\Http\Controllers\User\BumdesUserController::class, 'show'])
+    ->name('bumdes.detail');
+
 Route::get('/bumdes/laporan', function () {
     return view('users.bumdes-laporan');
 })->name('bumdes.laporan');
+
+// Rental Equipment Route
+Route::get('/unit-penyewaan-alat', [App\Http\Controllers\User\RentalUserController::class, 'index'])
+    ->name('rental.equipment');
 
 // ============================================
 // USER AUTH ROUTES 
