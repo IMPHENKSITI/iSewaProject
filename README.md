@@ -71,3 +71,8 @@ Catatan yang perlu diperbaikii:
 - Fix Minor
 - Fix Minor Space Kosong
 - Navigasi Footer Smooth (Beta) 
+
+## Version 0.5.0
+- Penambahan Fitur Bumdes
+- Navigasi yang ga terduga interaktifnya
+- Sudah bisa update profile dan login (Beta)
