@@ -936,6 +936,15 @@
 
                     updateCarousel();
                     startAutoSlide();
+
+                    // Add click handler for rental equipment cards
+                    const rentalCards = document.querySelectorAll('.unit-card[data-name="Unit Penyewaan Alat"]');
+                    rentalCards.forEach(card => {
+                        card.style.cursor = 'pointer';
+                        card.addEventListener('click', () => {
+                            window.location.href = "{{ route('rental.equipment') }}";
+                        });
+                    });
                 },
 
             };
