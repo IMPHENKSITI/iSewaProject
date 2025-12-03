@@ -77,11 +77,11 @@
                             </div>
 
                             <div class="unit-card" data-index="2" data-name="Unit Penyewaan Alat">
-                                <img src="{{ asset('User/img/elemen/F3.png') }}" alt="Alat">
+                                <img src="{{ asset('User/img/elemen/F1.png') }}" alt="Alat">
                             </div>
 
                             <div class="unit-card" data-index="3" data-name="Unit Penjualan Gas">
-                                <img src="{{ asset('User/img/elemen/F4.png') }}" alt="Gas">
+                                <img src="{{ asset('User/img/elemen/F2.png') }}" alt="Gas">
                             </div>
                         </div>
 
