@@ -46,6 +46,18 @@ Route::get('/unit-penyewaan-alat', [App\Http\Controllers\User\RentalUserControll
 Route::get('/unit-penyewaan-alat/{id}', [App\Http\Controllers\User\RentalUserController::class, 'show'])
     ->name('rental.equipment.show');
 
+// Rental Booking Routes
+Route::get('/unit-penyewaan-alat/{id}/booking', [App\Http\Controllers\User\RentalBookingController::class, 'create'])
+    ->name('rental.booking');
+Route::post('/rental/booking', [App\Http\Controllers\User\RentalBookingController::class, 'store'])
+    ->name('rental.booking.store');
+
+// Gas Sales Route
+Route::get('/unit-penjualan-gas', [App\Http\Controllers\User\GasSalesUserController::class, 'index'])
+    ->name('gas.sales');
+Route::get('/unit-penjualan-gas/{id}', [App\Http\Controllers\User\GasSalesUserController::class, 'show'])
+    ->name('gas.sales.show');
+
 // ============================================
 // USER AUTH ROUTES 
 // ============================================

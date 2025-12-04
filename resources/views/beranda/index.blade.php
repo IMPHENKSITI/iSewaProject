@@ -945,6 +945,15 @@
                             window.location.href = "{{ route('rental.equipment') }}";
                         });
                     });
+
+                    // Add click handler for gas sales cards
+                    const gasCards = document.querySelectorAll('.unit-card[data-name="Unit Penjualan Gas"]');
+                    gasCards.forEach(card => {
+                        card.style.cursor = 'pointer';
+                        card.addEventListener('click', () => {
+                            window.location.href = "{{ route('gas.sales') }}";
+                        });
+                    });
                 },
 
             };

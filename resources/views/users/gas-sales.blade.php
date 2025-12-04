@@ -52,7 +52,7 @@
             <div class="text-center mb-20 mt-12">
                 <h1 class="text-3xl md:text-4xl font-bold mb-4">
                     <span class="text-gray-800">Unit </span>
-                    <span class="bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">Penyewaan Alat</span>
+                    <span class="bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">Penjualan Gas</span>
                 </h1>
             </div>
 
@@ -60,22 +60,22 @@
             @if($items->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16 max-w-4xl mx-auto">
                     @foreach($items as $item)
-                    <a href="{{ route('rental.equipment.show', $item->id) }}" class="block">
-                    <div class="product-card bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 mx-auto w-full max-w-[380px]">
-                        <!-- Product Image -->
-                        <div class="product-image-wrapper mb-6 relative aspect-[4/3] overflow-hidden rounded-2xl">
-                            <img src="{{ asset('storage/' . $item->foto) }}" 
-                                 alt="{{ $item->nama_barang }}"
-                                 class="product-image w-full h-full object-cover">
-                        </div>
+                    <a href="{{ route('gas.sales.show', $item->id) }}" class="block">
+                        <div class="product-card bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 mx-auto w-full max-w-[380px]">
+                            <!-- Product Image -->
+                            <div class="product-image-wrapper mb-6 relative aspect-[4/3] overflow-hidden rounded-2xl">
+                                <img src="{{ asset('storage/' . $item->foto) }}" 
+                                     alt="{{ $item->jenis_gas }}"
+                                     class="product-image w-full h-full object-cover">
+                            </div>
 
-                        <!-- Product Name Only -->
-                        <div class="product-info text-center">
-                            <h3 class="product-name text-sm font-bold text-gray-800 mb-2">
-                                {{ $item->nama_barang }}
-                            </h3>
+                            <!-- Product Name Only -->
+                            <div class="product-info text-center">
+                                <h3 class="product-name text-sm font-bold text-gray-800 mb-2">
+                                    {{ $item->jenis_gas }}
+                                </h3>
+                            </div>
                         </div>
-                    </div>
                     </a>
                     @endforeach
                 </div>
@@ -83,10 +83,10 @@
                 <!-- Empty State -->
                 <div class="text-center py-20">
                     <svg class="w-24 h-24 mx-auto mb-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                     </svg>
-                    <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Produk Tersedia</h3>
-                    <p class="text-gray-500">Produk penyewaan alat akan segera ditambahkan.</p>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Produk Gas Tersedia</h3>
+                    <p class="text-gray-500">Produk gas akan segera ditambahkan.</p>
                 </div>
             @endif
         </div>
@@ -100,10 +100,8 @@
         font-family: 'Inter', sans-serif;
     }
 
-    /* Product Cards */
+    /* Card Hover Effects */
     .product-card {
-        position: relative;
-        background: white;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -111,6 +109,7 @@
         transform: translateY(-8px);
     }
 
+    /* Image Hover Effect */
     .product-image {
         transition: transform 0.3s ease;
     }
@@ -119,46 +118,31 @@
         transform: scale(1.05);
     }
 
+    /* Product Name Styling */
     .product-name {
         font-size: 1.1rem;
         font-weight: 700;
         color: #1f2937;
         line-height: 1.4;
-        margin-top: 1rem;
     }
 
-    /* Smooth animations */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
+    /* Gradient Text Animation */
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
         }
     }
 
-    .product-card {
-        animation: fadeInUp 0.6s ease-out;
-        animation-fill-mode: both;
-    }
-
-    .product-card:nth-child(1) { animation-delay: 0.1s; }
-    .product-card:nth-child(2) { animation-delay: 0.2s; }
-    .product-card:nth-child(3) { animation-delay: 0.3s; }
-    .product-card:nth-child(4) { animation-delay: 0.4s; }
-    .product-card:nth-child(5) { animation-delay: 0.5s; }
-    .product-card:nth-child(6) { animation-delay: 0.6s; }
-
-    /* Responsive */
+    /* Responsive Adjustments */
     @media (max-width: 768px) {
-        .product-name {
-            font-size: 1.125rem;
-        }
-
-        .product-image {
-            height: 200px;
+        .product-card {
+            max-width: 100%;
         }
     }
 </style>
@@ -168,24 +152,9 @@
 <script>
     (function() {
         'use strict';
-
+        
         // Smooth scroll to top on page load
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // Add loading state for images
-        document.addEventListener('DOMContentLoaded', () => {
-            const images = document.querySelectorAll('.product-image');
-            images.forEach(img => {
-                if (img.complete) {
-                    img.style.opacity = '1';
-                } else {
-                    img.style.opacity = '0';
-                    img.addEventListener('load', function() {
-                        this.style.opacity = '1';
-                    });
-                }
-            });
-        });
     })();
 </script>
 @endpush

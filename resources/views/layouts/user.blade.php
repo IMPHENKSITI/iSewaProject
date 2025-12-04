@@ -111,6 +111,32 @@
             });
 
         })();
+    <script>
+        // ... existing navbar script ...
     </script>
+
+    {{-- Trigger Login Modal if Session Exists --}}
+    @if(session('open_login_modal'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    const modalOverlay = document.getElementById('auth-modal-overlay');
+                    const modalLogin = document.getElementById('modal-login');
+                    
+                    if (modalOverlay && modalLogin) {
+                        modalOverlay.classList.remove('hidden');
+                        modalLogin.classList.remove('hidden');
+                        
+                        // Trigger animation
+                        requestAnimationFrame(() => {
+                            modalOverlay.classList.remove('opacity-0');
+                            modalLogin.classList.remove('opacity-0', 'scale-95');
+                        });
+                    }
+                }, 100);
+            });
+        </script>
+    @endif
+
     @include('auth.scripts')
 @endpush

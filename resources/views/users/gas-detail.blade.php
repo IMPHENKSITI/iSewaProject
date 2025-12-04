@@ -72,7 +72,7 @@
                                 @foreach($images as $index => $image)
                                 <div class="w-full h-full flex-shrink-0 flex-grow-0">
                                     <img src="{{ asset('storage/' . $image) }}" 
-                                         alt="{{ $item->nama_barang }} - Image {{ $index + 1 }}"
+                                         alt="{{ $item->jenis_gas }} - Image {{ $index + 1 }}"
                                          class="w-full h-full object-cover product-image">
                                 </div>
                                 @endforeach
@@ -122,17 +122,12 @@
                     <!-- Right Side: Product Information -->
                     <div class="lg:w-7/12 flex flex-col">
                         <!-- Product Name -->
-                        <h2 class="text-3xl font-bold text-gray-800 mb-4">{{ $item->nama_barang }}</h2>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">{{ $item->jenis_gas }}</h2>
 
                         <!-- Description -->
                         <p class="text-gray-600 text-justify mb-6 leading-relaxed text-sm">
                             {{ $item->deskripsi }}
                         </p>
-
-                        <!-- Pricing Label -->
-                        <div class="mb-4">
-                            <p class="text-sm font-semibold text-gray-700">Harga Sewa dihitung Sekali Pakai</p>
-                        </div>
 
                         <!-- Product Details Grid -->
                         <div class="space-y-2 mb-6">
@@ -147,7 +142,7 @@
                                 <span class="text-gray-600 font-medium text-sm">Status</span>
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold 
                                     {{ $item->status == 'tersedia' ? 'bg-green-100 text-green-700' : 
-                                       ($item->status == 'disewa' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
+                                       ($item->status == 'dipesan' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
                                     {{ ucfirst($item->status) }}
                                 </span>
                             </div>
@@ -161,10 +156,10 @@
 
                         <!-- Price -->
                         <div class="mb-6">
-                            <p class="text-3xl font-bold text-red-600">Rp. {{ number_format($item->harga_sewa, 0, ',', '.') }}</p>
+                            <p class="text-3xl font-bold text-red-600">Rp. {{ number_format($item->harga_satuan, 0, ',', '.') }}</p>
                         </div>
 
-                        <!-- Quantity Selector + Rent Button - SIDE BY SIDE -->
+                        <!-- Quantity Selector + Order Button - SIDE BY SIDE -->
                         <div class="flex items-center gap-4 mt-auto">
                             <!-- Quantity Selector -->
                             <div class="flex items-center gap-3 border-2 border-gray-300 rounded-full px-4 py-2">
@@ -192,12 +187,11 @@
                                 </button>
                             </div>
 
-                            <!-- Rent Button -->
-                            <a href="{{ route('rental.booking', $item->id) }}?quantity={{ $item->stok > 0 ? 1 : 0 }}" 
-                               id="rent-button"
-                               class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-center">
-                                Sewa
-                            </a>
+                            <!-- Order Button -->
+                            <button type="button" 
+                                    class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                Pesan
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -266,21 +260,13 @@
         const qtyInput = document.getElementById('quantity');
         const decreaseBtn = document.getElementById('decrease-qty');
         const increaseBtn = document.getElementById('increase-qty');
-        const rentButton = document.getElementById('rent-button');
         const maxStock = {{ $item->stok }};
-        const itemId = {{ $item->id }};
-
-        function updateRentButtonUrl() {
-            const qty = parseInt(qtyInput.value) || 1;
-            rentButton.href = `/unit-penyewaan-alat/${itemId}/booking?quantity=${qty}`;
-        }
 
         if (qtyInput && decreaseBtn && increaseBtn) {
             decreaseBtn.addEventListener('click', () => {
                 let currentValue = parseInt(qtyInput.value) || 1;
                 if (currentValue > 1) {
                     qtyInput.value = currentValue - 1;
-                    updateRentButtonUrl();
                 }
             });
 
@@ -288,7 +274,6 @@
                 let currentValue = parseInt(qtyInput.value) || 1;
                 if (currentValue < maxStock) {
                     qtyInput.value = currentValue + 1;
-                    updateRentButtonUrl();
                 }
             });
 
@@ -297,7 +282,6 @@
                 let value = parseInt(qtyInput.value) || 1;
                 if (value < 1) qtyInput.value = 1;
                 if (value > maxStock) qtyInput.value = maxStock;
-                updateRentButtonUrl();
             });
         }
 
@@ -388,4 +372,3 @@
     })();
 </script>
 @endpush
-
