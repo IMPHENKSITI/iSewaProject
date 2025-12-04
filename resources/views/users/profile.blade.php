@@ -2,27 +2,32 @@
 
 @section('page')
 <section class="relative z-10 min-h-screen pt-32 pb-16">
-    {{-- Background Decorations --}}
-    <div class="absolute top-0 right-0 w-96 h-96 pointer-events-none overflow-hidden">
-        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-blue-200/40 via-blue-300/30 to-transparent"
-            style="clip-path: polygon(100% 0, 100% 100%, 40% 100%, 0 0);"></div>
+    {{-- Background Image with Overlay --}}
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <img src="{{ asset('User/img/backgrounds/3.webp') }}" alt="Background" 
+             class="absolute inset-0 w-full h-full object-cover opacity-60">
     </div>
 
-    <div class="absolute bottom-0 left-0 w-96 h-64 pointer-events-none">
-        <div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-tr from-blue-300/30 via-yellow-200/20 to-transparent rounded-tr-full"></div>
+    {{-- Gradient Overlays --}}
+    <div class="absolute top-0 left-0 w-[700px] h-[550px] pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-400/50 via-blue-500/30 to-transparent rounded-br-[40%]"></div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6">
-        {{-- Header --}}
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold bg-gradient-to-r from-[#115789] to-blue-300 bg-clip-text text-transparent relative inline-block drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+    <div class="absolute bottom-0 right-0 w-[650px] h-[450px] pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-tl from-yellow-300/40 via-yellow-400/25 to-transparent rounded-tl-[40%]"></div>
+    </div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
+        {{-- Header Title --}}
+        <div class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
                 Profil Saya
             </h1>
         </div>
 
         {{-- Success Alert --}}
         @if(session('success'))
-        <div id="success-alert" class="max-w-4xl mx-auto mb-6 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-xl transition-opacity duration-300">
+        <div id="success-alert" class="mb-6 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-xl transition-opacity duration-300">
             <div class="flex items-center gap-3">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -32,31 +37,35 @@
         </div>
         @endif
 
-        {{-- Profile Card --}}
-        <div class="max-w-4xl mx-auto">
-            <div class="backdrop-blur-sm bg-white/80 rounded-3xl p-8 md:p-12 border border-white/70 shadow-xl">
-                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
+        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {{-- LEFT: Avatar Section --}}
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                {{-- LEFT COLUMN: Avatar Card (span 4 kolom) --}}
+                <div class="lg:col-span-4">
+                    <div class="glass-card rounded-3xl p-6 border border-white/50 shadow-lg">
                         <div class="flex flex-col items-center">
+                            {{-- Avatar with Blue Border --}}
                             <div class="relative group">
-                                <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gradient-to-br from-blue-400 to-blue-600">
+                                <div class="w-44 h-44 rounded-full overflow-hidden border-[5px] border-blue-400 shadow-xl bg-[#D1D5DB]">
                                     @if($user->file)
                                         <img id="avatar-preview" src="{{ $user->file->file_stream }}" alt="Avatar" class="w-full h-full object-cover">
                                     @else
                                         <img id="avatar-preview" src="" alt="Avatar" class="w-full h-full object-cover hidden">
-                                        <div id="avatar-placeholder" class="w-full h-full flex items-center justify-center text-white text-6xl font-bold">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        {{-- SVG User Icon Placeholder --}}
+                                        <div id="avatar-placeholder" class="w-full h-full flex items-center justify-center">
+                                            <svg class="w-24 h-24 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
                                         </div>
                                     @endif
                                 </div>
 
                                 {{-- Upload Overlay --}}
-                                <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer">
-                                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer"
+                                     onclick="document.getElementById('profile-input').click()">
+                                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     </svg>
@@ -65,113 +74,282 @@
                                 <input type="file" id="profile-input" name="profile" accept="image/jpeg,image/jpg,image/png" class="hidden">
                             </div>
 
-                            <button type="button" onclick="document.getElementById('profile-input').click()" class="mt-6 px-6 py-2.5 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 transition">
-                                Unggah Foto
+                            {{-- Pilih File Button --}}
+                            <button type="button" onclick="document.getElementById('profile-input').click()" 
+                                    class="mt-5 px-7 py-2.5 bg-blue-500 text-white rounded-full font-semibold text-sm hover:bg-blue-600 shadow-lg transition-all duration-300 hover:shadow-xl">
+                                Pilih File
                             </button>
 
-                            <p class="mt-3 text-sm text-gray-500 text-center">
+                            {{-- Unduh Foto Link --}}
+                            @if($user->file)
+                            <a href="{{ $user->file->file_stream }}" download 
+                               class="mt-2.5 text-blue-500 hover:text-blue-700 font-medium text-sm transition-colors">
+                                Unduh Foto
+                            </a>
+                            @else
+                            <p class="mt-2.5 text-gray-600 text-xs text-center">
                                 JPG, PNG (Max 2MB)
                             </p>
+                            @endif
 
                             @error('profile')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+                    </div>
+                </div>
 
-                        {{-- RIGHT: Form Fields --}}
-                        <div class="md:col-span-2 space-y-6">
-                            {{-- Username (disabled) --}}
+                {{-- RIGHT COLUMN: Form Cards (span 8 kolom) --}}
+                <div class="lg:col-span-8 space-y-5">
+                    {{-- CARD 1: Basic Info (Username, Nama, Email, Phone) --}}
+                    <div class="glass-card rounded-3xl p-6 border border-white/50 shadow-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {{-- Username (editable) --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
-                                <input type="text" value="{{ $user->username }}" disabled class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-600 cursor-not-allowed">
+                                <label class="block text-sm font-bold text-gray-800 mb-2">Username</label>
+                                <input type="text" name="username" value="{{ old('username', $user->username) }}" 
+                                       class="w-full px-4 py-2.5 bg-white/80 border border-white/60 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200/50 outline-none transition glass-input text-gray-800 text-sm">
+                                @error('username')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             {{-- Nama Lengkap --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
-                                <input type="text" name="name" value="{{ old('name', $user->name) }}" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+                                <label class="block text-sm font-bold text-gray-800 mb-2">Nama Lengkap</label>
+                                <input type="text" name="name" value="{{ old('name', $user->name) }}" required 
+                                       class="w-full px-4 py-2.5 bg-white/80 border border-white/60 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200/50 outline-none transition glass-input text-gray-800 text-sm">
                                 @error('name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             {{-- Email (disabled) --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                                <input type="email" value="{{ $user->email }}" disabled class="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-600 cursor-not-allowed">
+                                <label class="block text-sm font-bold text-gray-800 mb-2">Email</label>
+                                <input type="email" value="{{ $user->email }}" disabled 
+                                       class="w-full px-4 py-2.5 bg-white/60 border border-white/40 rounded-xl text-gray-700 cursor-not-allowed glass-input text-sm">
                             </div>
 
                             {{-- No Telepon --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">No Telepon</label>
-                                <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+                                <label class="block text-sm font-bold text-gray-800 mb-2">No Telepon</label>
+                                <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}" 
+                                       class="w-full px-4 py-2.5 bg-white/80 border border-white/60 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200/50 outline-none transition glass-input text-gray-800 text-sm">
                                 @error('phone')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
+                        </div>
+                    </div>
 
+                    {{-- CARD 2: Additional Details (Gender, Address, Password) --}}
+                    <div class="glass-card rounded-3xl p-6 border border-white/50 shadow-lg">
+                        <div class="space-y-5">
                             {{-- Jenis Kelamin --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Jenis Kelamin</label>
-                                <select name="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+                                <label class="block text-sm font-bold text-gray-800 mb-2">Jenis Kelamin</label>
+                                <select name="gender" 
+                                        class="w-full px-4 py-2.5 bg-white/80 border border-white/60 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200/50 outline-none transition glass-input text-gray-800 text-sm">
                                     <option value="">Pilih Jenis Kelamin</option>
                                     <option value="laki-laki" {{ old('gender', $user->gender) == 'laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="perempuan" {{ old('gender', $user->gender) == 'perempuan' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
+                                @error('gender')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             {{-- Alamat --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Alamat</label>
-                                <textarea name="address" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition resize-none">{{ old('address', $user->address) }}</textarea>
+                                <label class="block text-sm font-bold text-gray-800 mb-2">Alamat</label>
+                                <textarea name="address" rows="2.5" 
+                                          class="w-full px-4 py-2.5 bg-white/80 border border-white/60 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200/50 outline-none transition resize-none glass-input text-gray-800 text-sm">{{ old('address', $user->address) }}</textarea>
                                 @error('address')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             {{-- Kata Sandi --}}
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Kata Sandi</label>
-                                <div class="flex items-center gap-3">
-                                    <input type="password" value="••••••••" disabled class="flex-1 px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-600 cursor-not-allowed">
-                                    <button type="button" id="btn-open-change-password" class="px-6 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition whitespace-nowrap">
-                                        Ubah Sandi
-                                    </button>
-                                </div>
+                                <label class="block text-sm font-bold text-gray-800 mb-2">Kata Sandi</label>
+                                <input type="password" value="••••••••" disabled 
+                                       class="w-full px-4 py-2.5 bg-white/60 border border-white/40 rounded-xl text-gray-700 cursor-not-allowed glass-input text-sm">
                             </div>
 
-                            {{-- Action Buttons --}}
-                            <div class="flex flex-col sm:flex-row gap-3 pt-4">
-                                <button type="submit" class="flex-1 py-3 bg-blue-500 text-white rounded-full font-semibold hover:bg-blue-600 transition">
+                            {{-- 3 Action Buttons - Horizontal Layout --}}
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3">
+                                {{-- Ubah Sandi - Button Border Putih --}}
+                                <button type="button" id="btn-open-change-password"
+                                        class="button-interactive py-3.5 bg-white/70 backdrop-blur-sm text-blue-500 rounded-full font-semibold text-base transition-all duration-300 shadow-md border border-white/80 hover:bg-white/90 hover:shadow-lg hover:scale-105 active:scale-95">
+                                    Ubah Sandi
+                                </button>
+                                
+                                {{-- Simpan - Button Border Putih --}}
+                                <button type="submit" 
+                                        class="button-interactive py-3.5 bg-white/70 backdrop-blur-sm text-blue-500 rounded-full font-semibold text-base transition-all duration-300 shadow-md border border-white/80 hover:bg-white/90 hover:shadow-lg hover:scale-105 active:scale-95">
                                     Simpan
                                 </button>
-                                <form action="{{ route('auth.logout') }}" method="POST" class="flex-1">
-                                    @csrf
-                                    <button type="submit" class="w-full py-3 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition">
-                                        Keluar
-                                    </button>
-                                </form>
+                                
+                                {{-- Keluar - Button Border Putih --}}
+                                <button type="button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                                        class="button-interactive py-3.5 bg-white/70 backdrop-blur-sm text-red-500 rounded-full font-semibold text-base transition-all duration-300 shadow-md border border-white/80 hover:bg-white/90 hover:shadow-lg hover:scale-105 active:scale-95">
+                                    Keluar
+                                </button>
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
+
+        {{-- Logout Form (Hidden) --}}
+        <form id="logout-form" action="{{ route('auth.logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
     </div>
 </section>
 
-{{-- ✅ INCLUDE MODALS & SCRIPTS DARI AUTH --}}
+{{-- âœ… INCLUDE MODALS & SCRIPTS DARI AUTH --}}
 @include('auth.profile-modals')
 @endsection
 
 @push('scripts')
 @include('auth.profile-scripts')
+
+<script>
+    // Auto-hide success alert after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alert = document.getElementById('success-alert');
+        if (alert) {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        }
+
+        // Avatar Preview Functionality
+        const profileInput = document.getElementById('profile-input');
+        const avatarPreview = document.getElementById('avatar-preview');
+        const avatarPlaceholder = document.getElementById('avatar-placeholder');
+
+        if (profileInput) {
+            profileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        if (avatarPreview) {
+                            avatarPreview.src = event.target.result;
+                            avatarPreview.classList.remove('hidden');
+                        }
+                        if (avatarPlaceholder) {
+                            avatarPlaceholder.classList.add('hidden');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Button Ripple Effect
+        const interactiveButtons = document.querySelectorAll('.button-interactive');
+        interactiveButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.5)';
+                ripple.style.pointerEvents = 'none';
+                ripple.style.animation = 'ripple 0.6s ease-out';
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+    });
+</script>
 @endpush
 
 @push('styles')
 <style>
     * {
         font-family: 'Inter', sans-serif;
+    }
+    
+    /* Glass morphism dengan webkit prefix */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+    
+    .glass-input {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+    
+    /* Button Interactive Effects */
+    .button-interactive {
+        position: relative;
+        overflow: hidden;
+        transform: translateZ(0);
+        will-change: transform, box-shadow;
+    }
+    
+    .button-interactive::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .button-interactive:hover::before {
+        opacity: 1;
+    }
+    
+    .button-interactive:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .button-interactive:active {
+        transform: translateY(0) scale(0.98);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.1s ease;
+    }
+    
+    /* Ripple Effect on Click */
+    @keyframes ripple {
+        0% {
+            transform: scale(0);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+        .lg\:col-span-4 {
+            grid-column: span 12;
+        }
+        .lg\:col-span-8 {
+            grid-column: span 12;
+        }
     }
 </style>
 @endpush

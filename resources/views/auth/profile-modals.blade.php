@@ -102,21 +102,7 @@
             </button>
 
             <div class="text-center mb-8">
-                {{-- Shield Icon dengan Gradient --}}
-                <div class="w-32 h-32 mx-auto mb-6">
-                    <svg viewBox="0 0 120 120" class="w-full h-full drop-shadow-lg">
-                        <defs>
-                            <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M60 10 L100 25 L100 55 Q100 85 60 110 Q20 85 20 55 L20 25 Z" fill="url(#shieldGradient)" stroke="#2563eb" stroke-width="2"/>
-                        <rect x="50" y="45" width="20" height="25" rx="2" fill="white"/>
-                        <circle cx="60" cy="40" r="8" fill="white"/>
-                    </svg>
-                </div>
-
+                <img src="{{ asset('User/img/elemen/verifff.png') }}" alt="iSewa Logo" class="h-48">
                 <h2 class="text-2xl font-bold text-gray-900 mb-2">Verifikasi Kode</h2>
                 <p class="text-sm text-gray-600 mb-1">Masukkan Kode Untuk Melanjutkan</p>
                 <p class="text-sm text-gray-500">Silahkan masukkan kode konfirmasi yang anda terima</p>
@@ -158,8 +144,8 @@
         <div id="modal-change-password-success" class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
             <div class="text-center">
                 {{-- iSewa Logo --}}
-                <div class="w-48 h-48 mx-auto mb-6">
-                    <img src="{{ asset('User/img/logo/iSewa.png') }}" alt="iSewa Logo" class="w-full h-full object-contain">
+                <div class="w-32 h-32 mx-auto mb-6">
+                    <img src="{{ asset('User/img/logo/iSewaT.png') }}" alt="iSewa Logo" class="w-full h-full object-contain">
                 </div>
 
                 <h2 class="text-2xl font-bold text-gray-900 mb-3">Berhasil Diperbarui</h2>

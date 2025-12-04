@@ -5,27 +5,27 @@
 
         {{-- MODAL LOGIN --}}
         <div id="modal-login"
-            class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform scale-95 opacity-0 transition-all duration-300 hidden">
+            class="modal-content bg-white rounded-2xl shadow-lg max-w-[420px] w-full p-8 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
             <button type="button"
-                class="modal-close absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+                class="modal-close absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition z-10">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
 
             <div class="text-center mb-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Masuk</h2>
-                <p class="text-gray-600">Silahkan masuk atau daftar menggunakan akun anda</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Masuk</h2>
+                <p class="text-sm text-gray-600 mb-4">Silahkan masuk atau daftar menggunakan akun anda</p>
             </div>
 
             {{-- Tab Buttons --}}
-            <div class="flex gap-2 mb-6">
+            <div class="flex gap-3 mb-6">
                 <button type="button" id="tab-login"
-                    class="flex-1 py-2.5 rounded-full text-sm font-semibold bg-blue-500 text-white transition">
+                    class="flex-1 py-3 rounded-full text-sm font-semibold bg-blue-500 text-white transition shadow-sm">
                     Masuk
                 </button>
                 <button type="button" id="tab-register"
-                    class="flex-1 py-2.5 rounded-full text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">
+                    class="flex-1 py-3 rounded-full text-sm font-semibold bg-white text-gray-700 border-2 border-blue-400 hover:bg-gray-50 transition">
                     Daftar
                 </button>
             </div>
@@ -35,7 +35,7 @@
                 <div>
                     <input type="text" name="email_or_phone" placeholder="Email / No Telepon" required
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
-                    <span class="text-red-500 text-sm hidden" data-error="email_or_phone"></span>
+                    <span class="text-red-500 text-sm hidden block mt-1" data-error="email_or_phone"></span>
                 </div>
 
                 <div class="relative">
@@ -55,8 +55,8 @@
                                 d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                         </svg>
                     </button>
-                    <span class="text-red-500 text-sm hidden" data-error="password"></span>
                 </div>
+                <span class="text-red-500 text-sm hidden block mt-1" data-error="password"></span>
 
                 <div class="flex items-center justify-between text-sm">
                     <label class="flex items-center cursor-pointer">
@@ -81,10 +81,10 @@
                 </button>
             </form>
 
-            <div class="mt-6 text-center text-gray-600 text-sm">atau</div>
+            <div class="mt-6 text-center text-gray-500 text-sm">atau</div>
 
             {{-- Social Login --}}
-            <div class="mt-4 space-y-3">
+            <div class="mt-4 space-y-3 flex flex-col gap-3">
                 <button type="button"
                     class="w-full py-3 border border-gray-300 rounded-full flex items-center justify-center gap-3 hover:bg-gray-50 transition">
                     <svg class="w-5 h-5" viewBox="0 0 24 24">
@@ -104,7 +104,7 @@
 
         {{-- MODAL REGISTER --}}
         <div id="modal-register"
-            class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
+            class="modal-content bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
             <button type="button"
                 class="modal-close absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition z-10">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,18 +113,18 @@
             </button>
 
             <div class="text-center mb-6">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Daftar</h2>
-                <p class="text-gray-600">Silahkan masuk atau daftar menggunakan akun anda</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Daftar</h2>
+                <p class="text-sm text-gray-600 mb-4">Silahkan masuk atau daftar menggunakan akun anda</p>
             </div>
 
             {{-- Tab Buttons --}}
-            <div class="flex gap-2 mb-6">
+            <div class="flex gap-3 mb-6">
                 <button type="button" id="tab-login-2"
-                    class="flex-1 py-2.5 rounded-full text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">
+                    class="flex-1 py-3 rounded-full text-sm font-semibold bg-white text-gray-700 border-2 border-blue-400 hover:bg-gray-50 transition">
                     Masuk
                 </button>
                 <button type="button" id="tab-register-2"
-                    class="flex-1 py-2.5 rounded-full text-sm font-semibold bg-blue-500 text-white transition">
+                    class="flex-1 py-3 rounded-full text-sm font-semibold bg-blue-500 text-white transition shadow-sm">
                     Daftar
                 </button>
             </div>
@@ -135,12 +135,12 @@
                     <div>
                         <input type="text" name="username" placeholder="Username" required
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm">
-                        <span class="text-red-500 text-xs hidden" data-error="username"></span>
+                        <span class="text-red-500 text-xs hidden block mt-1" data-error="username"></span>
                     </div>
                     <div>
                         <input type="email" name="email" placeholder="Email" required
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm">
-                        <span class="text-red-500 text-xs hidden" data-error="email"></span>
+                        <span class="text-red-500 text-xs hidden block mt-1" data-error="email"></span>
                     </div>
                 </div>
 
@@ -148,19 +148,19 @@
                     <div>
                         <input type="text" name="name" placeholder="Nama Lengkap" required
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm">
-                        <span class="text-red-500 text-xs hidden" data-error="name"></span>
+                        <span class="text-red-500 text-xs hidden block mt-1" data-error="name"></span>
                     </div>
                     <div>
                         <input type="tel" name="phone" placeholder="No Telepon" required
                             class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm">
-                        <span class="text-red-500 text-xs hidden" data-error="phone"></span>
+                        <span class="text-red-500 text-xs hidden block mt-1" data-error="phone"></span>
                     </div>
                 </div>
 
                 <div>
                     <textarea name="address" placeholder="Alamat" required rows="2"
                         class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition text-sm resize-none"></textarea>
-                    <span class="text-red-500 text-xs hidden" data-error="address"></span>
+                    <span class="text-red-500 text-xs hidden block mt-1" data-error="address"></span>
                 </div>
 
                 <div>
@@ -170,7 +170,7 @@
                         <option value="laki-laki">Laki-laki</option>
                         <option value="perempuan">Perempuan</option>
                     </select>
-                    <span class="text-red-500 text-xs hidden" data-error="gender"></span>
+                    <span class="text-red-500 text-xs hidden block mt-1" data-error="gender"></span>
                 </div>
 
                 <div class="relative">
@@ -191,8 +191,8 @@
                                 d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                         </svg>
                     </button>
-                    <span class="text-red-500 text-xs hidden" data-error="password"></span>
                 </div>
+                <span class="text-red-500 text-xs hidden block mt-1" data-error="password"></span>
 
                 <div class="relative">
                     <input type="password" name="password_confirmation" id="register-password-confirm"
@@ -213,8 +213,8 @@
                                 d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                         </svg>
                     </button>
-                    <span class="text-red-500 text-xs hidden" data-error="password_confirmation"></span>
                 </div>
+                <span class="text-red-500 text-xs hidden block mt-1" data-error="password_confirmation"></span>
 
                 <button type="submit"
                     class="w-full py-3 bg-blue-500 text-white rounded-full font-semibold hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
@@ -243,15 +243,12 @@
             </button>
 
             <div class="text-center mb-8">
-                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Verifikasi Kode</h2>
+                <div class="flex justify-center mb-6">
+                    <img src="{{ asset('User/img/elemen/verifff.png') }}" alt="Verification Icon" class="h-48">
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Verifikasi Kode</h2>
-                <p class="text-gray-600 text-sm">Masukkan Kode Untuk Melanjutkan</p>
-                <p class="text-sm text-gray-500 mt-2">Silahkan masukkan kode konfirmasi yang anda terima</p>
+                <p class="text-base font-semibold text-gray-900 mb-2">Masukkan Kode Untuk Melanjutkan</p>
+                <p class="text-sm text-gray-500">Silahkan masukkan kode konfirmasi yang anda terima</p>
             </div>
 
             <form id="form-otp" class="space-y-6">
@@ -301,17 +298,18 @@
         <div id="modal-success"
             class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
             <div class="text-center">
-                <div class="w-24 h-24 mx-auto mb-6">
-                    <img src="{{ asset('User/img/logo/iSewa.png') }}" alt="iSewa Logo"
-                        class="w-full h-full object-contain">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Selamat Datang</h2>
+
+                <div class="flex justify-center mb-6">
+                    <img src="{{ asset('User/img/logo/iSewaT.png') }}" alt="iSewa Logo"
+                        class="h-32">
                 </div>
 
-                <h2 class="text-2xl font-bold text-gray-900 mb-3">Selamat Datang</h2>
-                <p class="text-gray-600 mb-2">Pembuatan Akun Berhasil</p>
-                <p class="text-sm text-gray-500">Silahkan konfirmasi untuk melanjutkan</p>
+                <p class="text-lg font-semibold text-gray-900 mb-2">Pembuatan Akun Berhasil</p>
+                <p class="text-sm text-gray-500 mb-8">Silahkan konfirmasi untuk melanjutkan</p>
 
                 <button type="button" id="btn-confirm-success"
-                    class="mt-8 w-full py-3 bg-blue-500 text-white rounded-full font-semibold hover:bg-blue-600 transition">
+                    class="w-full py-3 bg-blue-500 text-white rounded-full font-semibold hover:bg-blue-600 transition">
                     Konfirmasi
                 </button>
             </div>
@@ -333,14 +331,14 @@
             </div>
 
             <div class="flex justify-center mb-8">
-                <img src="{{ asset('User/img/logo/iSewa.png') }}" alt="iSewa Logo" class="h-24">
+                <img src="{{ asset('User/img/logo/iSewaT.png') }}" alt="iSewa Logo" class="h-32">
             </div>
 
             <form id="form-forgot-password" class="space-y-6">
                 <div>
                     <input type="email" name="email" placeholder="Email" required
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
-                    <span class="text-red-500 text-sm hidden" data-error="email"></span>
+                    <span class="text-red-500 text-sm hidden block mt-1" data-error="email"></span>
                 </div>
 
                 <button type="submit"
@@ -370,23 +368,10 @@
             </button>
 
             <div class="text-center mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Verifikasi Kode</h2>
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Verifikasi Kode</h2>
 
-                <div class="w-24 h-24 mx-auto mb-6">
-                    <svg viewBox="0 0 100 100" class="w-full h-full">
-                        <defs>
-                            <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%"
-                                y2="100%">
-                                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M50 10 L20 25 L20 50 Q20 75 50 90 Q80 75 80 50 L80 25 Z" fill="url(#shieldGradient)"
-                            stroke="#1e40af" stroke-width="2" />
-                        <rect x="40" y="35" width="20" height="25" rx="2" fill="white" />
-                        <circle cx="50" cy="42" r="3" fill="#3b82f6" />
-                        <rect x="47" y="45" width="6" height="12" rx="1" fill="#3b82f6" />
-                    </svg>
+                <div class="flex justify-center mb-6">
+                    <img src="{{ asset('User/img/elemen/verifff.png') }}" alt="Verification Icon" class="h-48">
                 </div>
 
                 <p class="text-base font-semibold text-gray-900 mb-2">Masukkan Kode Untuk Melanjutkan</p>
@@ -469,8 +454,8 @@
                                 d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                         </svg>
                     </button>
-                    <span class="text-red-500 text-sm hidden" data-error="new_password"></span>
                 </div>
+                <span class="text-red-500 text-sm hidden block mt-1" data-error="new_password"></span>
 
                 <div class="relative">
                     <input type="password" name="new_password_confirmation" id="forgot-new-password-confirm"
@@ -491,8 +476,8 @@
                                 d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                         </svg>
                     </button>
-                    <span class="text-red-500 text-sm hidden" data-error="new_password_confirmation"></span>
                 </div>
+                <span class="text-red-500 text-sm hidden block mt-1" data-error="new_password_confirmation"></span>
 
                 <p class="text-sm text-gray-500 text-center">Silahkan konfirmasi untuk melanjutkan</p>
 
@@ -518,9 +503,9 @@
             <div class="text-center">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Berhasil Diperbarui</h2>
 
-                <div class="w-32 h-32 mx-auto mb-6">
-                    <img src="{{ asset('User/img/logo/iSewa.png') }}" alt="iSewa Logo"
-                        class="w-full h-full object-contain">
+                <div class="flex justify-center mb-6">
+                    <img src="{{ asset('User/img/logo/iSewaT.png') }}" alt="iSewa Logo"
+                        class="h-32">
                 </div>
 
                 <p class="text-lg font-semibold text-gray-900 mb-2">Kata Sandi Telah Diperbarui</p>

@@ -29,12 +29,12 @@
                         class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-52 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
                         <div class="py-1">
                             <a href="{{ route('bumdes.profil') }}"
-                                class="block px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 text-[14px] font-medium transition-colors duration-150">
+                                class="block px-5 py-3 text-gray-700 hover:bg-blue-50 hover:border-l-[3px] hover:border-l-blue-500 text-[14px] font-medium transition-all duration-150">
                                 Profil dan Layanan
                             </a>
                             <div class="h-px bg-gray-100 mx-3"></div>
                             <a href="{{ route('bumdes.laporan') }}"
-                                class="block px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 text-[14px] font-medium transition-colors duration-150">
+                                class="block px-5 py-3 text-gray-700 hover:bg-blue-50 hover:border-l-[3px] hover:border-l-blue-500 text-[14px] font-medium transition-all duration-150">
                                 Laporan
                             </a>
                         </div>
@@ -45,82 +45,56 @@
                     class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200">
                     Profil iSewa
                 </a>
+
                 {{-- Auth Check: Show Dropdown atau Login/Register --}}
                 @auth
                     {{-- User Dropdown (Sudah Login) --}}
                     <div class="relative group">
-                        <button class="flex items-center gap-3 hover:opacity-80 transition">
-                            {{-- Avatar --}}
-                            <div
-                                class="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 border-2 border-white shadow-md">
+                        <button class="flex items-center gap-2.5 hover:opacity-90 transition">
+                            {{-- Name KIRI dengan garis biru --}}
+                            <span class="text-gray-900 font-bold text-base group-hover:border-b-2 group-hover:border-blue-500 pb-0.5">{{ auth()->user()->name }}</span>
+                            
+                            {{-- Avatar KANAN --}}
+                            <div class="w-11 h-11 rounded-full overflow-hidden bg-[#D1D5DB] flex-shrink-0 shadow-md">
                                 @if (auth()->user()->file)
                                     <img src="{{ auth()->user()->file->file_stream }}" alt="Avatar"
                                         class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center">
-                                        <span class="text-lg font-bold text-blue-600">
-                                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                                        </span>
+                                        <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
                                     </div>
                                 @endif
                             </div>
-
-                            {{-- Name --}}
-                            <span class="text-gray-900 font-medium text-sm">{{ auth()->user()->name }}</span>
-
-                            {{-- Arrow --}}
-                            <svg class="w-4 h-4 text-gray-600 transition-transform group-hover:rotate-180" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
                         </button>
 
-                        {{-- Dropdown Menu --}}
+                        {{-- Dropdown Menu - POSISI TENGAH --}}
                         <div
-                            class="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
-                            <div class="py-1">
+                            class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.1)] border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
+                            <div class="py-1.5">
                                 <a href="{{ route('profile') }}"
-                                    class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    <span class="text-sm font-medium">Profil</span>
+                                    class="block px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:border-l-[3px] hover:border-l-blue-500 transition-all duration-150">
+                                    <span class="text-[15px] font-normal text-center block">Profil</span>
                                 </a>
-
-                                <div class="h-px bg-gray-100 mx-3"></div>
 
                                 <a href="#aktivitas"
-                                    class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span class="text-sm font-medium">Aktivitas</span>
+                                    class="block px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:border-l-[3px] hover:border-l-blue-500 transition-all duration-150">
+                                    <span class="text-[15px] font-normal text-center block">Aktivitas</span>
                                 </a>
-
-                                <div class="h-px bg-gray-100 mx-3"></div>
 
                                 <a href="#notifikasi"
-                                    class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                    </svg>
-                                    <span class="text-sm font-medium">Notifikasi</span>
+                                    class="block px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:border-l-[3px] hover:border-l-blue-500 transition-all duration-150">
+                                    <span class="text-[15px] font-normal text-center block">Notifikasi</span>
                                 </a>
 
-                                <div class="h-px bg-gray-100 mx-3"></div>
+                                <div class="h-px bg-gray-200 my-1"></div>
 
                                 <form action="{{ route('auth.logout') }}" method="POST">
                                     @csrf
                                     <button type="submit"
-                                        class="flex items-center gap-3 w-full px-5 py-3 text-red-600 hover:bg-red-50 transition-colors duration-150">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                        </svg>
-                                        <span class="text-sm font-medium">Keluar</span>
+                                        class="block w-full px-4 py-2.5 text-red-600 hover:bg-red-50 hover:border-l-[3px] hover:border-l-red-500 transition-all duration-150">
+                                        <span class="text-[15px] font-normal text-center block">Keluar</span>
                                     </button>
                                 </form>
                             </div>
