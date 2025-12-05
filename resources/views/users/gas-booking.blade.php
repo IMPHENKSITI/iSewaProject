@@ -344,9 +344,6 @@
         </div>
     </div>
 </main>
-
-<!-- Footer -->
-@include('partials.footer')
 @endsection
 
 @push('styles')

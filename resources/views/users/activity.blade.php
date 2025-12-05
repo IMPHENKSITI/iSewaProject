@@ -482,9 +482,6 @@
         </div>
     </section>
 </main>
-
-<!-- Footer -->
-@include('partials.footer')
 @endsection
 
 @push('styles')
