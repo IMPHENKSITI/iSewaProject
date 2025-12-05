@@ -166,26 +166,22 @@
 
 @push('scripts')
 <script>
-    (function() {
-        'use strict';
+    // Smooth scroll to top on page load
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Smooth scroll to top on page load
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        // Add loading state for images
-        document.addEventListener('DOMContentLoaded', () => {
-            const images = document.querySelectorAll('.product-image');
-            images.forEach(img => {
-                if (img.complete) {
-                    img.style.opacity = '1';
-                } else {
-                    img.style.opacity = '0';
-                    img.addEventListener('load', function() {
-                        this.style.opacity = '1';
-                    });
-                }
-            });
+    // Add loading state for images
+    document.addEventListener('DOMContentLoaded', () => {
+        const images = document.querySelectorAll('.product-image');
+        images.forEach(img => {
+            if (img.complete) {
+                img.style.opacity = '1';
+            } else {
+                img.style.opacity = '0';
+                img.addEventListener('load', function() {
+                    this.style.opacity = '1';
+                });
+            }
         });
-    })();
+    });
 </script>
 @endpush

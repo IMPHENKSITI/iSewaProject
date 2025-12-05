@@ -254,120 +254,92 @@
 
 @push('scripts')
 <script>
-    (function() {
-        'use strict';
+    // Quantity Selector
+    const qtyInput = document.getElementById('quantity');
+    const decreaseBtn = document.getElementById('decrease-qty');
+    const increaseBtn = document.getElementById('increase-qty');
+    const maxStock = {{ $item->stok }};
 
-        // Quantity Selector
-        const qtyInput = document.getElementById('quantity');
-        const decreaseBtn = document.getElementById('decrease-qty');
-        const increaseBtn = document.getElementById('increase-qty');
-        const maxStock = {{ $item->stok }};
-
-        if (qtyInput && decreaseBtn && increaseBtn) {
-            decreaseBtn.addEventListener('click', () => {
-                let currentValue = parseInt(qtyInput.value) || 1;
-                if (currentValue > 1) {
-                    qtyInput.value = currentValue - 1;
-                }
-            });
-
-            increaseBtn.addEventListener('click', () => {
-                let currentValue = parseInt(qtyInput.value) || 1;
-                if (currentValue < maxStock) {
-                    qtyInput.value = currentValue + 1;
-                }
-            });
-
-            // Prevent manual input outside range
-            qtyInput.addEventListener('change', () => {
-                let value = parseInt(qtyInput.value) || 1;
-                if (value < 1) qtyInput.value = 1;
-                if (value > maxStock) qtyInput.value = maxStock;
-            });
-        }
-
-        // Image Carousel
-        const carousel = document.getElementById('product-carousel');
-        const prevBtn = document.getElementById('carousel-prev');
-        const nextBtn = document.getElementById('carousel-next');
-        const indicators = document.querySelectorAll('.carousel-indicator');
-
-        if (carousel && indicators.length > 1) {
-            let currentSlide = 0;
-            const totalSlides = indicators.length;
-            let autoSlideInterval;
-            const autoSlideDelay = 5000; // 5 seconds
-
-            const goToSlide = (slideIndex) => {
-                currentSlide = slideIndex;
-                carousel.style.transform = `translateX(-${slideIndex * 100}%)`;
-
-                // Update indicators
-                indicators.forEach((indicator, index) => {
-                    if (index === slideIndex) {
-                        indicator.classList.remove('w-2.5', 'bg-white/50');
-                        indicator.classList.add('w-8', 'bg-white');
-                    } else {
-                        indicator.classList.remove('w-8', 'bg-white');
-                        indicator.classList.add('w-2.5', 'bg-white/50');
-                    }
-                });
-            };
-
-            const nextSlide = () => {
-                currentSlide = (currentSlide + 1) % totalSlides;
-                goToSlide(currentSlide);
-            };
-
-            const prevSlide = () => {
-                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-                goToSlide(currentSlide);
-            };
-
-            const startAutoSlide = () => {
-                clearInterval(autoSlideInterval);
-                autoSlideInterval = setInterval(nextSlide, autoSlideDelay);
-            };
-
-            const resetAutoSlide = () => {
-                clearInterval(autoSlideInterval);
-                startAutoSlide();
-            };
-
-            // Navigation buttons
-            if (prevBtn) {
-                prevBtn.addEventListener('click', () => {
-                    prevSlide();
-                    resetAutoSlide();
-                });
+    if (qtyInput && decreaseBtn && increaseBtn) {
+        decreaseBtn.addEventListener('click', () => {
+            let currentValue = parseInt(qtyInput.value) || 1;
+            if (currentValue > 1) {
+                qtyInput.value = currentValue - 1;
             }
+        });
 
-            if (nextBtn) {
-                nextBtn.addEventListener('click', () => {
-                    nextSlide();
-                    resetAutoSlide();
-                });
+        increaseBtn.addEventListener('click', () => {
+            let currentValue = parseInt(qtyInput.value) || 1;
+            if (currentValue < maxStock) {
+                qtyInput.value = currentValue + 1;
             }
+        });
 
-            // Indicator buttons
+        // Prevent manual input outside range
+        qtyInput.addEventListener('change', () => {
+            let value = parseInt(qtyInput.value) || 1;
+            if (value < 1) qtyInput.value = 1;
+            if (value > maxStock) qtyInput.value = maxStock;
+        });
+    }
+
+    // Image Carousel
+    const carousel = document.getElementById('product-carousel');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+
+    if (carousel && indicators.length > 1) {
+        let currentSlide = 0;
+        const totalSlides = indicators.length;
+        let autoSlideInterval;
+        const autoSlideDelay = 5000; // 5 seconds
+
+        const goToSlide = (slideIndex) => {
+            currentSlide = slideIndex;
+            carousel.style.transform = `translateX(-${slideIndex * 100}%)`;
+
+            // Update indicators
             indicators.forEach((indicator, index) => {
-                indicator.addEventListener('click', () => {
-                    goToSlide(index);
-                    resetAutoSlide();
-                });
+                if (index === slideIndex) {
+                    indicator.classList.remove('w-2.5', 'bg-white/50');
+                    indicator.classList.add('w-8', 'bg-white');
+                } else {
+                    indicator.classList.remove('w-8', 'bg-white');
+                    indicator.classList.add('w-2.5', 'bg-white/50');
+                }
             });
+        };
 
-            // Start auto-slide
+        const nextSlide = () => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            goToSlide(currentSlide);
+        };
+
+        const prevSlide = () => {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            goToSlide(currentSlide);
+        };
+
+        const startAutoSlide = () => {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = setInterval(nextSlide, autoSlideDelay);
+        };
+
+        const resetAutoSlide = () => {
+            clearInterval(autoSlideInterval);
             startAutoSlide();
+        };
 
-            // Pause on hover
-            const carouselContainer = carousel.parentElement;
-            if (carouselContainer) {
-                carouselContainer.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
-                carouselContainer.addEventListener('mouseleave', startAutoSlide);
-            }
+        // Navigation buttons
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                resetAutoSlide();
+            });
         }
 
+<<<<<<< HEAD
         // Order Button - Redirect to Booking Page
         const orderBtn = document.getElementById('order-btn');
         if (orderBtn && qtyInput) {
@@ -380,5 +352,36 @@
         // Smooth scroll to top on page load
         window.scrollTo({ top: 0, behavior: 'smooth' });
     })();
+=======
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetAutoSlide();
+            });
+        }
+
+        // Indicator buttons
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                goToSlide(index);
+                resetAutoSlide();
+            });
+        });
+
+        // Start auto-slide
+        startAutoSlide();
+
+        // Pause on hover
+        const carouselContainer = carousel.parentElement;
+        if (carouselContainer) {
+            carouselContainer.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
+            carouselContainer.addEventListener('mouseleave', startAutoSlide);
+        }
+    }
+
+    // Smooth scroll to top on page load
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+>>>>>>> 9291aa651412ef0d9bc6baefcedd947ab2483923
 </script>
 @endpush
+```

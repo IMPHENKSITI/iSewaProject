@@ -37,12 +37,14 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         $validated = $request->validate([
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'gender' => 'nullable|in:laki-laki,perempuan',
             'profile' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ], [
+            'username.required' => 'Username harus diisi',
             'name.required' => 'Nama harus diisi',
             'profile.image' => 'File harus berupa gambar',
             'profile.mimes' => 'Format file harus JPG, JPEG, atau PNG',
@@ -50,6 +52,7 @@ class ProfileController extends Controller
         ]);
 
         $user->update([
+            'username' => $validated['username'],
             'name' => $validated['name'],
             'phone' => $validated['phone'],
             'address' => $validated['address'],

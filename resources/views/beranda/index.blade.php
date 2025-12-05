@@ -560,419 +560,400 @@
     {{-- ApexCharts Library - Required Dependency --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        (function() {
-            'use strict';
+        const BerandaPage = {
+            // Initialize all components
+            init() {
+                this.initCarousel();
+                this.initCharts();
+                this.initUnitCarousel();
+            },
 
-            const BerandaPage = {
-                // Initialize all components
-                init() {
-                    this.initCarousel();
-                    this.initCharts();
-                    this.initUnitCarousel();
-                },
+            // Carousel initialization
+            initCarousel() {
+                const carouselSlides = document.getElementById('carousel-slides');
+                if (!carouselSlides) return;
 
-                // Carousel initialization
-                initCarousel() {
-                    const carouselSlides = document.getElementById('carousel-slides');
-                    if (!carouselSlides) return;
+                const prevButton = document.getElementById('carousel-prev');
+                const nextButton = document.getElementById('carousel-next');
+                // Use let so we can update the reference after cloning
+                let indicators = document.querySelectorAll('.carousel-indicator');
 
-                    const prevButton = document.getElementById('carousel-prev');
-                    const nextButton = document.getElementById('carousel-next');
-                    // Use let so we can update the reference after cloning
-                    let indicators = document.querySelectorAll('.carousel-indicator');
+                let currentSlide = 0;
+                const totalSlides = 3;
+                let autoSlideInterval;
+                const autoSlideDelay = 7000; // 7 Seconds
 
-                    let currentSlide = 0;
-                    const totalSlides = 3;
-                    let autoSlideInterval;
-                    const autoSlideDelay = 7000; // 7 Seconds
+                const goToSlide = (slideIndex) => {
+                    currentSlide = slideIndex;
+                    carouselSlides.style.transform = `translateX(-${slideIndex * 100}%)`;
 
-                    const goToSlide = (slideIndex) => {
-                        currentSlide = slideIndex;
-                        carouselSlides.style.transform = `translateX(-${slideIndex * 100}%)`;
-
-                        // indicators variable now points to the LIVE elements in DOM
-                        indicators.forEach((indicator, index) => {
-                            indicator.classList.toggle('bg-white', index === slideIndex);
-                            indicator.classList.toggle('w-8', index === slideIndex);
-                            indicator.classList.toggle('bg-white/50', index !== slideIndex);
-                            indicator.classList.toggle('w-2.5', index !== slideIndex);
-                        });
-                    };
-
-                    const nextSlide = () => {
-                        currentSlide = (currentSlide + 1) % totalSlides;
-                        goToSlide(currentSlide);
-                    };
-
-                    const prevSlide = () => {
-                        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-                        goToSlide(currentSlide);
-                    };
-
-                    const startAutoSlide = () => {
-                        clearInterval(autoSlideInterval);
-                        autoSlideInterval = setInterval(nextSlide, autoSlideDelay);
-                    };
-
-                    const resetAutoSlide = () => {
-                        clearInterval(autoSlideInterval);
-                        startAutoSlide();
-                    };
-
-                    if (nextButton) {
-                        const newNext = nextButton.cloneNode(true);
-                        nextButton.parentNode.replaceChild(newNext, nextButton);
-                        newNext.addEventListener('click', () => {
-                            nextSlide();
-                            resetAutoSlide();
-                        });
-                    }
-
-                    if (prevButton) {
-                        const newPrev = prevButton.cloneNode(true);
-                        prevButton.parentNode.replaceChild(newPrev, prevButton);
-                        newPrev.addEventListener('click', () => {
-                            prevSlide();
-                            resetAutoSlide();
-                        });
-                    }
-
-                    // Fix: Update indicators reference after cloning
-                    const newIndicatorsList = [];
+                    // indicators variable now points to the LIVE elements in DOM
                     indicators.forEach((indicator, index) => {
-                        const newIndicator = indicator.cloneNode(true);
-                        indicator.parentNode.replaceChild(newIndicator, indicator);
-                        newIndicator.addEventListener('click', () => {
-                            goToSlide(index);
-                            resetAutoSlide();
-                        });
-                        newIndicatorsList.push(newIndicator);
+                        indicator.classList.toggle('bg-white', index === slideIndex);
+                        indicator.classList.toggle('w-8', index === slideIndex);
+                        indicator.classList.toggle('bg-white/50', index !== slideIndex);
+                        indicator.classList.toggle('w-2.5', index !== slideIndex);
                     });
-                    indicators = newIndicatorsList; // Update reference to new nodes
+                };
 
+                const nextSlide = () => {
+                    currentSlide = (currentSlide + 1) % totalSlides;
+                    goToSlide(currentSlide);
+                };
+
+                const prevSlide = () => {
+                    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                    goToSlide(currentSlide);
+                };
+
+                const startAutoSlide = () => {
+                    clearInterval(autoSlideInterval);
+                    autoSlideInterval = setInterval(nextSlide, autoSlideDelay);
+                };
+
+                const resetAutoSlide = () => {
+                    clearInterval(autoSlideInterval);
                     startAutoSlide();
-                },
+                };
 
-                // Charts initialization
-                initCharts() {
-                    if (typeof ApexCharts === 'undefined') return;
+                if (nextButton) {
+                    const newNext = nextButton.cloneNode(true);
+                    nextButton.parentNode.replaceChild(newNext, nextButton);
+                    newNext.addEventListener('click', () => {
+                        nextSlide();
+                        resetAutoSlide();
+                    });
+                }
 
-                    this.initKinerjaChart();
-                    this.initUnitChart();
-                },
+                if (prevButton) {
+                    const newPrev = prevButton.cloneNode(true);
+                    prevButton.parentNode.replaceChild(newPrev, prevButton);
+                    newPrev.addEventListener('click', () => {
+                        prevSlide();
+                        resetAutoSlide();
+                    });
+                }
 
-                // Kinerja BUMDES Chart
-                initKinerjaChart() {
-                    const container = document.querySelector("#kinerjaChart");
-                    if (!container) return;
+                // Fix: Update indicators reference after cloning
+                const newIndicatorsList = [];
+                indicators.forEach((indicator, index) => {
+                    const newIndicator = indicator.cloneNode(true);
+                    indicator.parentNode.replaceChild(newIndicator, indicator);
+                    newIndicator.addEventListener('click', () => {
+                        goToSlide(index);
+                        resetAutoSlide();
+                    });
+                    newIndicatorsList.push(newIndicator);
+                });
+                indicators = newIndicatorsList; // Update reference to new nodes
 
-                    container.innerHTML = '';
+                startAutoSlide();
+            },
 
-                    const options = {
-                        series: [{
-                            name: 'Kinerja',
-                            data: [25, 20.8, 17.6, 20.2, 19.8, 22.5]
-                        }],
-                        chart: {
-                            type: 'area',
-                            height: 280,
-                            toolbar: {
-                                show: false
-                            },
-                            zoom: {
-                                enabled: false
-                            },
-                            background: 'transparent'
-                        },
-                        colors: ['#f59e0b'],
-                        stroke: {
-                            curve: 'smooth',
-                            width: 2.5
-                        },
-                        fill: {
-                            type: 'gradient',
-                            gradient: {
-                                shadeIntensity: 1,
-                                opacityFrom: 0.45,
-                                opacityTo: 0.05,
-                                stops: [0, 90, 100]
-                            }
-                        },
-                        dataLabels: {
-                            enabled: false
-                        },
-                        markers: {
-                            size: 0,
-                            hover: {
-                                size: 5
-                            }
-                        },
-                        xaxis: {
-                            categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
-                            labels: {
-                                style: {
-                                    colors: '#374151',
-                                    fontSize: '12px',
-                                    fontWeight: 500
-                                }
-                            },
-                            axisBorder: {
-                                show: false
-                            },
-                            axisTicks: {
-                                show: false
-                            }
-                        },
-                        yaxis: {
-                            min: 15,
-                            max: 25,
-                            tickAmount: 5,
-                            labels: {
-                                formatter: (val) => val.toFixed(1),
-                                style: {
-                                    colors: '#6b7280',
-                                    fontSize: '11px'
-                                }
-                            }
-                        },
-                        grid: {
-                            borderColor: '#e5e7eb',
-                            strokeDashArray: 3,
-                            xaxis: {
-                                lines: {
-                                    show: true
-                                }
-                            },
-                            yaxis: {
-                                lines: {
-                                    show: true
-                                }
-                            },
-                            padding: {
-                                top: 0,
-                                right: 5,
-                                bottom: 0,
-                                left: 5
-                            }
-                        },
-                        tooltip: {
-                            y: {
-                                formatter: (val) => val.toFixed(1) + 'Jt'
-                            }
-                        }
-                    };
+            // Charts initialization
+            initCharts() {
+                if (typeof ApexCharts === 'undefined') return;
 
-                    const chart = new ApexCharts(container, options);
-                    chart.render();
-                },
+                this.initKinerjaChart();
+                this.initUnitChart();
+            },
 
-                // Unit Populer Chart
-                initUnitChart() {
-                    const container = document.querySelector("#unitChart");
-                    if (!container) return;
+            // Kinerja BUMDES Chart
+            initKinerjaChart() {
+                const container = document.querySelector("#kinerjaChart");
+                if (!container) return;
 
-                    container.innerHTML = '';
+                container.innerHTML = '';
 
-                    const options = {
-                        series: [{
-                                name: 'Unit Penyewaan Alat',
-                                data: [20, 15, 30, 22, 17]
-                            },
-                            {
-                                name: 'Unit Penjualan Gas',
-                                data: [16, 17, 18, 20, 10]
-                            }
-                        ],
-                        chart: {
-                            type: 'bar',
-                            height: 280,
-                            toolbar: {
-                                show: false
-                            },
-                            stacked: false,
-                            background: 'transparent'
-                        },
-                        colors: ['#f59e0b', '#3b82f6'],
-                        plotOptions: {
-                            bar: {
-                                horizontal: false,
-                                columnWidth: '50%',
-                                borderRadius: 4,
-                                dataLabels: {
-                                    position: 'top'
-                                }
-                            }
-                        },
-                        dataLabels: {
-                            enabled: false
-                        },
-                        xaxis: {
-                            categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
-                            labels: {
-                                style: {
-                                    colors: '#374151',
-                                    fontSize: '12px',
-                                    fontWeight: 500
-                                }
-                            },
-                            axisBorder: {
-                                show: false
-                            },
-                            axisTicks: {
-                                show: false
-                            }
-                        },
-                        yaxis: {
-                            min: 0,
-                            max: 35,
-                            tickAmount: 7,
-                            labels: {
-                                style: {
-                                    colors: '#6b7280',
-                                    fontSize: '11px'
-                                }
-                            }
-                        },
-                        grid: {
-                            borderColor: '#e5e7eb',
-                            strokeDashArray: 3,
-                            padding: {
-                                top: 0,
-                                right: 10,
-                                bottom: 0,
-                                left: 5
-                            }
-                        },
-                        legend: {
+                const options = {
+                    series: [{
+                        name: 'Kinerja',
+                        data: [25, 20.8, 17.6, 20.2, 19.8, 22.5]
+                    }],
+                    chart: {
+                        type: 'area',
+                        height: 280,
+                        toolbar: {
                             show: false
                         },
-                        tooltip: {
-                            shared: true,
-                            intersect: false
+                        zoom: {
+                            enabled: false
+                        },
+                        background: 'transparent'
+                    },
+                    colors: ['#f59e0b'],
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2.5
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.45,
+                            opacityTo: 0.05,
+                            stops: [0, 90, 100]
                         }
-                    };
-
-                    const chart = new ApexCharts(container, options);
-                    chart.render();
-                },
-
-                // Unit Carousel
-                initUnitCarousel() {
-                    const cards = Array.from(document.querySelectorAll('.unit-card'));
-                    if (cards.length === 0) return;
-
-                    const titleElement = document.getElementById('unit-title');
-                    const nextBtn = document.getElementById('unit-next');
-                    const prevBtn = document.getElementById('unit-prev');
-
-                    const stateClasses = ['state-0', 'state-1', 'state-2', 'state-3'];
-                    let positions = [1, 2, 3, 0];
-
-                    let autoSlideInterval;
-                    const autoSlideDelay = 3000; // 3 seconds delay
-
-                    const updateCarousel = () => {
-                        cards.forEach((card, index) => {
-                            card.classList.remove(...stateClasses);
-                            const currentPos = positions[index];
-                            card.classList.add(stateClasses[currentPos]);
-
-                            if (currentPos === 1 && titleElement) {
-                                titleElement.style.opacity = '0';
-                                setTimeout(() => {
-                                    titleElement.textContent = card.getAttribute('data-name');
-                                    titleElement.style.opacity = '1';
-                                }, 200);
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    markers: {
+                        size: 0,
+                        hover: {
+                            size: 5
+                        }
+                    },
+                    xaxis: {
+                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
+                        labels: {
+                            style: {
+                                colors: '#374151',
+                                fontSize: '12px',
+                                fontWeight: 500
                             }
-                        });
-                    };
-
-                    const handleNext = () => {
-                        positions = positions.map(pos => (pos - 1 < 0 ? 3 : pos - 1));
-                        updateCarousel();
-                    };
-
-                    const handlePrev = () => {
-                        positions = positions.map(pos => (pos + 1 > 3 ? 0 : pos + 1));
-                        updateCarousel();
-                    };
-
-                    const startAutoSlide = () => {
-                        clearInterval(autoSlideInterval);
-                        autoSlideInterval = setInterval(handleNext, autoSlideDelay);
-                    };
-
-                    const resetAutoSlide = () => {
-                        clearInterval(autoSlideInterval);
-                        startAutoSlide();
-                    };
-
-                    if (nextBtn) {
-                        const newNext = nextBtn.cloneNode(true);
-                        nextBtn.parentNode.replaceChild(newNext, nextBtn);
-                        newNext.addEventListener('click', () => {
-                            handleNext();
-                            resetAutoSlide();
-                        });
-                        // Fix: Ensure z-index is high enough
-                        newNext.parentElement.classList.remove('z-60');
-                        newNext.parentElement.classList.add('z-[60]');
+                        },
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        min: 15,
+                        max: 25,
+                        tickAmount: 5,
+                        labels: {
+                            formatter: (val) => val.toFixed(1),
+                            style: {
+                                colors: '#6b7280',
+                                fontSize: '11px'
+                            }
+                        }
+                    },
+                    grid: {
+                        borderColor: '#e5e7eb',
+                        strokeDashArray: 3,
+                        xaxis: {
+                            lines: {
+                                show: true
+                            }
+                        },
+                        yaxis: {
+                            lines: {
+                                show: true
+                            }
+                        },
+                        padding: {
+                            top: 0,
+                            right: 5,
+                            bottom: 0,
+                            left: 5
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: (val) => val.toFixed(1) + 'Jt'
+                        }
                     }
-                    if (prevBtn) {
-                        const newPrev = prevBtn.cloneNode(true);
-                        prevBtn.parentNode.replaceChild(newPrev, prevBtn);
-                        newPrev.addEventListener('click', () => {
-                            handlePrev();
-                            resetAutoSlide();
-                        });
-                    }
+                };
 
-                    // Pause on hover (optional but good UX)
-                    const container = document.getElementById('unit-carousel-container');
-                    if (container) {
-                        container.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
-                        container.addEventListener('mouseleave', startAutoSlide);
-                    }
+                const chart = new ApexCharts(container, options);
+                chart.render();
+            },
 
+            // Unit Populer Chart
+            initUnitChart() {
+                const container = document.querySelector("#unitChart");
+                if (!container) return;
+
+                container.innerHTML = '';
+
+                const options = {
+                    series: [{
+                            name: 'Unit Penyewaan Alat',
+                            data: [20, 15, 30, 22, 17]
+                        },
+                        {
+                            name: 'Unit Penjualan Gas',
+                            data: [16, 17, 18, 20, 10]
+                        }
+                    ],
+                    chart: {
+                        type: 'bar',
+                        height: 280,
+                        toolbar: {
+                            show: false
+                        },
+                        stacked: false,
+                        background: 'transparent'
+                    },
+                    colors: ['#f59e0b', '#3b82f6'],
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '50%',
+                            borderRadius: 4,
+                            dataLabels: {
+                                position: 'top'
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    xaxis: {
+                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
+                        labels: {
+                            style: {
+                                colors: '#374151',
+                                fontSize: '12px',
+                                fontWeight: 500
+                            }
+                        },
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        min: 0,
+                        max: 35,
+                        tickAmount: 7,
+                        labels: {
+                            style: {
+                                colors: '#6b7280',
+                                fontSize: '11px'
+                            }
+                        }
+                    },
+                    grid: {
+                        borderColor: '#e5e7eb',
+                        strokeDashArray: 3,
+                        padding: {
+                            top: 0,
+                            right: 10,
+                            bottom: 0,
+                            left: 5
+                        }
+                    },
+                    legend: {
+                        show: false
+                    },
+                    tooltip: {
+                        shared: true,
+                        intersect: false
+                    }
+                };
+
+                const chart = new ApexCharts(container, options);
+                chart.render();
+            },
+
+            // Unit Carousel
+            initUnitCarousel() {
+                const cards = Array.from(document.querySelectorAll('.unit-card'));
+                if (cards.length === 0) return;
+
+                const titleElement = document.getElementById('unit-title');
+                const nextBtn = document.getElementById('unit-next');
+                const prevBtn = document.getElementById('unit-prev');
+
+                const stateClasses = ['state-0', 'state-1', 'state-2', 'state-3'];
+                let positions = [1, 2, 3, 0];
+
+                let autoSlideInterval;
+                const autoSlideDelay = 3000; // 3 seconds delay
+
+                const updateCarousel = () => {
+                    cards.forEach((card, index) => {
+                        card.classList.remove(...stateClasses);
+                        const currentPos = positions[index];
+                        card.classList.add(stateClasses[currentPos]);
+
+                        if (currentPos === 1 && titleElement) {
+                            titleElement.style.opacity = '0';
+                            setTimeout(() => {
+                                titleElement.textContent = card.getAttribute('data-name');
+                                titleElement.style.opacity = '1';
+                            }, 200);
+                        }
+                    });
+                };
+
+                const handleNext = () => {
+                    positions = positions.map(pos => (pos - 1 < 0 ? 3 : pos - 1));
                     updateCarousel();
+                };
+
+                const handlePrev = () => {
+                    positions = positions.map(pos => (pos + 1 > 3 ? 0 : pos + 1));
+                    updateCarousel();
+                };
+
+                const startAutoSlide = () => {
+                    clearInterval(autoSlideInterval);
+                    autoSlideInterval = setInterval(handleNext, autoSlideDelay);
+                };
+
+                const resetAutoSlide = () => {
+                    clearInterval(autoSlideInterval);
                     startAutoSlide();
+                };
 
-                    // Add click handler for rental equipment cards
-                    const rentalCards = document.querySelectorAll('.unit-card[data-name="Unit Penyewaan Alat"]');
-                    rentalCards.forEach(card => {
-                        card.style.cursor = 'pointer';
-                        card.addEventListener('click', () => {
-                            window.location.href = "{{ route('rental.equipment') }}";
-                        });
+                if (nextBtn) {
+                    const newNext = nextBtn.cloneNode(true);
+                    nextBtn.parentNode.replaceChild(newNext, nextBtn);
+                    newNext.addEventListener('click', () => {
+                        handleNext();
+                        resetAutoSlide();
                     });
-
-                    // Add click handler for gas sales cards
-                    const gasCards = document.querySelectorAll('.unit-card[data-name="Unit Penjualan Gas"]');
-                    gasCards.forEach(card => {
-                        card.style.cursor = 'pointer';
-                        card.addEventListener('click', () => {
-                            window.location.href = "{{ route('gas.sales') }}";
-                        });
-                    });
-                },
-
-            };
-
-            // Initialize on DOM ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => BerandaPage.init());
-            } else {
-                BerandaPage.init();
-            }
-
-            // Re-initialize when content loaded via AJAX
-            document.addEventListener('ajaxContentLoaded', (e) => {
-                // Only initialize if we're on beranda page
-                if (e.detail.url.includes('beranda') || e.detail.url === '/') {
-                    setTimeout(() => BerandaPage.init(), 100);
+                    // Fix: Ensure z-index is high enough
+                    newNext.parentElement.classList.remove('z-60');
+                    newNext.parentElement.classList.add('z-[60]');
                 }
-            });
+                if (prevBtn) {
+                    const newPrev = prevBtn.cloneNode(true);
+                    prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+                    newPrev.addEventListener('click', () => {
+                        handlePrev();
+                        resetAutoSlide();
+                    });
+                }
 
-        })();
+                // Pause on hover (optional but good UX)
+                const container = document.getElementById('unit-carousel-container');
+                if (container) {
+                    container.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
+                    container.addEventListener('mouseleave', startAutoSlide);
+                }
+
+                updateCarousel();
+                startAutoSlide();
+
+                // Add click handler for rental equipment cards
+                const rentalCards = document.querySelectorAll('.unit-card[data-name="Unit Penyewaan Alat"]');
+                rentalCards.forEach(card => {
+                    card.style.cursor = 'pointer';
+                    card.addEventListener('click', () => {
+                        window.location.href = "{{ route('rental.equipment') }}";
+                    });
+                });
+
+                // Add click handler for gas sales cards
+                const gasCards = document.querySelectorAll('.unit-card[data-name="Unit Penjualan Gas"]');
+                gasCards.forEach(card => {
+                    card.style.cursor = 'pointer';
+                    card.addEventListener('click', () => {
+                        window.location.href = "{{ route('gas.sales') }}";
+                    });
+                });
+            },
+        };
+        // Initialize
+        BerandaPage.init();
     </script>
 @endpush
