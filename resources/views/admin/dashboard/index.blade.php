@@ -6,7 +6,7 @@
             <!-- Welcome Card & Performance Chart -->
             <div class="row mb-2">
                 <div class="col-lg-5">
-                    <div class="card animate-fade-in">
+                <div class="card">
                         <div class="d-flex align-items-end row">
                             <div class="col-sm-10">
                                 <div class="card-body p-3">
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="col-lg-7">
-                    <div class="card animate-fade-in">
+                    <div class="card">
                         <div class="card-body">
                             <div
                                 class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
@@ -59,7 +59,7 @@
             <!-- Unit Cards - Full Width -->
             <div class="row mb-4">
                 <div class="col-md-6 mb-3">
-                    <div class="card unit-card warning hover-lift animate-on-scroll slide-in-left"
+                    <div class="card unit-card warning hover-lift"
                         onclick="window.location='{{ route('admin.unit.penyewaan.index') }}'">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center">
@@ -76,7 +76,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <div class="card unit-card danger hover-lift animate-on-scroll slide-in-right"
+                    <div class="card unit-card danger hover-lift"
                         onclick="window.location='{{ route('admin.unit.penjualan_gas.index') }}'">
                         <div class="card-body p-4">
                             <div class="d-flex align-items-center">
@@ -109,130 +109,69 @@
                                             Notifikasi Permintaan
                                         </h5>
                                     </div>
-                                    <span class="badge bg-primary rounded-pill px-3">3 Baru</span>
+                                    <span class="badge bg-primary rounded-pill px-3">{{ $totalPending ?? 0 }} Baru</span>
                                 </div>
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
                                     <table class="table table-hover mb-0">
                                         <tbody>
-
-                                            <!-- Notification 1 -->
-                                            <tr class="notification-item" id="notification1">
-                                                <td class="ps-4" style="width: 60px;">
-                                                    <div class="avatar">
-                                                        <img src="{{ asset('Admin/img/avatars/1.png') }}" alt="User A"
-                                                            class="rounded-circle"
-                                                            style="width: 48px; height: 48px; object-fit: cover;">
-                                                    </div>
-                                                </td>
-                                                <td class="py-3">
-                                                    <div class="mb-1">
-                                                        <span class="badge bg-label-warning me-2">
-                                                            <i class=""></i>Penyewaan Alat
-                                                        </span>
-                                                        <small class="text-muted">2 jam lalu</small>
-                                                    </div>
-                                                    <h6 class="mb-1 fw-semibold">User A mengajukan penyewaan Tenda Komplit
-                                                    </h6>
-                                                    <p class="text-muted mb-0 small">Untuk acara pernikahan tanggal 15
-                                                        November 2025</p>
-                                                </td>
-                                                <td class="text-end pe-4" style="width: 280px;">
-                                                    <div class="d-flex gap-2 justify-content-end">
-                                                        <button class="btn btn-sm btn-outline-info"
-                                                            onclick="showDetails(1, 'Penyewaan Tenda Komplit', 'User A', 'Untuk acara pernikahan tanggal 15 November 2025', 'Penyewaan Alat')">
-                                                            <i class="bx bx-show me-1"></i>Detail
-                                                        </button>
-                                                        <button class="btn btn-sm btn-success"
-                                                            onclick="acceptRequest(1, 'User A', 'Tenda Komplit')">
-                                                            <i class="bx bx-check me-1"></i>Terima
-                                                        </button>
-                                                        <button class="btn btn-sm btn-danger"
-                                                            onclick="rejectRequest(1, 'User A', 'Tenda Komplit')">
-                                                            <i class="bx bx-x me-1"></i>Tolak
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
-                                            <!-- Notification 2 -->
-                                            <tr class="notification-item" id="notification2">
-                                                <td class="ps-4" style="width: 60px;">
-                                                    <div class="avatar">
-                                                        <img src="{{ asset('Admin/img/avatars/2.png') }}"
-                                                            alt="Budi Santoso" class="rounded-circle"
-                                                            style="width: 48px; height: 48px; object-fit: cover;">
-                                                    </div>
-                                                </td>
-                                                <td class="py-3">
-                                                    <div class="mb-1">
-                                                        <span class="badge bg-label-danger me-2">
-                                                            <i class=></i>Penjualan Gas
-                                                        </span>
-                                                        <small class="text-muted">5 jam lalu</small>
-                                                    </div>
-                                                    <h6 class="mb-1 fw-semibold">Budi Santoso memesan Gas LPG 3 Kg</h6>
-                                                    <p class="text-muted mb-0 small">Pemesanan 5 tabung untuk kebutuhan
-                                                        usaha warung</p>
-                                                </td>
-                                                <td class="text-end pe-4" style="width: 280px;">
-                                                    <div class="d-flex gap-2 justify-content-end">
-                                                        <button class="btn btn-sm btn-outline-info"
-                                                            onclick="showDetails(2, 'Penjualan Gas LPG 3 Kg', 'Budi Santoso', 'Pemesanan 5 tabung untuk kebutuhan usaha warung', 'Penjualan Gas')">
-                                                            <i class="bx bx-show me-1"></i>Detail
-                                                        </button>
-                                                        <button class="btn btn-sm btn-success"
-                                                            onclick="acceptRequest(2, 'Budi Santoso', 'Gas LPG 3 Kg')">
-                                                            <i class="bx bx-check me-1"></i>Terima
-                                                        </button>
-                                                        <button class="btn btn-sm btn-danger"
-                                                            onclick="rejectRequest(2, 'Budi Santoso', 'Gas LPG 3 Kg')">
-                                                            <i class="bx bx-x me-1"></i>Tolak
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
-                                            <!-- Notification 3 -->
-                                            <tr class="notification-item" id="notification3">
-                                                <td class="ps-4" style="width: 60px;">
-                                                    <div class="avatar">
-                                                        <img src="{{ asset('Admin/img/avatars/3.png') }}"
-                                                            alt="Siti Aminah" class="rounded-circle"
-                                                            style="width: 48px; height: 48px; object-fit: cover;">
-                                                    </div>
-                                                </td>
-                                                <td class="py-3">
-                                                    <div class="mb-1">
-                                                        <span class="badge bg-label-warning me-2">
-                                                            <i class=></i>Penyewaan Alat
-                                                        </span>
-                                                        <small class="text-muted">1 hari lalu</small>
-                                                    </div>
-                                                    <h6 class="mb-1 fw-semibold">Siti Aminah mengajukan penyewaan Sound
-                                                        System</h6>
-                                                    <p class="text-muted mb-0 small">Untuk acara pengajian 17 Agustusan di
-                                                        RT 05</p>
-                                                </td>
-                                                <td class="text-end pe-4" style="width: 280px;">
-                                                    <div class="d-flex gap-2 justify-content-end">
-                                                        <button class="btn btn-sm btn-outline-info"
-                                                            onclick="showDetails(3, 'Penyewaan Sound System', 'Siti Aminah', 'Untuk acara pengajian 17 Agustusan di RT 05', 'Penyewaan Alat')">
-                                                            <i class="bx bx-show me-1"></i>Detail
-                                                        </button>
-                                                        <button class="btn btn-sm btn-success"
-                                                            onclick="acceptRequest(3, 'Siti Aminah', 'Sound System')">
-                                                            <i class="bx bx-check me-1"></i>Terima
-                                                        </button>
-                                                        <button class="btn btn-sm btn-danger"
-                                                            onclick="rejectRequest(3, 'Siti Aminah', 'Sound System')">
-                                                            <i class="bx bx-x me-1"></i>Tolak
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
+                                            @forelse($latestRequests as $request)
+                                                <tr class="notification-item" id="notification-{{ $request->id }}-{{ $request->type }}">
+                                                    <td class="ps-4" style="width: 60px;">
+                                                        <div class="avatar avatar-md">
+                                                            @if($request->user->avatar)
+                                                                <img src="{{ asset('storage/' . $request->user->avatar) }}" alt="{{ $request->user->name }}"
+                                                                    class="rounded-circle w-100 h-100" style="object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                            @else
+                                                                <span class="avatar-initial rounded-circle bg-label-primary d-flex align-items-center justify-content-center fw-bold">{{ substr($request->user->name, 0, 1) }}</span>
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3">
+                                                        <div class="mb-1">
+                                                            <span class="badge {{ $request->type == 'rental' ? 'bg-label-warning' : 'bg-label-info' }} me-2">
+                                                                @if($request->type == 'rental') 
+                                                                    <i class="bx bx-wrench me-1"></i>Penyewaan Alat
+                                                                @else
+                                                                    <i class="bx bxs-gas-pump me-1"></i>Penjualan Gas
+                                                                @endif
+                                                            </span>
+                                                            <small class="text-muted">{{ $request->created_at->diffForHumans() }}</small>
+                                                        </div>
+                                                        <h6 class="mb-1 fw-semibold">{{ $request->user->name }} {{ $request->type == 'rental' ? 'mengajukan penyewaan' : 'memesan' }} {{ $request->item_name }}</h6>
+                                                        <p class="text-muted mb-0 small">
+                                                            @if($request->type == 'rental')
+                                                                Durasi: {{ $request->days_count }} hari • Total: Rp {{ number_format($request->total_amount, 0, ',', '.') }}
+                                                            @else
+                                                                Jumlah: {{ $request->quantity }} tabung • Total: Rp {{ number_format($request->total_amount, 0, ',', '.') }}
+                                                            @endif
+                                                        </p>
+                                                    </td>
+                                                    <td class="text-end pe-4" style="width: 280px;">
+                                                        <div class="d-flex gap-2 justify-content-end">
+                                                            <a href="{{ route('admin.aktivitas.permintaan-pengajuan.show', [$request->id, $request->type]) }}" 
+                                                               class="btn btn-sm btn-outline-info">
+                                                                <i class="bx bx-show me-1"></i>Detail
+                                                            </a>
+                                                            <button class="btn btn-sm btn-success"
+                                                                onclick="acceptRequest({{ $request->id }}, '{{ $request->type }}', '{{ $request->user->name }}')">
+                                                                <i class="bx bx-check me-1"></i>Terima
+                                                            </button>
+                                                            <button class="btn btn-sm btn-danger"
+                                                                onclick="rejectRequest({{ $request->id }}, '{{ $request->type }}', '{{ $request->user->name }}')">
+                                                                <i class="bx bx-x me-1"></i>Tolak
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="3" class="text-center py-5">
+                                                        <div class="text-muted">Tidak ada notifikasi baru</div>
+                                                    </td>
+                                                </tr>
+                                            @endforelse
                                         </tbody>
                                     </table>
                                 </div>
@@ -240,7 +179,7 @@
 
                             <!-- Footer -->
                             <div class="card-footer bg-white text-center py-3 border-top">
-                                <a href="#" class="text-primary fw-medium text-decoration-none">
+                                <a href="{{ route('admin.aktivitas.permintaan-pengajuan.index') }}" class="text-primary fw-medium text-decoration-none">
                                     Lihat Semua Notifikasi
                                     <i class="bx bx-chevron-right"></i>
                                 </a>
@@ -371,60 +310,8 @@
                         }
                     });
 
-                    // Fungsi untuk menampilkan detail permintaan
-                    function showDetails(id, item, user, description, type) {
-                        console.log('showDetails called:', {id, item, user, description, type});
-                        
-                        if (typeof Swal === 'undefined') {
-                            alert('SweetAlert2 belum dimuat. Silakan refresh halaman.');
-                            return;
-                        }
-
-                        Swal.fire({
-                            title: '<strong>Detail Permintaan</strong>',
-                            html: `
-                                <div class="text-start p-3">
-                                    <div class="mb-4 text-center">
-                                        <span class="badge bg-primary fs-6 px-4 py-2 rounded-pill">${type}</span>
-                                    </div>
-                                    <div class="mb-3 pb-3 border-bottom">
-                                        <small class="text-muted d-block text-uppercase fw-bold mb-2" style="letter-spacing: 0.5px;">👤 Pengguna</small>
-                                        <h5 class="mb-0 text-dark">${user}</h5>
-                                    </div>
-                                    <div class="mb-3 pb-3 border-bottom">
-                                        <small class="text-muted d-block text-uppercase fw-bold mb-2" style="letter-spacing: 0.5px;">📦 Item</small>
-                                        <h5 class="mb-0 text-dark">${item}</h5>
-                                    </div>
-                                    <div class="mb-0">
-                                        <small class="text-muted d-block text-uppercase fw-bold mb-2" style="letter-spacing: 0.5px;">📝 Keterangan</small>
-                                        <p class="mb-0 text-secondary" style="line-height: 1.6;">${description}</p>
-                                    </div>
-                                </div>
-                            `,
-                            icon: 'info',
-                            iconColor: '#696cff',
-                            showCloseButton: true,
-                            showConfirmButton: false,
-                            width: '600px',
-                            padding: '2rem',
-                            customClass: {
-                                popup: 'rounded-4 shadow-lg',
-                                title: 'text-primary mb-3',
-                                htmlContainer: 'text-start'
-                            },
-                            showClass: {
-                                popup: 'animate__animated animate__fadeInDown animate__faster'
-                            },
-                            hideClass: {
-                                popup: 'animate__animated animate__fadeOutUp animate__faster'
-                            }
-                        });
-                    }
-
                     // Fungsi untuk menerima permintaan
-                    function acceptRequest(id, userName, itemName) {
-                        console.log('acceptRequest called:', {id, userName, itemName});
-                        
+                    function acceptRequest(id, type, userName) {
                         if (typeof Swal === 'undefined') {
                             alert('SweetAlert2 belum dimuat. Silakan refresh halaman.');
                             return;
@@ -455,60 +342,51 @@
                             buttonsStyling: false,
                             reverseButtons: true,
                             width: '550px',
-                            padding: '2.5rem',
-                            showClass: {
-                                popup: 'animate__animated animate__zoomIn animate__faster'
-                            },
-                            hideClass: {
-                                popup: 'animate__animated animate__zoomOut animate__faster'
-                            }
+                            padding: '2.5rem'
                         }).then((result) => {
-                            console.log('Accept modal result:', result);
-                            
                             if (result.isConfirmed) {
-                                // Proses penerimaan
-                                const notificationElement = document.getElementById(`notification${id}`);
-                                
-                                if (!notificationElement) {
-                                    console.error('Notification element not found:', `notification${id}`);
-                                    return;
-                                }
-                                
-                                const buttons = notificationElement.querySelectorAll('button');
+                                // Construct URL manually
+                                const url = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${id}/${type}/approve`;
 
-                                // Disable semua tombol dan tampilkan loading
-                                buttons.forEach(btn => {
-                                    btn.disabled = true;
-                                    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-                                });
-
-                                // Simulasi proses (ganti dengan AJAX ke server)
-                                setTimeout(() => {
-                                    // Tampilkan toast sukses
-                                    Toast.fire({
-                                        icon: 'success',
-                                        title: 'Berhasil!',
-                                        text: `Permintaan dari ${userName} telah diterima.`
+                                // Show loading
+                                const notificationElement = document.getElementById(`notification-${id}-${type}`);
+                                if (notificationElement) {
+                                    const buttons = notificationElement.querySelectorAll('button, a');
+                                    buttons.forEach(btn => {
+                                        if(btn.tagName === 'BUTTON') {
+                                            btn.disabled = true;
+                                            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+                                        } else {
+                                            btn.classList.add('disabled');
+                                        }
                                     });
+                                }
 
-                                    // Animasi hapus notifikasi
-                                    notificationElement.style.transition = 'all 0.3s ease';
-                                    notificationElement.style.opacity = '0';
-                                    notificationElement.style.transform = 'translateX(100%)';
-
-                                    setTimeout(() => {
-                                        notificationElement.remove();
-                                        updateNotificationCount();
-                                    }, 300);
-                                }, 1000);
+                                fetch(url, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(response => {
+                                    if(response.redirected) {
+                                        window.location.href = response.url;
+                                    } else {
+                                        // Reload page to reflect changes
+                                        location.reload(); 
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+                                });
                             }
                         });
                     }
 
                     // Fungsi untuk menolak permintaan
-                    function rejectRequest(id, userName, itemName) {
-                        console.log('rejectRequest called:', {id, userName, itemName});
-                        
+                    function rejectRequest(id, type, userName) {
                         if (typeof Swal === 'undefined') {
                             alert('SweetAlert2 belum dimuat. Silakan refresh halaman.');
                             return;
@@ -550,56 +428,39 @@
                             reverseButtons: true,
                             width: '600px',
                             padding: '2.5rem',
-                            showClass: {
-                                popup: 'animate__animated animate__shakeX animate__faster'
-                            },
-                            hideClass: {
-                                popup: 'animate__animated animate__fadeOut animate__faster'
-                            },
                             preConfirm: () => {
                                 return document.getElementById('rejectReason').value;
                             }
                         }).then((result) => {
-                            console.log('Reject modal result:', result);
-                            
                             if (result.isConfirmed) {
                                 const reason = result.value;
+                                const url = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${id}/${type}/reject`;
                                 
-                                // Proses penolakan
-                                const notificationElement = document.getElementById(`notification${id}`);
-                                
-                                if (!notificationElement) {
-                                    console.error('Notification element not found:', `notification${id}`);
-                                    return;
-                                }
-                                
-                                const buttons = notificationElement.querySelectorAll('button');
-
-                                // Disable semua tombol dan tampilkan loading
-                                buttons.forEach(btn => {
-                                    btn.disabled = true;
-                                    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-                                });
-
-                                // Simulasi proses (ganti dengan AJAX ke server)
-                                setTimeout(() => {
-                                    // Tampilkan toast sukses
-                                    Toast.fire({
+                                fetch(url, {
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ reason: reason })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    Swal.fire({
                                         icon: 'success',
                                         title: 'Berhasil!',
-                                        text: `Permintaan dari ${userName} telah ditolak.`
+                                        text: `Permintaan dari ${userName} telah ditolak.`,
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        location.reload();
                                     });
-
-                                    // Animasi hapus notifikasi
-                                    notificationElement.style.transition = 'all 0.3s ease';
-                                    notificationElement.style.opacity = '0';
-                                    notificationElement.style.transform = 'translateX(-100%)';
-
-                                    setTimeout(() => {
-                                        notificationElement.remove();
-                                        updateNotificationCount();
-                                    }, 300);
-                                }, 1000);
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    // Fallback reload if JSON parse fails (some controllers redirect)
+                                    location.reload(); 
+                                });
                             }
                         });
                     }
@@ -635,7 +496,7 @@
                         <div class="dashboard-stats-row">
                             <!-- Left Column: Pendapatan dan Pengeluaran -->
                             <div class="dashboard-stats-col">
-                                <div class="card animate-fade-in">
+                                <div class="card">
                                     <div class="card-header">
                                         <h5 class="card-title mb-0">Pendapatan dan Pengeluaran</h5>
                                     </div>
@@ -664,13 +525,13 @@
 
                             <!-- Middle Column: Grafik Transaksi -->
                             <div class="dashboard-stats-col">
-                                <div class="card animate-fade-in">
+                                <div class="card">
                                     <div class="card-header">
                                         <h5 class="card-title mb-0">Perbandingan Transaksi</h5>
                                     </div>
                                     <div class="card-body d-flex flex-column justify-content-center align-items-center"
                                         style="min-height: 400px; padding: 2rem;">
-                                        <h2 class="mb-2">500</h2>
+                                        <h2 class="mb-2">{{ $rentalCount + $gasCount }}</h2>
                                         <span class="text-muted mb-4">Total Transaksi</span>
                                         <!-- Large donut chart will be rendered here by inline script -->
                                         <div id="transactionDonutChart" style="width: 100%; max-width: 300px;"></div>
@@ -933,7 +794,6 @@
             <div class="content-backdrop fade"></div>
 
         <!-- SCRIPT LANGSUNG DI SINI -->
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script>
             // Tunggu sampai halaman selesai load
             window.addEventListener('load', function() {
@@ -1060,19 +920,18 @@
                 const orderChartElement = document.querySelector("#transactionDonutChart");
                 if (orderChartElement) {
                     var optionsOrder = {
-                        series: [58, 82],
+                        series: [{{ $rentalCount ?? 0 }}, {{ $gasCount ?? 0 }}],
                         chart: {
                             type: "donut",
                             width: 300,
                             height: 300,
                             events: {
                                 dataPointSelection: function(event, chartContext, config) {
-                                    // Prevent default behavior on click
                                     event.preventDefault();
                                 }
                             }
                         },
-                        labels: ["Unit Penyewaan Alat 58 Transaksi", "Gas 82 Transaksi"],
+                        labels: ["Unit Penyewaan Alat {{ $rentalCount ?? 0 }} Transaksi", "Gas {{ $gasCount ?? 0 }} Transaksi"],
                         colors: ["#FFC107", "#EA5455"],
                         legend: {
                             show: true,
@@ -1109,7 +968,7 @@
                                             color: "#5e5873",
                                             offsetY: 5,
                                             formatter: function() {
-                                                return "140";
+                                                return "{{ ($rentalCount ?? 0) + ($gasCount ?? 0) }}";
                                             },
                                         },
                                         total: {

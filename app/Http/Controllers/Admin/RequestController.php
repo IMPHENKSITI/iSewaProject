@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\RentalRequest;
+use App\Models\RentalBooking;
 use App\Models\GasOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,16 +17,32 @@ class RequestController extends Controller
         $status = $request->get('status', 'all');
         $category = $request->get('category', 'all');
 
-        // Build queries for rental requests
-        $rentalQuery = RentalRequest::with('user');
+        // Build queries for rental bookings
+        $rentalQuery = RentalBooking::with(['user', 'barang']);
         if ($status !== 'all') {
-            $rentalQuery->where('status', $status);
+            if ($status === 'cancellation_pending') {
+                $rentalQuery->where('cancellation_status', 'pending');
+            } elseif ($status === 'in_process') {
+                $rentalQuery->whereIn('status', ['confirmed', 'approved', 'being_prepared', 'in_delivery', 'arrived']);
+            } elseif ($status === 'completed') {
+                $rentalQuery->whereIn('status', ['completed', 'resolved', 'returned']);
+            } else {
+                $rentalQuery->where('status', $status);
+            }
         }
 
         // Build queries for gas orders
         $gasQuery = GasOrder::with('user');
         if ($status !== 'all') {
-            $gasQuery->where('status', $status);
+            if ($status === 'cancellation_pending') {
+                $gasQuery->where('cancellation_status', 'pending');
+            } elseif ($status === 'in_process') {
+                $gasQuery->whereIn('status', ['confirmed', 'approved', 'being_prepared', 'in_delivery', 'arrived']);
+            } elseif ($status === 'completed') {
+                $gasQuery->whereIn('status', ['completed', 'resolved']);
+            } else {
+                $gasQuery->where('status', $status);
+            }
         }
 
         // Get results based on category filter
@@ -36,6 +52,10 @@ class RequestController extends Controller
         } elseif ($category === 'gas') {
             $rentalRequests = collect();
             $gasOrders = $gasQuery->orderByDesc('created_at')->get();
+        } elseif ($category === 'latest') {
+            // Filter terbaru (7 hari terakhir)
+            $rentalRequests = $rentalQuery->where('created_at', '>=', now()->subDays(7))->orderByDesc('created_at')->get();
+            $gasOrders = $gasQuery->where('created_at', '>=', now()->subDays(7))->orderByDesc('created_at')->get();
         } else {
             $rentalRequests = $rentalQuery->orderByDesc('created_at')->get();
             $gasOrders = $gasQuery->orderByDesc('created_at')->get();
@@ -43,11 +63,12 @@ class RequestController extends Controller
 
         // Count statistics
         $stats = [
-            'total' => RentalRequest::count() + GasOrder::count(),
-            'pending' => RentalRequest::where('status', 'pending')->count() + GasOrder::where('status', 'pending')->count(),
-            'approved' => RentalRequest::where('status', 'approved')->count() + GasOrder::where('status', 'approved')->count(),
-            'rejected' => RentalRequest::where('status', 'rejected')->count() + GasOrder::where('status', 'rejected')->count(),
-            'rental_total' => RentalRequest::count(),
+            'total' => RentalBooking::count() + GasOrder::count(),
+            'pending' => RentalBooking::where('status', 'pending')->count() + GasOrder::where('status', 'pending')->count(),
+            'approved' => RentalBooking::where('status', 'approved')->count() + GasOrder::where('status', 'approved')->count(),
+            'rejected' => RentalBooking::where('status', 'rejected')->count() + GasOrder::where('status', 'rejected')->count(),
+            'cancellation_pending' => RentalBooking::where('cancellation_status', 'pending')->count() + GasOrder::where('cancellation_status', 'pending')->count(),
+            'rental_total' => RentalBooking::count(),
             'gas_total' => GasOrder::count(),
         ];
 
@@ -57,9 +78,9 @@ class RequestController extends Controller
     public function show($id, $type)
     {
         if ($type === 'rental') {
-            $request = RentalRequest::findOrFail($id);
+            $request = RentalBooking::with(['user', 'barang'])->findOrFail($id);
         } else {
-            $request = GasOrder::findOrFail($id);
+            $request = GasOrder::with('user')->findOrFail($id);
         }
 
         return view('admin.aktivitas.request-detail', compact('request', 'type'));
@@ -68,24 +89,57 @@ class RequestController extends Controller
     public function approve(Request $request, $id, $type)
     {
         if ($type === 'rental') {
-            $model = RentalRequest::findOrFail($id);
+            $model = RentalBooking::findOrFail($id);
+            // RentalBooking uses strict ENUM: pending, confirmed, in_progress, completed, cancelled
+            $newStatus = 'confirmed';
+            $updateData = [
+                'status' => $newStatus,
+                'confirmed_at' => now()
+            ];
+            
+            // Generate order number if not exists
+            if (!$model->order_number) {
+                $updateData['order_number'] = \App\Models\RentalBooking::generateOrderNumber();
+            }
+            
+            $model->update($updateData);
         } else {
             $model = GasOrder::findOrFail($id);
-        }
+            // GasOrder now uses matched status with Rental
+            $newStatus = 'confirmed';
+             $updateData = [
+                'status' => $newStatus,
+                'confirmed_at' => now()
+            ];
+            
+            // Generate order number if not exists
+            if (!$model->order_number) {
+                $updateData['order_number'] = GasOrder::generateOrderNumber();
+            }
 
-        $model->update(['status' => 'approved']);
+            $model->update($updateData);
+        }
 
         // Trigger notifikasi: Status Berubah (Disetujui)
         $notification = new Notification();
         $notification->title = "Permintaan Disetujui";
         $notification->message = "Permintaan Anda (#{$model->id}) untuk {$type} telah disetujui oleh " . auth()->user()->name . ".";
         $notification->type = 'status_berubah';
-        $notification->user_id = $model->user_id; // User yang membuat permintaan
-        $notification->admin_id = auth()->id(); // Admin yang menyetujui
+        $notification->user_id = $model->user_id;
+        $notification->admin_id = auth()->id();
         $notification->save();
 
-        session()->flash('success', "Permintaan {$type} berhasil disetujui.");
+        $message = "Permintaan {$type} berhasil disetujui.";
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'status' => $newStatus
+            ]);
+        }
+
+        session()->flash('success', $message);
         return redirect()->back();
     }
 
@@ -96,27 +150,47 @@ class RequestController extends Controller
         ]);
 
         if ($type === 'rental') {
-            $model = RentalRequest::findOrFail($id);
+            $model = RentalBooking::findOrFail($id);
+            // RentalBooking uses Strict ENUM: pending, confirmed, in_progress, completed, cancelled
+            // We use 'cancelled' to represent Rejection by Admin, and explain in notes
+            $newStatus = 'cancelled';
+            $model->update([
+                'status' => $newStatus,
+                'admin_notes' => "Ditolak: " . $request->reason,
+                'cancellation_reason' => "Ditolak Admin: " . $request->reason,
+                // Ensure cancellation_status is not 'pending' to avoid confusion
+                'cancellation_status' => null 
+            ]);
         } else {
             $model = GasOrder::findOrFail($id);
+            // GasOrder uses string status, likely supports 'rejected'
+            $newStatus = 'rejected';
+            $model->update([
+                'status' => $newStatus,
+                'rejection_reason' => $request->reason,
+            ]);
         }
-
-        $model->update([
-            'status' => 'rejected',
-            'rejection_reason' => $request->reason,
-        ]);
 
         // Trigger notifikasi: Status Berubah (Ditolak)
         $notification = new Notification();
         $notification->title = "Permintaan Ditolak";
         $notification->message = "Permintaan Anda (#{$model->id}) untuk {$type} telah ditolak oleh " . auth()->user()->name . ". Alasan: {$request->reason}";
         $notification->type = 'status_berubah';
-        $notification->user_id = $model->user_id; // User yang membuat permintaan
-        $notification->admin_id = auth()->id(); // Admin yang menolak
+        $notification->user_id = $model->user_id;
+        $notification->admin_id = auth()->id();
         $notification->save();
 
-        session()->flash('warning', "Permintaan {$type} ditolak dengan alasan: {$request->reason}");
+        $message = "Permintaan {$type} ditolak dengan alasan: {$request->reason}";
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'status' => $newStatus
+            ]);
+        }
+
+        session()->flash('warning', $message);
         return redirect()->back();
     }
 

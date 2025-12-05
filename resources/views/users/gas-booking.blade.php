@@ -299,16 +299,16 @@
     </div>
 
     <!-- Success Modal -->
-    <div id="gas-success-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
-        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all relative">
-            <button type="button" id="close-gas-success-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    <div id="gas-success-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm transition-all duration-300" style="display: none;">
+        <div class="bg-white rounded-[2rem] p-10 max-w-lg w-full mx-4 shadow-2xl transform transition-all scale-100 relative">
+            <button type="button" id="close-gas-success-modal" class="absolute top-6 right-6 text-gray-400 hover:text-gray-800 transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
             
             <div class="text-center">
-                <div class="mb-6">
+                <div class="mb-8 mt-4">
                     <div class="checkmark-circle mx-auto">
                         <svg class="checkmark" viewBox="0 0 52 52">
                             <circle class="checkmark-circle-path" cx="26" cy="26" r="25" fill="none"/>
@@ -317,26 +317,29 @@
                     </div>
                 </div>
                 
-                <h2 class="text-2xl font-bold text-gray-800 mb-3">Pembelian Berhasil</h2>
-                <p class="text-gray-700 font-medium mb-2">Pembelian Anda telah Berhasil</p>
-                <p class="text-gray-500 text-sm mb-8">Silahkan klik untuk menuju halaman selanjutnya</p>
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Pesanan Berhasil Dibuat</h2>
+                
+                <div class="mb-8">
+                    <p class="text-gray-800 font-bold text-lg mb-1">Pesanan Anda sedang Diproses</p>
+                    <p class="text-gray-500 text-sm">Silahkan klik untuk menuju halaman selanjutnya</p>
+                </div>
                 
                 <div class="space-y-4">
-                    <div class="flex gap-4">
+                    <div class="grid grid-cols-2 gap-4">
                         <button type="button" 
                                 id="view-gas-receipt-btn"
-                                class="flex-1 px-5 py-3 border-2 border-blue-500 text-blue-500 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                                class="px-4 py-3 bg-gray-50 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:-translate-y-0.5 shadow-sm hover:shadow-md text-sm">
                             Lihat Bukti Transaksi
                         </button>
                         <button type="button" 
                                 id="download-gas-receipt-btn"
-                                class="flex-1 px-5 py-3 border-2 border-blue-500 text-blue-500 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                                class="px-4 py-3 bg-gray-50 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:-translate-y-0.5 shadow-sm hover:shadow-md text-sm">
                             Unduh Bukti Transaksi
                         </button>
                     </div>
                     <button type="button" 
                             id="view-gas-activity-btn"
-                            class="w-full px-6 py-3.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all">
+                            class="w-full px-6 py-4 bg-[#2395FF] hover:bg-blue-600 text-white font-extrabold rounded-2xl shadow-lg hover:shadow-blue-200/50 transition-all duration-300 transform hover:scale-[1.02] text-lg">
                         Lihat Aktivitas
                     </button>
                 </div>
@@ -376,15 +379,15 @@
 
     /* Checkmark Animation */
     .checkmark-circle {
-        width: 80px;
-        height: 80px;
+        width: 150px;
+        height: 150px;
         position: relative;
         display: inline-block;
     }
 
     .checkmark {
-        width: 80px;
-        height: 80px;
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
         display: block;
         stroke-width: 3;
@@ -428,7 +431,7 @@
 
     @keyframes fill {
         100% {
-            box-shadow: inset 0px 0px 0px 30px #4ade80;
+            box-shadow: inset 0px 0px 0px 75px #4ade80;
         }
     }
 </style>

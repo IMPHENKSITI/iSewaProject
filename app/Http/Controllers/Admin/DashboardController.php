@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Barang; 
 use App\Models\Gas; 
+use App\Models\RentalBooking;
+use App\Models\GasOrder;
 
 class DashboardController extends Controller
 {
@@ -17,17 +19,57 @@ class DashboardController extends Controller
  */
 public function index()
 {
-    // Contoh data statistik
+    // Fetch pending rental bookings
+    $rentalRequests = RentalBooking::with(['user', 'barang'])
+        ->where('status', 'pending')
+        ->get()
+        ->map(function ($item) {
+            $item->type = 'rental';
+            $item->item_name = $item->barang->nama_barang ?? 'Unknown Item';
+            return $item;
+        });
+
+    // Fetch pending gas orders
+    $gasRequests = GasOrder::with('user')
+        ->where('status', 'pending')
+        ->get()
+        ->map(function ($item) {
+            $item->type = 'gas';
+            // item_name is already in GasOrder or we use generic name
+            $item->item_name = $item->item_name ?? 'Gas Order'; 
+            return $item;
+        });
+
+    // Merge and sort by created_at desc
+    $latestRequests = $rentalRequests->concat($gasRequests)->sortByDesc('created_at')->take(5);
+
+    // Calculate real stats
+    $totalOrders = RentalBooking::count() + GasOrder::count();
+    
+    // Hitung total order selesai/sukses
+    $completedRentals = RentalBooking::where('status', 'resolved')->count();
+    $completedGas = GasOrder::where('status', 'completed')->count();
+    $completedOrders = $completedRentals + $completedGas;
+
+    // Hitung statistik untuk Donut Chart (Total Transaksi per Kategori)
+    $rentalCount = RentalBooking::where('status', '!=', 'cancelled')->count();
+    $gasCount = GasOrder::count(); // Gas orders don't have 'cancelled' status usually, but check if needed
+
+    $totalPending = $rentalRequests->count() + $gasRequests->count();
+
     $data = [
         'totalUsers' => User::count(),
-        'totalOrders' => 0, // Ganti dengan model Order nanti Order::count()
+        'totalOrders' => $totalOrders,
         'newUsers' => User::whereDate('created_at', '>=', now()->subMonth())->count(),
-        'completedOrders' => 0, // Ganti dengan model Order nanti Order::where('status', 'completed')->count()
+        'completedOrders' => $completedOrders,
+        'latestRequests' => $latestRequests,
+        'totalPending' => $totalPending,
+        'rentalCount' => $rentalCount,
+        'gasCount' => $gasCount
     ];
 
     // Ambil jumlah item untuk setiap unit layanan
-    // Gunakan TRIM untuk menghilangkan spasi ekstra di awal/akhir
-    $data['unitPenyewaan'] = Barang::count(); // Hitung SEMUA barang
+    $data['unitPenyewaan'] = Barang::count(); 
     $data['unitGas'] = Gas::count();
 
     // Kembalikan view dengan data tambahan

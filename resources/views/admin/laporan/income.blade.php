@@ -141,7 +141,7 @@
                         <div class="dashboard-stats-row">
                             <!-- Left Column: Pendapatan dan Pengeluaran -->
                             <div class="dashboard-stats-col">
-                                <div class="card animate-fade-in">
+                                <div class="card">
                                     <div class="card-header">
                                         <h5 class="card-title mb-0">Pendapatan dan Pengeluaran</h5>
                                     </div>
@@ -170,13 +170,13 @@
 
                             <!-- Middle Column: Grafik Transaksi -->
                             <div class="dashboard-stats-col">
-                                <div class="card animate-fade-in">
+                                <div class="card">
                                     <div class="card-header">
                                         <h5 class="card-title mb-0">Perbandingan Transaksi</h5>
                                     </div>
                                     <div class="card-body d-flex flex-column justify-content-center align-items-center"
                                         style="min-height: 400px; padding: 2rem;">
-                                        <h2 class="mb-2">500</h2>
+                                        <h2 class="mb-2">{{ $rentalCount + $gasCount }}</h2>
                                         <span class="text-muted mb-4">Total Transaksi</span>
                                         <!-- Large donut chart will be rendered here by inline script -->
                                         <div id="transactionDonutChart" style="width: 100%; max-width: 300px;"></div>
@@ -942,7 +942,7 @@
             const orderChartElement = document.querySelector("#transactionDonutChart");
             if (orderChartElement) {
                 var optionsOrder = {
-                    series: [58, 82],
+                    series: [{{ $rentalCount ?? 0 }}, {{ $gasCount ?? 0 }}],
                     chart: {
                         type: "donut",
                         width: 300,
@@ -954,7 +954,7 @@
                             }
                         }
                     },
-                    labels: ["Unit Penyewaan Alat 58 Transaksi", "Gas 82 Transaksi"],
+                    labels: ["Unit Penyewaan Alat {{ $rentalCount ?? 0 }} Transaksi", "Gas {{ $gasCount ?? 0 }} Transaksi"],
                     colors: ["#FFC107", "#EA5455"],
                     legend: {
                         show: true,
@@ -991,7 +991,7 @@
                                         color: "#5e5873",
                                         offsetY: 5,
                                         formatter: function() {
-                                            return "140";
+                                            return "{{ ($rentalCount ?? 0) + ($gasCount ?? 0) }}";
                                         },
                                     },
                                     total: {

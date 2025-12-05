@@ -91,4 +91,32 @@ class ActivityController extends Controller
             'message' => 'Permintaan pembatalan berhasil diajukan'
         ]);
     }
+
+    public function destroy($type, $id)
+    {
+        if ($type === 'rental') {
+            $order = RentalBooking::where('id', $id)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
+        } else {
+            $order = GasOrder::where('id', $id)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
+        }
+
+        // Only allow deleting if status is cancelled or rejected
+        if (!in_array($order->status, ['cancelled', 'rejected'])) {
+             return response()->json([
+                'success' => false,
+                'message' => 'Pesanan tidak dapat dihapus kecuali dibatalkan atau ditolak'
+            ], 400);
+        }
+
+        $order->delete(); // Soft delete
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Riwayat pesanan berhasil dihapus'
+        ]);
+    }
 }

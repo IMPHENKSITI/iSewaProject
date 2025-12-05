@@ -23,7 +23,7 @@
 
         <div class="relative z-10 max-w-6xl mx-auto px-6">
             {{-- Header --}}
-            <div class="text-left mb-16 mt-16 md:mt-20">
+            <div class="text-left mb-16 mt-16 md:mt-20 animate-section">
                 <h1 class="text-5xl font-bold mb-2">
                     <span class="bg-gradient-to-r from-[#115789] to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">Pelayanan</span>
                 </h1>
@@ -33,7 +33,7 @@
             <div class="space-y-6">
                 {{-- Service 1: Unit Penyewaan Alat --}}
                 <div
-                    class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-white/50">
+                    class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-white/50 animate-section">
                     <div class="flex flex-col md:flex-row gap-8 items-start">
                         <div class="flex-shrink-0">
                             <div class="w-32 h-32 flex items-center justify-center">
@@ -55,7 +55,7 @@
 
                 {{-- Service 2: Pelaporan dan Monitoring Usaha --}}
                 <div
-                    class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-white/50">
+                    class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-white/50 animate-section">
                     <div class="flex flex-col md:flex-row gap-8 items-start">
                         <div class="flex-shrink-0">
                             <div class="w-32 h-32 flex items-center justify-center">
@@ -77,7 +77,7 @@
 
                 {{-- Service 3: Penjualan Gas Desa --}}
                 <div
-                    class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-white/50">
+                    class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-white/50 animate-section">
                     <div class="flex flex-col md:flex-row gap-8 items-start">
                         <div class="flex-shrink-0">
                             <div class="w-32 h-32 flex items-center justify-center">
@@ -120,5 +120,50 @@
                 font-size: 1.5rem;
             }
         }
+        
+        /* Animation keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Initial hidden state */
+        .animate-section {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        /* Animated state */
+        .animate-section.show {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        /* Staggered delays for each section */
+        .animate-section:nth-child(1) { animation-delay: 0.1s; }
+        .animate-section:nth-child(2) { animation-delay: 0.2s; }
+        .animate-section:nth-child(3) { animation-delay: 0.3s; }
+        .animate-section:nth-child(4) { animation-delay: 0.4s; }
     </style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all sections to animate
+        const sections = document.querySelectorAll('.animate-section');
+        
+        // Add show class to trigger animations
+        sections.forEach((section, index) => {
+            setTimeout(() => {
+                section.classList.add('show');
+            }, index * 100); // Stagger by 100ms
+        });
+    });
+</script>
 @endpush

@@ -87,6 +87,10 @@ class ReportController extends Controller
             ->orderByDesc('transaction_date')
             ->get();
 
+        // Hitung total transaksi untuk Donut Chart
+        $rentalCount = \App\Models\RentalBooking::where('status', '!=', 'cancelled')->count();
+        $gasCount = GasOrder::count();
+
         return view('admin.laporan.income', compact(
             'totalPenyewaan',
             'totalGas',
@@ -96,7 +100,9 @@ class ReportController extends Controller
             'rentalRequests',
             'gasOrders',
             'manualReports',
-            'manualLainnya'
+            'manualLainnya',
+            'rentalCount',
+            'gasCount'
         ));
     }
 

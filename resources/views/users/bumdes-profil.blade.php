@@ -50,7 +50,7 @@
 
         <div class="max-w-7xl mx-auto px-6 relative z-10">
             <!-- Header Section -->
-            <div class="text-center mb-16">
+            <div class="text-center mb-16 animate-section">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">
                     <span class="bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Pilih </span>
                     <span class="bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">BUMDes</span>
@@ -61,7 +61,7 @@
             </div>
 
             <!-- Village Selection Card -->
-            <div class="max-w-3xl mx-auto mb-16">
+            <div class="max-w-3xl mx-auto mb-16 animate-section">
                 <div class="backdrop-blur-sm bg-white/70 rounded-2xl p-6 border border-white/80 shadow-lg hover:shadow-xl transition-all duration-300">
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl font-bold text-gray-800">Desa Pematang Duku Timur</h3>
@@ -73,7 +73,7 @@
             </div>
 
             <!-- BUMDes Section -->
-            <div class="mb-16">
+            <div class="mb-16 animate-section">
                 <div class="text-left mb-8">
                     <h2 class="text-3xl md:text-4xl font-bold">
                         <span class="bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">BUMDes</span>

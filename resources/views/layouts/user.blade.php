@@ -1,5 +1,41 @@
 @extends('layouts.app')
 
+@push('styles')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <style>
+        /* Global Page Load Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-section {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .animate-section.show {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .animate-section:nth-child(1) { animation-delay: 0.1s; }
+        .animate-section:nth-child(2) { animation-delay: 0.2s; }
+        .animate-section:nth-child(3) { animation-delay: 0.3s; }
+        .animate-section:nth-child(4) { animation-delay: 0.4s; }
+        .animate-section:nth-child(5) { animation-delay: 0.5s; }
+        .animate-section:nth-child(6) { animation-delay: 0.6s; }
+        .animate-section:nth-child(7) { animation-delay: 0.7s; }
+        .animate-section:nth-child(8) { animation-delay: 0.8s; }
+    </style>
+@endpush
+
 @section('content')
     {{-- USER NAVBAR --}}
     @include('partials.navbar')
@@ -126,6 +162,18 @@
             });
         </script>
     @endif
+
+    {{-- Global Animation Trigger --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.animate-section');
+            sections.forEach((section, index) => {
+                setTimeout(() => {
+                    section.classList.add('show');
+                }, index * 100);
+            });
+        });
+    </script>
 
     @include('auth.scripts')
 @endpush

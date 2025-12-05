@@ -41,8 +41,8 @@
                     </div>
                 </div>
 
-                <a href="#profil"
-                    class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200">
+                <a href="{{ route('isewa.profile') }}"
+                    class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200 {{ request()->routeIs('isewa.profile') ? 'border-b-2 border-blue-500 pb-0.5' : '' }}">
                     Profil iSewa
                 </a>
 
@@ -85,7 +85,7 @@
                                     <span class="text-[15px] font-normal text-center block">Aktivitas</span>
                                 </a>
 
-                                <a href="#notifikasi"
+                                <a href="{{ route('user.notifications') }}"
                                     class="block px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:border-l-[3px] hover:border-l-blue-500 transition-all duration-150">
                                     <span class="text-[15px] font-normal text-center block">Notifikasi</span>
                                 </a>

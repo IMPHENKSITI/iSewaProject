@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class GasOrder extends Model
 {
+    
     protected $fillable = [
         'order_number',
         'user_id',
@@ -27,6 +28,7 @@ class GasOrder extends Model
         'arrival_time',
         'completion_time',
         'delivery_proof_image',
+        'confirmed_at',
         'cancellation_reason_user',
         'cancellation_requested_at',
         'cancellation_status',

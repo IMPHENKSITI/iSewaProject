@@ -40,6 +40,11 @@ Route::get('/bumdes/laporan', function () {
     return view('users.bumdes-laporan');
 })->name('bumdes.laporan');
 
+// Profil iSewa Route
+Route::get('/pelayanan/profil', [App\Http\Controllers\User\IsewaProfileController::class, 'index'])
+    ->name('isewa.profile');
+
+
 // Rental Equipment Route
 Route::get('/unit-penyewaan-alat', [App\Http\Controllers\User\RentalUserController::class, 'index'])
     ->name('rental.equipment');
@@ -70,6 +75,21 @@ Route::get('/aktivitas', [App\Http\Controllers\User\ActivityController::class, '
 Route::post('/aktivitas/{type}/{id}/cancel', [App\Http\Controllers\User\ActivityController::class, 'requestCancellation'])
     ->name('user.activity.cancel')
     ->middleware('auth');
+Route::delete('/aktivitas/{type}/{id}', [App\Http\Controllers\User\ActivityController::class, 'destroy'])
+    ->name('user.activity.destroy')
+    ->middleware('auth');
+
+// User Notification Routes
+Route::get('/notifikasi', [App\Http\Controllers\User\NotificationController::class, 'index'])
+    ->name('user.notifications')
+    ->middleware('auth');
+Route::post('/notifikasi/{id}/read', [App\Http\Controllers\User\NotificationController::class, 'markAsRead'])
+    ->name('user.notifications.read')
+    ->middleware('auth');
+Route::post('/notifikasi/read-all', [App\Http\Controllers\User\NotificationController::class, 'markAllAsRead'])
+    ->name('user.notifications.readAll')
+    ->middleware('auth');
+
 
 // ============================================
 // USER AUTH ROUTES 

@@ -33,16 +33,25 @@ class NotificationController extends Controller
             'title' => 'required|string|max:255',
             'message' => 'required|string',
             'user_id' => 'nullable|exists:users,id', // Bisa kosong jika broadcast
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image
         ]);
 
-        $notification = Notification::create([
+        $data = [
             'title' => $request->title,
             'message' => $request->message,
             'type' => 'pesan_admin', // Tipe untuk notifikasi dari admin
             'admin_id' => auth()->id(), // ID admin yang sedang login
             'user_id' => $request->user_id, // Jika ditujukan ke user tertentu
             'sent_at' => now(),
-        ]);
+        ];
+
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('notifications', 'public');
+            $data['image'] = $imagePath;
+        }
+
+        $notification = Notification::create($data);
 
         return redirect()->route('admin.notifications.index')->with('success', 'Notifikasi berhasil dikirim.');
     }

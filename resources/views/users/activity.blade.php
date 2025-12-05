@@ -93,12 +93,17 @@
                                     @php
                                         $statusConfig = [
                                             'completed' => ['text' => 'Selesai', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
+                                            'resolved' => ['text' => 'Selesai', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                             'pending' => ['text' => 'Belum Bayar', 'color' => 'text-yellow-600', 'dot' => 'bg-yellow-600'],
+                                            'paid' => ['text' => 'Sudah Bayar', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'confirmed' => ['text' => 'Dikonfirmasi', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
+                                            'approved' => ['text' => 'Disetujui', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'being_prepared' => ['text' => 'Dipersiapkan', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'in_delivery' => ['text' => 'Dalam Pengiriman', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'arrived' => ['text' => 'Tiba', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                             'cancelled' => ['text' => 'Dibatalkan', 'color' => 'text-red-600', 'dot' => 'bg-red-600'],
+                                            'rejected' => ['text' => 'Ditolak', 'color' => 'text-red-600', 'dot' => 'bg-red-600'],
+                                            'returned' => ['text' => 'Dikembalikan', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                         ];
                                         $status = $statusConfig[$booking->status] ?? ['text' => ucfirst($booking->status), 'color' => 'text-gray-600', 'dot' => 'bg-gray-600'];
                                     @endphp
@@ -183,6 +188,8 @@
                                     @endif
                                 </div>
 
+
+
                                 <!-- Right Column -->
                                 <div class="space-y-4">
                                     <!-- Transaction Receipt -->
@@ -193,12 +200,12 @@
                                             <a href="{{ asset('storage/' . $booking->payment_proof) }}" 
                                                target="_blank"
                                                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
-                                                Lihat
+                                                Lihat Bukti Transaksi
                                             </a>
                                             <a href="{{ asset('storage/' . $booking->payment_proof) }}" 
                                                download
                                                class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
-                                                Unduh
+                                                Unduh Bukti Transaksi
                                             </a>
                                             @else
                                             <p class="text-gray-400 text-sm">Belum ada bukti transaksi</p>
@@ -278,6 +285,18 @@
                                         </div>
                                     </div>
                                     @endif
+
+                                    <!-- Delete History Function -->
+                                    @if(in_array($booking->status, ['cancelled', 'rejected']))
+                                    <div class="pt-4 border-t border-gray-200">
+                                        <button type="button" 
+                                                class="delete-order-btn w-full px-4 py-2 border-2 border-red-500 text-red-500 rounded-lg text-sm font-semibold hover:bg-red-50 transition-colors"
+                                                data-type="rental"
+                                                data-id="{{ $booking->id }}">
+                                            <i class="fas fa-trash-alt mr-2"></i>Hapus Riwayat
+                                        </button>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -344,12 +363,16 @@
                                     @php
                                         $statusConfig = [
                                             'completed' => ['text' => 'Selesai', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
+                                            'resolved' => ['text' => 'Selesai', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                             'pending' => ['text' => 'Belum Bayar', 'color' => 'text-yellow-600', 'dot' => 'bg-yellow-600'],
+                                            'paid' => ['text' => 'Sudah Bayar', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'confirmed' => ['text' => 'Dikonfirmasi', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
+                                            'approved' => ['text' => 'Disetujui', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'being_prepared' => ['text' => 'Dipersiapkan', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'in_delivery' => ['text' => 'Dalam Pengiriman', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'arrived' => ['text' => 'Tiba', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                             'cancelled' => ['text' => 'Dibatalkan', 'color' => 'text-red-600', 'dot' => 'bg-red-600'],
+                                            'rejected' => ['text' => 'Ditolak', 'color' => 'text-red-600', 'dot' => 'bg-red-600'],
                                         ];
                                         $status = $statusConfig[$order->status] ?? ['text' => ucfirst($order->status), 'color' => 'text-gray-600', 'dot' => 'bg-gray-600'];
                                     @endphp
@@ -399,20 +422,20 @@
                                         </p>
                                     </div>
                                     
-                                    @if($order->delivery_time)
+                                    @if($order->completion_time)
                                     <div>
                                         <p class="text-sm text-gray-500 mb-1">Waktu Pengambilan</p>
                                         <p class="font-semibold text-gray-800">
-                                            {{ \Carbon\Carbon::parse($order->delivery_time)->locale('id')->isoFormat('dddd, DD MMMM YYYY HH:mm') }} WIB
+                                            {{ \Carbon\Carbon::parse($order->completion_time)->locale('id')->isoFormat('dddd, DD MMMM YYYY HH:mm') }} WIB
                                         </p>
                                     </div>
                                     @endif
                                     
-                                    @if($order->arrival_time)
+                                    @if($order->confirmed_at)
                                     <div>
                                         <p class="text-sm text-gray-500 mb-1">Waktu Pembayaran</p>
                                         <p class="font-semibold text-gray-800">
-                                            {{ \Carbon\Carbon::parse($order->arrival_time)->locale('id')->isoFormat('dddd, DD MMMM YYYY HH:mm') }} WIB
+                                            {{ \Carbon\Carbon::parse($order->confirmed_at)->locale('id')->isoFormat('dddd, DD MMMM YYYY HH:mm') }} WIB
                                         </p>
                                     </div>
                                     @endif
@@ -427,6 +450,8 @@
                                     @endif
                                 </div>
 
+
+
                                 <!-- Right Column -->
                                 <div class="space-y-4">
                                     <!-- Transaction Receipt -->
@@ -437,12 +462,12 @@
                                             <a href="{{ asset('storage/' . $order->proof_of_payment) }}" 
                                                target="_blank"
                                                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
-                                                Lihat
+                                                Lihat Bukti Transaksi
                                             </a>
                                             <a href="{{ asset('storage/' . $order->proof_of_payment) }}" 
                                                download
                                                class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
-                                                Unduh
+                                                Unduh Bukti Transaksi
                                             </a>
                                             @else
                                             <p class="text-gray-400 text-sm">Belum ada bukti transaksi</p>
@@ -466,6 +491,18 @@
                                             <p class="text-sm font-semibold text-yellow-800 mb-1">Permintaan Pembatalan Diajukan</p>
                                             <p class="text-xs text-yellow-700">Menunggu konfirmasi admin</p>
                                         </div>
+                                    </div>
+                                    @endif
+
+                                    <!-- Delete History Function -->
+                                    @if(in_array($order->status, ['cancelled', 'rejected']))
+                                    <div class="pt-4 border-t border-gray-200">
+                                        <button type="button" 
+                                                class="delete-order-btn w-full px-4 py-2 border-2 border-red-500 text-red-500 rounded-lg text-sm font-semibold hover:bg-red-50 transition-colors"
+                                                data-type="gas"
+                                                data-id="{{ $order->id }}">
+                                            <i class="fas fa-trash-alt mr-2"></i>Hapus Riwayat
+                                        </button>
                                     </div>
                                     @endif
                                 </div>
@@ -632,6 +669,60 @@
                             icon: 'error',
                             title: 'Error!',
                             text: 'Terjadi kesalahan. Silakan coba lagi.',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Delete Order
+        const deleteButtons = document.querySelectorAll('.delete-order-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const type = button.dataset.type;
+                const id = button.dataset.id;
+                
+                const result = await Swal.fire({
+                    title: 'Hapus Riwayat?',
+                    text: "Riwayat pesanan akan dihapus dari daftar.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280'
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`/aktivitas/${type}/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            await Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: data.message,
+                                confirmButtonColor: '#3b82f6'
+                            });
+                            location.reload();
+                        } else {
+                            throw new Error(data.message);
+                        }
+                    } catch (error) {
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: error.message || 'Terjadi kesalahan.',
                             confirmButtonColor: '#ef4444'
                         });
                     }
