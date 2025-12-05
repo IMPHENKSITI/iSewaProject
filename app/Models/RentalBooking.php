@@ -12,6 +12,7 @@ class RentalBooking extends Model
     protected $fillable = [
         'user_id',
         'barang_id',
+        'order_number',
         'delivery_method',
         'quantity',
         'start_date',
@@ -23,16 +24,30 @@ class RentalBooking extends Model
         'longitude',
         'payment_method',
         'payment_proof',
+        'delivery_proof_image',
         'total_amount',
         'status',
         'admin_notes',
         'confirmed_at',
+        'delivery_time',
+        'arrival_time',
+        'return_time',
+        'completion_time',
+        'cancellation_reason',
+        'cancellation_requested_at',
+        'cancellation_status',
+        'admin_cancellation_response',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
         'confirmed_at' => 'datetime',
+        'delivery_time' => 'datetime',
+        'arrival_time' => 'datetime',
+        'return_time' => 'datetime',
+        'completion_time' => 'datetime',
+        'cancellation_requested_at' => 'datetime',
         'total_amount' => 'decimal:2',
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
@@ -108,5 +123,33 @@ class RentalBooking extends Model
     public function isCash()
     {
         return $this->payment_method === 'tunai';
+    }
+
+    /**
+     * Generate unique order number
+     */
+    public static function generateOrderNumber()
+    {
+        do {
+            $orderNumber = strtoupper(substr(md5(uniqid(rand(), true)), 0, 13));
+        } while (self::where('order_number', $orderNumber)->exists());
+        
+        return $orderNumber;
+    }
+
+    /**
+     * Check if cancellation is requested
+     */
+    public function hasCancellationRequest()
+    {
+        return $this->cancellation_status === 'pending';
+    }
+
+    /**
+     * Check if order can be cancelled
+     */
+    public function canBeCancelled()
+    {
+        return !in_array($this->status, ['completed', 'cancelled']) && !$this->hasCancellationRequest();
     }
 }

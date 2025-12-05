@@ -41,7 +41,7 @@ class RentalBookingController extends Controller
     {
         // Check if user is authenticated
         if (!Auth::check()) {
-            return redirect()->route('beranda')->with('open_login_modal', true);
+            return response()->json(['success' => false, 'message' => 'Anda harus login terlebih dahulu'], 401);
         }
 
         // Validate the request
@@ -60,17 +60,17 @@ class RentalBookingController extends Controller
             'longitude' => 'nullable|numeric',
             
             // For 'transfer' payment method
-            'payment_proof' => 'required_if:payment_method,transfer|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'payment_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         // Calculate days count
         $startDate = \Carbon\Carbon::parse($validated['start_date']);
         $endDate = \Carbon\Carbon::parse($validated['end_date']);
-        $daysCount = $startDate->diffInDays($endDate) + 1; // Include both start and end date
+        $daysCount = $startDate->diffInDays($endDate) + 1;
 
         // Get item to calculate total
         $item = Barang::findOrFail($validated['barang_id']);
-        $totalAmount = $item->harga_sewa * $validated['quantity'] * $daysCount;
+        $totalAmount = $item->harga_sewa * $validated['quantity'];
 
         // Handle payment proof upload
         $paymentProofPath = null;
@@ -97,9 +97,34 @@ class RentalBookingController extends Controller
             'status' => 'pending',
         ]);
 
-        // TODO: Send notification to admin
-        // You can implement this later using Laravel notifications
+        // Create transaction receipt
+        $receipt = \App\Models\TransactionReceipt::create([
+            'booking_type' => 'rental',
+            'booking_id' => $booking->id,
+            'receipt_number' => \App\Models\TransactionReceipt::generateReceiptNumber('rental'),
+            'user_id' => Auth::id(),
+            'item_name' => $item->nama_barang,
+            'quantity' => $validated['quantity'],
+            'total_amount' => $totalAmount,
+            'payment_method' => $validated['payment_method'],
+        ]);
 
-        return redirect()->route('beranda')->with('success', 'Pemesanan berhasil! Silakan tunggu konfirmasi dari admin.');
+        // Create admin notification
+        \App\Models\AdminNotification::create([
+            'type' => 'rental_request',
+            'reference_id' => $booking->id,
+            'title' => 'Permintaan Penyewaan Baru',
+            'message' => 'Permintaan penyewaan ' . $item->nama_barang . ' dari ' . Auth::user()->name,
+            'is_read' => false,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pemesanan berhasil dibuat!',
+            'booking_id' => $booking->id,
+            'receipt_id' => $receipt->id,
+            'receipt_number' => $receipt->receipt_number,
+        ]);
     }
 }
+

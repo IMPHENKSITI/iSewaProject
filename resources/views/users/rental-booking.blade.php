@@ -1,5 +1,76 @@
 @extends('layouts.user')
 
+@php
+    // Determine card background style based on admin settings
+    $cardStyle = 'background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);'; // default blue
+    $amountColor = 'text-yellow-300'; // Default amount color
+    $cardTextColor = 'text-white'; // Default card text color
+    $buttonClass = 'bg-white/20 backdrop-blur-sm border border-white/40 text-white hover:bg-white/30'; // Default button style
+    $borderClass = 'border-white/30'; // Default border style
+    
+    if ($setting && $setting->card_gradient_style) {
+        $gradients = [
+            'white' => 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)',
+            'silver' => 'linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%)',
+            'gold' => 'linear-gradient(135deg, #ffd700 0%, #fdb931 100%)',
+            'transparent' => 'rgba(59, 130, 246, 0.3)',
+            'blue' => 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+            'green' => 'linear-gradient(135deg, #00a884 0%, #005c4b 100%)',
+            'purple' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'dark' => 'linear-gradient(135deg, #232526 0%, #414345 100%)',
+            'orange' => 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)',
+            'red' => 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)',
+        ];
+        
+        $style = $setting->card_gradient_style;
+        $cardStyle = 'background: ' . ($gradients[$style] ?? $gradients['blue']) . ';';
+        
+        // Determine colors based on background
+        if (in_array($style, ['white', 'silver', 'gold', 'transparent'])) {
+            $amountColor = 'text-red-600';
+            $cardTextColor = 'text-gray-800';
+            $buttonClass = 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-400';
+            $borderClass = 'border-gray-300';
+        } elseif ($style == 'red') {
+            $amountColor = 'text-white';
+            $cardTextColor = 'text-white';
+        } else {
+            $amountColor = 'text-yellow-300'; // Blue, Green, Purple, Dark
+            $cardTextColor = 'text-white';
+        }
+    }
+    
+    // Legacy support for image (if re-enabled or existing)
+    if ($setting && $setting->card_background_type === 'image' && $setting->card_background_image) {
+        $cardStyle = "background-image: url('" . asset('storage/' . $setting->card_background_image) . "'); background-size: cover; background-position: center;";
+        $amountColor = 'text-yellow-300';
+        $cardTextColor = 'text-white';
+    }
+    
+    // Get cash payment description
+    $cashDescription = $setting->cash_payment_description ?? 'Yani - Bendahara BUMDes';
+
+    // Bank Logo Mapping
+    $bankLogos = [
+        'Bank Syariah Indonesia' => 'admin/img/banks/bsi.png',
+        'BRI' => 'admin/img/banks/bri.png',
+        'Mandiri' => 'admin/img/banks/mandiri.png',
+        'BNI' => 'admin/img/banks/bni.png',
+        'BCA' => 'admin/img/banks/bca.png',
+        'Bank Riau Kepri Syariah' => 'admin/img/banks/brk.png',
+        'Bank Mega' => 'admin/img/banks/mega.png',
+    ];
+    $bankLogoPath = $bankLogos[$setting->bank_name ?? ''] ?? 'admin/img/banks/bsi.png';
+    
+    // Determine available payment methods
+    $methods = $setting->payment_methods ?? ['transfer', 'tunai'];
+    $hasTransfer = in_array('transfer', $methods);
+    $hasTunai = in_array('tunai', $methods);
+    
+    // Determine default active method
+    $defaultMethod = $hasTransfer ? 'transfer' : 'tunai';
+@endphp
+
 @section('page')
 <main class="flex-grow relative w-full">
     <section class="relative z-10 min-h-screen pt-32 pb-16 bg-cover bg-center bg-no-repeat bg-fixed" 
@@ -54,7 +125,7 @@
         </div>
         --}}
 
-        <div class="max-w-5xl mx-auto px-6 relative z-10">
+        <div class="max-w-5xl mx-auto px-6 relative z-20">
             <!-- Header with Gradient Text -->
             <div class="text-center mb-12 mt-8">
                 <h1 class="text-3xl md:text-4xl font-bold mb-2">
@@ -74,25 +145,21 @@
                 <!-- Delivery Method Selection -->
                 <div class="flex justify-center gap-6 mb-10">
                     <!-- Antar Card -->
-                    <div class="delivery-method-card active cursor-pointer" data-method="antar">
-                        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent">
-                            <!-- Placeholder for Truck Icon -->
-                            <div class="mb-4 flex justify-center">
-                                <img src="{{ asset('admin/img/elements/antar.png') }}" alt="Antar" class="w-20 h-20 object-contain">
-                            </div>
-                            <p class="font-bold text-lg text-gray-800">Antar</p>
+                    <div class="delivery-method-card active cursor-pointer bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent" data-method="antar">
+                        <!-- Placeholder for Truck Icon -->
+                        <div class="mb-4 flex justify-center">
+                            <img src="{{ asset('admin/img/elements/antar.png') }}" alt="Antar" class="w-20 h-20 object-contain pointer-events-none">
                         </div>
+                        <p class="font-bold text-lg text-gray-800 pointer-events-none">Antar</p>
                     </div>
 
                     <!-- Jemput Card -->
-                    <div class="delivery-method-card cursor-pointer" data-method="jemput">
-                        <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent">
-                            <!-- Placeholder for Warehouse Icon -->
-                            <div class="mb-4 flex justify-center">
-                                <img src="{{ asset('admin/img/elements/jemput.png') }}" alt="Jemput" class="w-20 h-20 object-contain">
-                            </div>
-                            <p class="font-bold text-lg text-gray-800">Jemput</p>
+                    <div class="delivery-method-card cursor-pointer bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent" data-method="jemput">
+                        <!-- Placeholder for Warehouse Icon -->
+                        <div class="mb-4 flex justify-center">
+                            <img src="{{ asset('admin/img/elements/jemput.png') }}" alt="Jemput" class="w-20 h-20 object-contain pointer-events-none">
                         </div>
+                        <p class="font-bold text-lg text-gray-800 pointer-events-none">Jemput</p>
                     </div>
                 </div>
 
@@ -227,52 +294,57 @@
                     <div class="mb-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
                         <div class="flex gap-4 mb-6">
+                            @if($hasTransfer)
                             <button type="button" 
-                                    class="payment-method-btn active flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                                    class="payment-method-btn {{ $defaultMethod == 'transfer' ? 'active' : '' }} flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
                                     data-method="transfer">
                                 Transfer
                             </button>
+                            @endif
+                            
+                            @if($hasTunai)
                             <button type="button" 
-                                    class="payment-method-btn flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                                    class="payment-method-btn {{ $defaultMethod == 'tunai' ? 'active' : '' }} flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
                                     data-method="tunai">
                                 Tunai
                             </button>
+                            @endif
                         </div>
-                        <input type="hidden" name="payment_method" id="payment-method-hidden" value="transfer">
+                        <input type="hidden" name="payment_method" id="payment-method-hidden" value="{{ $defaultMethod }}">
 
                         <!-- Transfer Payment Card -->
-                        <div id="transfer-payment" class="payment-content">
-                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-lg p-8">
-                                <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">{{ $setting->bank_name ?? 'Bank Syariah Indonesia' }}</h4>
+                        <div id="transfer-payment" class="payment-content {{ $defaultMethod == 'transfer' ? '' : 'hidden' }}">
+                            <div class="rounded-2xl shadow-lg p-8 {{ $cardTextColor }}" style="{{ $cardStyle }}">
+                                <h4 class="text-2xl font-bold text-center mb-6">{{ $setting->bank_name ?? 'Bank Syariah Indonesia' }}</h4>
                                 
                                 <div class="flex items-start gap-6 mb-6">
-                                    <!-- Bank Logo Placeholder -->
+                                    <!-- Bank Logo -->
                                     <div class="flex-shrink-0">
-                                        <div class="w-24 h-24 bg-white rounded-lg flex items-center justify-center shadow-md">
-                                            <span class="text-3xl font-bold text-blue-600">BSI</span>
+                                        <div class="w-24 h-16 bg-white rounded-lg flex items-center justify-center shadow-md p-2">
+                                            <img src="{{ asset($bankLogoPath) }}" alt="{{ $setting->bank_name }}" class="w-full h-full object-contain">
                                         </div>
                                     </div>
                                     
                                     <div class="flex-1">
-                                        <p class="text-sm text-gray-600 mb-1">Atas Nama</p>
-                                        <p class="text-lg font-bold text-gray-800 mb-4">{{ $setting->account_name ?? 'BUMDes Desa Pematang Duku Timur' }}</p>
+                                        <p class="text-sm mb-1 opacity-90">Atas Nama</p>
+                                        <p class="text-lg font-bold mb-4">{{ $setting->bank_account_holder ?? 'BUMDes Desa Pematang Duku Timur' }}</p>
                                         
-                                        <p class="text-sm text-gray-600 mb-1">Nomor Rekening Tujuan</p>
-                                        <p class="text-3xl font-bold text-gray-800 mb-2">{{ $setting->account_number ?? '1234 5678 989' }}</p>
+                                        <p class="text-sm mb-1 opacity-90">Nomor Rekening Tujuan</p>
+                                        <p class="text-3xl font-bold mb-2">{{ $setting->bank_account_number ?? '1234 5678 989' }}</p>
                                     </div>
                                     
                                     <div class="text-right">
-                                        <p class="text-sm text-gray-600 mb-1">Jumlah Yang Harus Dibayar</p>
-                                        <p class="text-3xl font-bold text-red-600" id="total-amount-transfer">Rp. {{ number_format($item->harga_sewa * $quantity, 0, ',', '.') }}</p>
+                                        <p class="text-sm mb-1 opacity-90">Jumlah Yang Harus Dibayar</p>
+                                        <p class="text-3xl font-bold {{ $amountColor }}" id="total-amount-transfer">Rp. {{ number_format($item->harga_sewa * $quantity, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
                                 
-                                <div class="border-t border-blue-200 pt-6">
+                                <div class="border-t {{ $borderClass }} pt-6">
                                     <div class="flex items-center justify-between mb-4">
-                                        <label class="text-sm font-semibold text-gray-700">Upload Bukti Pembayaran</label>
+                                        <label class="text-sm font-semibold">Upload Bukti Pembayaran</label>
                                         <button type="button" 
                                                 onclick="document.getElementById('payment-proof').click()"
-                                                class="px-4 py-2 bg-white border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                                                class="px-4 py-2 {{ $buttonClass }} rounded-lg transition-colors">
                                             Pilih File
                                         </button>
                                     </div>
@@ -281,20 +353,20 @@
                                            id="payment-proof" 
                                            accept="image/*,application/pdf"
                                            class="hidden">
-                                    <p id="file-name" class="text-sm text-gray-600 italic">Belum ada file dipilih</p>
-                                    <a href="#" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Kirim</a>
+                                    <p id="file-name" class="text-sm opacity-80 italic">Belum ada file dipilih</p>
+                                    <a href="#" class="text-sm hover:underline mt-2 inline-block opacity-90">Kirim</a>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Cash Payment Card -->
-                        <div id="cash-payment" class="payment-content hidden">
+                        <div id="cash-payment" class="payment-content {{ $defaultMethod == 'tunai' ? '' : 'hidden' }}">
                             <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg p-8">
                                 <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">Silahkan Lakukan Pembayaran Ditempat</h4>
                                 
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-lg text-gray-700">Yani - Bendahara BUMDes</p>
+                                        <p class="text-lg text-gray-700">{{ $cashDescription }}</p>
                                     </div>
                                     
                                     <div class="text-right">
@@ -429,76 +501,82 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Payment Method for Jemput -->
                     <div class="mb-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
                         <div class="flex gap-4 mb-6">
+                            @if($hasTransfer)
                             <button type="button" 
-                                    class="payment-method-btn-jemput flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                                    class="payment-method-btn-jemput {{ $defaultMethod == 'transfer' ? 'active' : '' }} flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
                                     data-method="transfer">
                                 Transfer
                             </button>
+                            @endif
+                            
+                            @if($hasTunai)
                             <button type="button" 
-                                    class="payment-method-btn-jemput active flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                                    class="payment-method-btn-jemput {{ $defaultMethod == 'tunai' ? 'active' : '' }} flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
                                     data-method="tunai">
                                 Tunai
                             </button>
+                            @endif
                         </div>
+                        <input type="hidden" name="payment_method_jemput" id="payment-method-jemput-hidden" value="{{ $defaultMethod }}">
 
                         <!-- Transfer Payment Card for Jemput -->
-                        <div id="transfer-payment-jemput" class="payment-content-jemput hidden">
-                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-lg p-8">
-                                <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">{{ $setting->bank_name ?? 'Bank Syariah Indonesia' }}</h4>
+                        <div id="transfer-payment-jemput" class="payment-content-jemput {{ $defaultMethod == 'transfer' ? '' : 'hidden' }}">
+                            <div class="rounded-2xl shadow-lg p-8 {{ $cardTextColor }}" style="{{ $cardStyle }}">
+                                <h4 class="text-2xl font-bold text-center mb-6">{{ $setting->bank_name ?? 'Bank Syariah Indonesia' }}</h4>
                                 
                                 <div class="flex items-start gap-6 mb-6">
                                     <div class="flex-shrink-0">
-                                        <div class="w-24 h-24 bg-white rounded-lg flex items-center justify-center shadow-md">
-                                            <span class="text-3xl font-bold text-blue-600">BSI</span>
+                                        <div class="w-24 h-16 bg-white rounded-lg flex items-center justify-center shadow-md p-2">
+                                            <img src="{{ asset($bankLogoPath) }}" alt="{{ $setting->bank_name }}" class="w-full h-full object-contain">
                                         </div>
                                     </div>
                                     
                                     <div class="flex-1">
-                                        <p class="text-sm text-gray-600 mb-1">Atas Nama</p>
-                                        <p class="text-lg font-bold text-gray-800 mb-4">{{ $setting->account_name ?? 'BUMDes Desa Pematang Duku Timur' }}</p>
+                                        <p class="text-sm mb-1 opacity-90">Atas Nama</p>
+                                        <p class="text-lg font-bold mb-4">{{ $setting->bank_account_holder ?? 'BUMDes Desa Pematang Duku Timur' }}</p>
                                         
-                                        <p class="text-sm text-gray-600 mb-1">Nomor Rekening Tujuan</p>
-                                        <p class="text-3xl font-bold text-gray-800 mb-2">{{ $setting->account_number ?? '1234 5678 989' }}</p>
+                                        <p class="text-sm mb-1 opacity-90">Nomor Rekening Tujuan</p>
+                                        <p class="text-3xl font-bold mb-2">{{ $setting->bank_account_number ?? '1234 5678 989' }}</p>
                                     </div>
                                     
                                     <div class="text-right">
-                                        <p class="text-sm text-gray-600 mb-1">Jumlah Yang Harus Dibayar</p>
-                                        <p class="text-3xl font-bold text-red-600" id="total-amount-transfer-jemput">Rp. {{ number_format($item->harga_sewa * $quantity, 0, ',', '.') }}</p>
+                                        <p class="text-sm mb-1 opacity-90">Jumlah Yang Harus Dibayar</p>
+                                        <p class="text-3xl font-bold {{ $amountColor }}" id="total-amount-transfer-jemput">Rp. {{ number_format($item->harga_sewa * $quantity, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
                                 
-                                <div class="border-t border-blue-200 pt-6">
+                                <div class="border-t {{ $borderClass }} pt-6">
                                     <div class="flex items-center justify-between mb-4">
-                                        <label class="text-sm font-semibold text-gray-700">Upload Bukti Pembayaran</label>
+                                        <label class="text-sm font-semibold">Upload Bukti Pembayaran</label>
                                         <button type="button" 
                                                 onclick="document.getElementById('payment-proof-jemput').click()"
-                                                class="px-4 py-2 bg-white border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                                                class="px-4 py-2 {{ $buttonClass }} rounded-lg hover:bg-white/30 transition-colors">
                                             Pilih File
                                         </button>
                                     </div>
                                     <input type="file" 
+                                           name="payment_proof_jemput"
                                            id="payment-proof-jemput" 
                                            accept="image/*,application/pdf"
                                            class="hidden">
-                                    <p id="file-name-jemput" class="text-sm text-gray-600 italic">Belum ada file dipilih</p>
-                                    <a href="#" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Kirim</a>
+                                    <p id="file-name-jemput" class="text-sm opacity-80 italic">Belum ada file dipilih</p>
+                                    <a href="#" class="text-sm hover:underline mt-2 inline-block opacity-90">Kirim</a>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Cash Payment Card for Jemput -->
-                        <div id="cash-payment-jemput" class="payment-content-jemput">
+                        <div id="cash-payment-jemput" class="payment-content-jemput {{ $defaultMethod == 'tunai' ? '' : 'hidden' }}">
                             <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg p-8">
                                 <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">Silahkan Lakukan Pembayaran Ditempat</h4>
                                 
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-lg text-gray-700">Yani - Bendahara BUMDes</p>
+                                        <p class="text-lg text-gray-700">{{ $cashDescription }}</p>
                                     </div>
                                     
                                     <div class="text-right">
@@ -512,7 +590,8 @@
 
                     <!-- Submit Button -->
                     <div class="flex justify-end">
-                        <button type="submit" 
+                        <button type="button" 
+                                id="confirm-booking-btn"
                                 class="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
                             Konfirmasi
                         </button>
@@ -521,6 +600,78 @@
             </form>
         </div>
     </section>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
+            <div class="text-center">
+                <img src="{{ asset('admin/img/illustrations/isewalogo.png') }}" alt="iSewa Logo" class="w-40 mx-auto mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Anda akan Melakukan Penyewaan</h2>
+                <p class="text-gray-600 mb-2">Pesanan Anda Akan Diproses</p>
+                <p class="text-gray-500 text-sm mb-6">Apakah anda yakin?</p>
+                
+                <div class="flex gap-4">
+                    <button type="button" 
+                            id="cancel-confirmation"
+                            class="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-full transition-colors">
+                        Tidak
+                    </button>
+                    <button type="button" 
+                            id="proceed-confirmation"
+                            class="flex-1 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full transition-colors">
+                        Ya
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
+            <button type="button" id="close-success-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            
+            <div class="text-center">
+                <div class="mb-6">
+                    <!-- Animated Checkmark -->
+                    <div class="checkmark-circle mx-auto">
+                        <svg class="checkmark" viewBox="0 0 52 52">
+                            <circle class="checkmark-circle-path" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">Pesanan Berhasil Dibuat</h2>
+                <p class="text-gray-700 font-medium mb-2">Pesanan Anda sedang Diproses</p>
+                <p class="text-gray-500 text-sm mb-8">Silahkan klik untuk menuju halaman selanjutnya</p>
+                
+                <div class="space-y-4">
+                    <div class="flex gap-4">
+                        <button type="button" 
+                                id="view-receipt-btn"
+                                class="flex-1 px-5 py-3 border-2 border-blue-500 text-blue-500 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                            Lihat Bukti Transaksi
+                        </button>
+                        <button type="button" 
+                                id="download-receipt-btn"
+                                class="flex-1 px-5 py-3 border-2 border-blue-500 text-blue-500 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                            Unduh Bukti Transaksi
+                        </button>
+                    </div>
+                    <button type="button" 
+                            id="view-activity-btn"
+                            class="w-full px-6 py-3.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all">
+                        Lihat Aktivitas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 @endsection
 
@@ -531,9 +682,8 @@
     }
 
     /* Delivery Method Cards */
-    .delivery-method-card.active > div {
+    .delivery-method-card.active {
         border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
     /* Payment Method Buttons */
@@ -559,117 +709,186 @@
     input[type="number"] {
         -moz-appearance: textfield;
     }
+
+    /* Checkmark Animation */
+    .checkmark-circle {
+        width: 80px;
+        height: 80px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .checkmark {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 3;
+        stroke: #4ade80;
+        stroke-miterlimit: 10;
+        box-shadow: inset 0px 0px 0px #4ade80;
+        animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+
+    .checkmark-circle-path {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 3;
+        stroke-miterlimit: 10;
+        stroke: #4ade80;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        stroke: #fff;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @keyframes scale {
+        0%, 100% {
+            transform: none;
+        }
+        50% {
+            transform: scale3d(1.1, 1.1, 1);
+        }
+    }
+
+    @keyframes fill {
+        100% {
+            box-shadow: inset 0px 0px 0px 30px #4ade80;
+        }
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    (function() {
+    document.addEventListener('DOMContentLoaded', function() {
         'use strict';
 
-        const pricePerUnit = {{ $item->harga_sewa }};
+        const pricePerUnit = {{ number_format($item->harga_sewa, 0, '.', '') }};
         const maxStock = {{ $item->stok }};
         
+        // Helper to safely get element
+        const getEl = (id) => document.getElementById(id);
+
         // Delivery Method Toggle
         const deliveryCards = document.querySelectorAll('.delivery-method-card');
-        const deliveryMethodInput = document.getElementById('delivery-method-input');
-        const antarForm = document.getElementById('antar-form');
-        const jemputForm = document.getElementById('jemput-form');
+        const deliveryMethodInput = getEl('delivery-method-input');
+        const antarForm = getEl('antar-form');
+        const jemputForm = getEl('jemput-form');
 
-        deliveryCards.forEach(card => {
-            card.addEventListener('click', function() {
-                const method = this.dataset.method;
-                
-                // Update active state
-                deliveryCards.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update hidden input
-                deliveryMethodInput.value = method;
-                
-                // Show/hide forms
-                if (method === 'antar') {
-                    antarForm.classList.remove('hidden');
-                    jemputForm.classList.add('hidden');
-                } else {
-                    antarForm.classList.add('hidden');
-                    jemputForm.classList.remove('hidden');
-                }
+        if (deliveryCards.length > 0 && deliveryMethodInput && antarForm && jemputForm) {
+            deliveryCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const method = this.dataset.method;
+                    
+                    // Update active state
+                    deliveryCards.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update hidden input
+                    deliveryMethodInput.value = method;
+                    
+                    // Show/hide forms
+                    if (method === 'antar') {
+                        antarForm.classList.remove('hidden');
+                        jemputForm.classList.add('hidden');
+                        updateTotals();
+                    } else {
+                        antarForm.classList.add('hidden');
+                        jemputForm.classList.remove('hidden');
+                        updateTotalsJemput();
+                    }
+                });
             });
-        });
+        }
 
         // Quantity Controls for Antar
-        const qtyDisplay = document.getElementById('quantity-display');
-        const hiddenQty = document.getElementById('hidden-quantity');
-        const decreaseBtn = document.getElementById('decrease-qty');
-        const increaseBtn = document.getElementById('increase-qty');
+        const qtyDisplay = getEl('quantity-display');
+        const hiddenQty = getEl('hidden-quantity');
+        const decreaseBtn = getEl('decrease-qty');
+        const increaseBtn = getEl('increase-qty');
 
-        decreaseBtn.addEventListener('click', () => {
-            let val = parseInt(qtyDisplay.value);
-            if (val > 1) {
-                qtyDisplay.value = val - 1;
-                hiddenQty.value = val - 1;
+        if (qtyDisplay && hiddenQty && decreaseBtn && increaseBtn) {
+            decreaseBtn.addEventListener('click', () => {
+                let val = parseInt(qtyDisplay.value);
+                if (val > 1) {
+                    qtyDisplay.value = val - 1;
+                    hiddenQty.value = val - 1;
+                    updateTotals();
+                }
+            });
+
+            increaseBtn.addEventListener('click', () => {
+                let val = parseInt(qtyDisplay.value);
+                if (val < maxStock) {
+                    qtyDisplay.value = val + 1;
+                    hiddenQty.value = val + 1;
+                    updateTotals();
+                }
+            });
+
+            qtyDisplay.addEventListener('change', () => {
+                let val = parseInt(qtyDisplay.value) || 1;
+                if (val < 1) val = 1;
+                if (val > maxStock) val = maxStock;
+                qtyDisplay.value = val;
+                hiddenQty.value = val;
                 updateTotals();
-            }
-        });
-
-        increaseBtn.addEventListener('click', () => {
-            let val = parseInt(qtyDisplay.value);
-            if (val < maxStock) {
-                qtyDisplay.value = val + 1;
-                hiddenQty.value = val + 1;
-                updateTotals();
-            }
-        });
-
-        qtyDisplay.addEventListener('change', () => {
-            let val = parseInt(qtyDisplay.value) || 1;
-            if (val < 1) val = 1;
-            if (val > maxStock) val = maxStock;
-            qtyDisplay.value = val;
-            hiddenQty.value = val;
-            updateTotals();
-        });
+            });
+        }
 
         // Quantity Controls for Jemput
-        const qtyDisplayJemput = document.getElementById('quantity-display-jemput');
-        const decreaseBtnJemput = document.getElementById('decrease-qty-jemput');
-        const increaseBtnJemput = document.getElementById('increase-qty-jemput');
+        const qtyDisplayJemput = getEl('quantity-display-jemput');
+        const decreaseBtnJemput = getEl('decrease-qty-jemput');
+        const increaseBtnJemput = getEl('increase-qty-jemput');
 
-        decreaseBtnJemput.addEventListener('click', () => {
-            let val = parseInt(qtyDisplayJemput.value);
-            if (val > 1) {
-                qtyDisplayJemput.value = val - 1;
-                hiddenQty.value = val - 1;
+        if (qtyDisplayJemput && decreaseBtnJemput && increaseBtnJemput) {
+            decreaseBtnJemput.addEventListener('click', () => {
+                let val = parseInt(qtyDisplayJemput.value);
+                if (val > 1) {
+                    qtyDisplayJemput.value = val - 1;
+                    if (hiddenQty) hiddenQty.value = val - 1;
+                    updateTotalsJemput();
+                }
+            });
+
+            increaseBtnJemput.addEventListener('click', () => {
+                let val = parseInt(qtyDisplayJemput.value);
+                if (val < maxStock) {
+                    qtyDisplayJemput.value = val + 1;
+                    if (hiddenQty) hiddenQty.value = val + 1;
+                    updateTotalsJemput();
+                }
+            });
+
+            qtyDisplayJemput.addEventListener('change', () => {
+                let val = parseInt(qtyDisplayJemput.value) || 1;
+                if (val < 1) val = 1;
+                if (val > maxStock) val = maxStock;
+                qtyDisplayJemput.value = val;
+                if (hiddenQty) hiddenQty.value = val;
                 updateTotalsJemput();
-            }
-        });
-
-        increaseBtnJemput.addEventListener('click', () => {
-            let val = parseInt(qtyDisplayJemput.value);
-            if (val < maxStock) {
-                qtyDisplayJemput.value = val + 1;
-                hiddenQty.value = val + 1;
-                updateTotalsJemput();
-            }
-        });
-
-        qtyDisplayJemput.addEventListener('change', () => {
-            let val = parseInt(qtyDisplayJemput.value) || 1;
-            if (val < 1) val = 1;
-            if (val > maxStock) val = maxStock;
-            qtyDisplayJemput.value = val;
-            hiddenQty.value = val;
-            updateTotalsJemput();
-        });
+            });
+        }
 
         // Date Calculation for Antar
-        const startDate = document.getElementById('start-date');
-        const endDate = document.getElementById('end-date');
-        const daysCount = document.getElementById('days-count');
+        const startDate = getEl('start-date');
+        const endDate = getEl('end-date');
+        const daysCount = getEl('days-count');
 
         function calculateDays() {
-            if (startDate.value && endDate.value) {
+            if (startDate && endDate && daysCount && startDate.value && endDate.value) {
                 const start = new Date(startDate.value);
                 const end = new Date(endDate.value);
                 const diffTime = Math.abs(end - start);
@@ -679,16 +898,18 @@
             }
         }
 
-        startDate.addEventListener('change', calculateDays);
-        endDate.addEventListener('change', calculateDays);
+        if (startDate && endDate) {
+            startDate.addEventListener('change', calculateDays);
+            endDate.addEventListener('change', calculateDays);
+        }
 
         // Date Calculation for Jemput
-        const startDateJemput = document.getElementById('start-date-jemput');
-        const endDateJemput = document.getElementById('end-date-jemput');
-        const daysCountJemput = document.getElementById('days-count-jemput');
+        const startDateJemput = getEl('start-date-jemput');
+        const endDateJemput = getEl('end-date-jemput');
+        const daysCountJemput = getEl('days-count-jemput');
 
         function calculateDaysJemput() {
-            if (startDateJemput.value && endDateJemput.value) {
+            if (startDateJemput && endDateJemput && daysCountJemput && startDateJemput.value && endDateJemput.value) {
                 const start = new Date(startDateJemput.value);
                 const end = new Date(endDateJemput.value);
                 const diffTime = Math.abs(end - start);
@@ -698,173 +919,146 @@
             }
         }
 
-        startDateJemput.addEventListener('change', calculateDaysJemput);
-        endDateJemput.addEventListener('change', calculateDaysJemput);
+        if (startDateJemput && endDateJemput) {
+            startDateJemput.addEventListener('change', calculateDaysJemput);
+            endDateJemput.addEventListener('change', calculateDaysJemput);
+        }
 
         // Update Totals for Antar
         function updateTotals() {
+            if (!qtyDisplay) return;
             const qty = parseInt(qtyDisplay.value) || 1;
-            const days = parseInt(daysCount.textContent) || 1;
             const subtotal = pricePerUnit * qty;
-            const total = subtotal * days;
+            const total = subtotal; // Total equals subtotal, no days multiplication
             
-            document.getElementById('subtotal').textContent = 'Rp. ' + subtotal.toLocaleString('id-ID');
-            document.getElementById('total-amount-transfer').textContent = 'Rp. ' + total.toLocaleString('id-ID');
-            document.getElementById('total-amount-cash').textContent = 'Rp. ' + total.toLocaleString('id-ID');
+            const subtotalEl = getEl('subtotal');
+            const totalTransferEl = getEl('total-amount-transfer');
+            const totalCashEl = getEl('total-amount-cash');
+
+            if (subtotalEl) subtotalEl.textContent = 'Rp. ' + subtotal.toLocaleString('id-ID');
+            if (totalTransferEl) totalTransferEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
+            if (totalCashEl) totalCashEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
         }
 
         // Update Totals for Jemput
         function updateTotalsJemput() {
+            if (!qtyDisplayJemput) return;
             const qty = parseInt(qtyDisplayJemput.value) || 1;
-            const days = parseInt(daysCountJemput.textContent) || 1;
             const subtotal = pricePerUnit * qty;
-            const total = subtotal * days;
+            const total = subtotal; // Total equals subtotal, no days multiplication
             
-            document.getElementById('subtotal-jemput').textContent = 'Rp. ' + subtotal.toLocaleString('id-ID');
-            document.getElementById('total-amount-transfer-jemput').textContent = 'Rp. ' + total.toLocaleString('id-ID');
-            document.getElementById('total-amount-cash-jemput').textContent = 'Rp. ' + total.toLocaleString('id-ID');
+            const subtotalEl = getEl('subtotal-jemput');
+            const totalTransferEl = getEl('total-amount-transfer-jemput');
+            const totalCashEl = getEl('total-amount-cash-jemput');
+
+            if (subtotalEl) subtotalEl.textContent = 'Rp. ' + subtotal.toLocaleString('id-ID');
+            if (totalTransferEl) totalTransferEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
+            if (totalCashEl) totalCashEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
         }
 
         // Payment Method Toggle for Antar
         const paymentBtns = document.querySelectorAll('.payment-method-btn');
-        const paymentMethodHidden = document.getElementById('payment-method-hidden');
-        const transferPayment = document.getElementById('transfer-payment');
-        const cashPayment = document.getElementById('cash-payment');
+        const paymentMethodHidden = getEl('payment-method-hidden');
+        const transferPayment = getEl('transfer-payment');
+        const cashPayment = getEl('cash-payment');
 
-        paymentBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const method = this.dataset.method;
-                
-                paymentBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                paymentMethodHidden.value = method;
-                
-                if (method === 'transfer') {
-                    transferPayment.classList.remove('hidden');
-                    cashPayment.classList.add('hidden');
-                } else {
-                    transferPayment.classList.add('hidden');
-                    cashPayment.classList.remove('hidden');
-                }
+        if (paymentBtns.length > 0 && paymentMethodHidden && transferPayment && cashPayment) {
+            paymentBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const method = this.dataset.method;
+                    
+                    paymentBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    paymentMethodHidden.value = method;
+                    
+                    if (method === 'transfer') {
+                        transferPayment.classList.remove('hidden');
+                        cashPayment.classList.add('hidden');
+                    } else {
+                        transferPayment.classList.add('hidden');
+                        cashPayment.classList.remove('hidden');
+                    }
+                });
             });
-        });
+        }
 
         // Payment Method Toggle for Jemput
         const paymentBtnsJemput = document.querySelectorAll('.payment-method-btn-jemput');
-        const transferPaymentJemput = document.getElementById('transfer-payment-jemput');
-        const cashPaymentJemput = document.getElementById('cash-payment-jemput');
+        const transferPaymentJemput = getEl('transfer-payment-jemput');
+        const cashPaymentJemput = getEl('cash-payment-jemput');
 
-        paymentBtnsJemput.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const method = this.dataset.method;
-                
-                paymentBtnsJemput.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                paymentMethodHidden.value = method;
-                
-                if (method === 'transfer') {
-                    transferPaymentJemput.classList.remove('hidden');
-                    cashPaymentJemput.classList.add('hidden');
-                } else {
-                    transferPaymentJemput.classList.add('hidden');
-                    cashPaymentJemput.classList.remove('hidden');
-                }
+        if (paymentBtnsJemput.length > 0 && paymentMethodHidden && transferPaymentJemput && cashPaymentJemput) {
+            paymentBtnsJemput.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const method = this.dataset.method;
+                    
+                    paymentBtnsJemput.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    paymentMethodHidden.value = method;
+                    
+                    if (method === 'transfer') {
+                        transferPaymentJemput.classList.remove('hidden');
+                        cashPaymentJemput.classList.add('hidden');
+                    } else {
+                        transferPaymentJemput.classList.add('hidden');
+                        cashPaymentJemput.classList.remove('hidden');
+                    }
+                });
             });
-        });
+        }
 
         // File Upload Preview
-        const paymentProof = document.getElementById('payment-proof');
-        const fileName = document.getElementById('file-name');
+        const paymentProof = getEl('payment-proof');
+        const fileName = getEl('file-name');
 
-        paymentProof.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                fileName.textContent = this.files[0].name;
-                fileName.classList.remove('italic');
-            }
-        });
+        if (paymentProof && fileName) {
+            paymentProof.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileName.textContent = this.files[0].name;
+                    fileName.classList.remove('italic');
+                }
+            });
+        }
 
-        const paymentProofJemput = document.getElementById('payment-proof-jemput');
-        const fileNameJemput = document.getElementById('file-name-jemput');
+        const paymentProofJemput = getEl('payment-proof-jemput');
+        const fileNameJemput = getEl('file-name-jemput');
 
-        paymentProofJemput.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                fileNameJemput.textContent = this.files[0].name;
-                fileNameJemput.classList.remove('italic');
-            }
-        });
+        if (paymentProofJemput && fileNameJemput) {
+            paymentProofJemput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileNameJemput.textContent = this.files[0].name;
+                    fileNameJemput.classList.remove('italic');
+                }
+            });
+        }
 
         // Google Maps Location Sharing
-        const shareLocationBtn = document.getElementById('share-location-btn');
-        const latitudeInput = document.getElementById('latitude-input');
-        const longitudeInput = document.getElementById('longitude-input');
+        const shareLocationBtn = getEl('share-location-btn');
+        const latitudeInput = getEl('latitude-input');
+        const longitudeInput = getEl('longitude-input');
 
-        shareLocationBtn.addEventListener('click', function() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        latitudeInput.value = position.coords.latitude;
-                        longitudeInput.value = position.coords.longitude;
-                        alert('Lokasi berhasil dibagikan!');
-                    },
-                    (error) => {
-                        alert('Gagal mendapatkan lokasi. Pastikan GPS aktif.');
-                    }
-                );
-            } else {
-                alert('Browser tidak mendukung geolocation.');
-            }
-        });
+        if (shareLocationBtn && latitudeInput && longitudeInput) {
+            shareLocationBtn.addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            latitudeInput.value = position.coords.latitude;
+                            longitudeInput.value = position.coords.longitude;
+                            alert('Lokasi berhasil dibagikan!');
+                        },
+                        (error) => {
+                            alert('Gagal mendapatkan lokasi. Pastikan GPS aktif.');
+                        }
+                    );
+                } else {
+                    alert('Browser tidak mendukung geolocation.');
+                }
+            });
+        }
 
-        // Form Validation
-        const bookingForm = document.getElementById('booking-form');
-        bookingForm.addEventListener('submit', function(e) {
-            const method = deliveryMethodInput.value;
-            
-            if (method === 'antar') {
-                const recipientName = document.getElementById('recipient-name').value;
-                const deliveryAddress = document.getElementById('delivery-address').value;
-                const startDateVal = startDate.value;
-                const endDateVal = endDate.value;
-                
-                if (!recipientName || !deliveryAddress || !startDateVal || !endDateVal) {
-                    e.preventDefault();
-                    alert('Mohon lengkapi semua data pengiriman!');
-                    return false;
-                }
-            } else {
-                const startDateVal = startDateJemput.value;
-                const endDateVal = endDateJemput.value;
-                
-                if (!startDateVal || !endDateVal) {
-                    e.preventDefault();
-                    alert('Mohon pilih tanggal sewa!');
-                    return false;
-                }
-                
-                // Copy jemput dates to main form
-                startDate.value = startDateVal;
-                endDate.value = endDateVal;
-            }
-            
-            const paymentMethod = paymentMethodHidden.value;
-            if (paymentMethod === 'transfer') {
-                const proofFile = method === 'antar' ? paymentProof.files[0] : paymentProofJemput.files[0];
-                if (!proofFile) {
-                    e.preventDefault();
-                    alert('Mohon upload bukti pembayaran!');
-                    return false;
-                }
-                
-                // Copy file to main input if from jemput
-                if (method === 'jemput' && paymentProofJemput.files[0]) {
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(paymentProofJemput.files[0]);
-                    paymentProof.files = dataTransfer.files;
-                }
-            }
-        });
+        }
 
         // Smooth scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -873,19 +1067,157 @@
         updateTotals();
         updateTotalsJemput();
 
-        // Update totals when switching tabs
-        deliveryCards.forEach(card => {
-            card.addEventListener('click', function() {
-                const method = this.dataset.method;
-                setTimeout(() => {
-                    if (method === 'jemput') {
-                        updateTotalsJemput();
-                    } else {
-                        updateTotals();
+        // ============================================
+        // BOOKING CONFIRMATION SYSTEM
+        // ============================================
+        
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const successModal = document.getElementById('success-modal');
+        const confirmBookingBtn = document.getElementById('confirm-booking-btn');
+        const cancelConfirmation = document.getElementById('cancel-confirmation');
+        const proceedConfirmation = document.getElementById('proceed-confirmation');
+        const closeSuccessModal = document.getElementById('close-success-modal');
+        const viewReceiptBtn = document.getElementById('view-receipt-btn');
+        const downloadReceiptBtn = document.getElementById('download-receipt-btn');
+        const viewActivityBtn = document.getElementById('view-activity-btn');
+        const bookingForm = getEl('booking-form');
+
+        let receiptId = null;
+
+        // Show confirmation modal on button click
+        if (confirmBookingBtn) {
+            confirmBookingBtn.addEventListener('click', function() {
+                // Validate required fields
+                const deliveryMethod = deliveryMethodInput ? deliveryMethodInput.value : 'antar';
+                let isValid = true;
+                let errorMessage = '';
+
+                if (deliveryMethod === 'antar') {
+                    const recipientName = getEl('recipient-name')?.value;
+                    const deliveryAddress = getEl('delivery-address')?.value;
+                    const startDateVal = startDate?.value;
+                    const endDateVal = endDate?.value;
+
+                    if (!recipientName || !deliveryAddress || !startDateVal || !endDateVal) {
+                        isValid = false;
+                        errorMessage = 'Mohon lengkapi semua field yang wajib diisi (Nama Penerima, Alamat Pengiriman, Tanggal Mulai, Tanggal Selesai)';
                     }
-                }, 50);
+                } else {
+                    const startDateVal = startDateJemput?.value;
+                    const endDateVal = endDateJemput?.value;
+
+                    if (!startDateVal || !endDateVal) {
+                        isValid = false;
+                        errorMessage = 'Mohon lengkapi Tanggal Mulai dan Tanggal Selesai';
+                    }
+                }
+
+                if (!isValid) {
+                    alert(errorMessage);
+                    return;
+                }
+
+                // Show confirmation modal
+                confirmationModal.style.display = 'flex';
+                confirmationModal.classList.remove('hidden');
             });
-        });
-    })();
+        }
+
+        // Cancel confirmation
+        if (cancelConfirmation) {
+            cancelConfirmation.addEventListener('click', function() {
+                confirmationModal.style.display = 'none';
+                confirmationModal.classList.add('hidden');
+            });
+        }
+
+        // Proceed with booking
+        if (proceedConfirmation) {
+            proceedConfirmation.addEventListener('click', function() {
+                // Hide confirmation modal
+                confirmationModal.style.display = 'none';
+                confirmationModal.classList.add('hidden');
+
+                // Copy jemput data to main form if jemput method is selected
+                const deliveryMethod = deliveryMethodInput ? deliveryMethodInput.value : 'antar';
+                if (deliveryMethod === 'jemput') {
+                    // Copy dates
+                    if (startDateJemput && startDate) startDate.value = startDateJemput.value;
+                    if (endDateJemput && endDate) endDate.value = endDateJemput.value;
+                    
+                    // Copy payment proof file if exists
+                    const paymentProofJemput = getEl('payment-proof-jemput');
+                    if (paymentProofJemput?.files[0] && paymentProof) {
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(paymentProofJemput.files[0]);
+                        paymentProof.files = dataTransfer.files;
+                    }
+                }
+
+                // Submit form via AJAX
+                const formData = new FormData(bookingForm);
+
+                fetch('{{ route("rental.booking.store") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        receiptId = data.receipt_id;
+                        
+                        // Show success modal
+                        successModal.style.display = 'flex';
+                        successModal.classList.remove('hidden');
+                    } else {
+                        alert(data.message || 'Terjadi kesalahan saat memproses pesanan');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat memproses pesanan');
+                });
+            });
+        }
+
+        // Close success modal
+        if (closeSuccessModal) {
+            closeSuccessModal.addEventListener('click', function() {
+                successModal.style.display = 'none';
+                successModal.classList.add('hidden');
+            });
+        }
+
+        // View receipt
+        if (viewReceiptBtn) {
+            viewReceiptBtn.addEventListener('click', function() {
+                if (receiptId) {
+                    window.location.href = `/receipt/${receiptId}`;
+                }
+            });
+        }
+
+        // Download receipt
+        if (downloadReceiptBtn) {
+            downloadReceiptBtn.addEventListener('click', function() {
+                if (receiptId) {
+                    window.location.href = `/receipt/${receiptId}/download`;
+                }
+            });
+        }
+
+        // View activity
+        if (viewActivityBtn) {
+            viewActivityBtn.addEventListener('click', function() {
+                window.location.href = '{{ route("user.activity") }}';
+            });
+        }
+
+    });
+
 </script>
 @endpush

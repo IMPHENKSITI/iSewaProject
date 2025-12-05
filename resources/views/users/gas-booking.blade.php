@@ -1,0 +1,632 @@
+@extends('layouts.user')
+
+@php
+    // Card styling logic (same as rental booking)
+    $cardStyle = 'background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);'; // default blue
+    $amountColor = 'text-yellow-300'; // Default amount color
+    $cardTextColor = 'text-white';
+    $buttonClass = 'bg-white/20 backdrop-blur-sm border border-white/40 text-white hover:bg-white/30';
+    $borderClass = 'border-white/30';
+    
+    if ($setting && $setting->card_gradient_style) {
+        $gradients = [
+            'white' => 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)',
+            'silver' => 'linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%)',
+            'gold' => 'linear-gradient(135deg, #ffd700 0%, #fdb931 100%)',
+            'transparent' => 'rgba(59, 130, 246, 0.3)',
+            'blue' => 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+            'green' => 'linear-gradient(135deg, #00a884 0%, #005c4b 100%)',
+            'purple' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'dark' => 'linear-gradient(135deg, #232526 0%, #414345 100%)',
+            'orange' => 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)',
+            'red' => 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)',
+        ];
+        
+        $style = $setting->card_gradient_style;
+        $cardStyle = 'background: ' . ($gradients[$style] ?? $gradients['blue']) . ';';
+        
+        // Determine colors based on background (SAME AS RENTAL BOOKING)
+        if (in_array($style, ['white', 'silver', 'gold', 'transparent'])) {
+            $amountColor = 'text-red-600';
+            $cardTextColor = 'text-gray-800';
+            $buttonClass = 'bg-gray-200 hover:bg-gray-300 text-gray-800 border border-gray-400';
+            $borderClass = 'border-gray-300';
+        } elseif ($style == 'red') {
+            $amountColor = 'text-white';
+            $cardTextColor = 'text-white';
+        } else {
+            $amountColor = 'text-yellow-300'; // Blue, Green, Purple, Dark
+            $cardTextColor = 'text-white';
+        }
+    }
+    
+    // Get cash payment description
+    $cashDescription = $setting->cash_payment_description ?? 'Yani - Bendahara BUMDes';
+
+    // Bank Logo Mapping
+    $bankLogos = [
+        'Bank Syariah Indonesia' => 'admin/img/banks/bsi.png',
+        'BRI' => 'admin/img/banks/bri.png',
+        'Mandiri' => 'admin/img/banks/mandiri.png',
+        'BNI' => 'admin/img/banks/bni.png',
+        'BCA' => 'admin/img/banks/bca.png',
+        'Bank Riau Kepri Syariah' => 'admin/img/banks/brk.png',
+        'Bank Mega' => 'admin/img/banks/mega.png',
+    ];
+    $bankLogoPath = $bankLogos[$setting->bank_name ?? ''] ?? 'admin/img/banks/bsi.png';
+    
+    // Determine available payment methods
+    $methods = $setting->payment_methods ?? ['transfer', 'tunai'];
+    $hasTransfer = in_array('transfer', $methods);
+    $hasTunai = in_array('tunai', $methods);
+    
+    // Determine default active method
+    $defaultMethod = $hasTransfer ? 'transfer' : 'tunai';
+@endphp
+
+@section('page')
+<main class="flex-grow relative w-full">
+    <section class="relative z-10 min-h-screen pt-32 pb-16 bg-cover bg-center bg-no-repeat bg-fixed" 
+             style="background-image: url('{{ asset('admin/img/elements/background1.png') }}');">
+        
+        <!-- White Overlay -->
+        <div class="absolute inset-0 bg-white/25 pointer-events-none"></div>
+
+        <div class="max-w-5xl mx-auto px-6 relative z-20">
+            <!-- Header with Gradient Text (Centered) -->
+            <div class="text-center mb-12 mt-8">
+                <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">
+                    Pembelian Gas
+                </h1>
+            </div>
+
+            <form id="gas-booking-form" action="#" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="gas_id" value="{{ $item->id }}">
+                <input type="hidden" name="quantity" id="hidden-quantity" value="{{ $quantity }}">
+
+                <!-- Buyer Information Card -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                        </svg>
+                        <h3 class="text-lg font-bold text-gray-800">Nama dan Alamat Pembeli</h3>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <input type="text" 
+                               name="buyer_name" 
+                               id="buyer-name"
+                               placeholder="Nama Lengkap" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               required>
+                        
+                        <textarea name="buyer_address" 
+                                  id="buyer-address"
+                                  rows="3" 
+                                  placeholder="Alamat Lengkap" 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  required></textarea>
+                    </div>
+                </div>
+
+                <!-- Product Card -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <div class="flex gap-6">
+                        <!-- Product Image -->
+                        <img src="{{ asset('storage/' . $item->foto) }}" 
+                             alt="{{ $item->jenis_gas }}" 
+                             class="w-32 h-32 object-cover rounded-lg flex-shrink-0">
+                        
+                        <div class="flex-1">
+                            <!-- Product Name -->
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $item->jenis_gas }}</h3>
+                            
+                            <!-- Price -->
+                            <div class="mb-3">
+                                <p class="text-sm text-gray-600">Harga Satuan</p>
+                                <p class="text-lg font-bold text-gray-800">Rp. {{ number_format($item->harga_satuan, 0, ',', '.') }}</p>
+                            </div>
+                            
+                            <!-- Quantity Selector -->
+                            <div class="flex items-center gap-3 mb-3">
+                                <label class="text-sm text-gray-600 font-medium">Jumlah</label>
+                                <div class="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-1">
+                                    <button type="button" id="decrease-qty" class="text-gray-600 hover:text-gray-800">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                        </svg>
+                                    </button>
+                                    <input type="number" 
+                                           id="quantity-display" 
+                                           value="{{ $quantity }}" 
+                                           min="1" 
+                                           max="{{ $item->stok }}"
+                                           class="w-12 text-center border-0 focus:outline-none focus:ring-0">
+                                    <button type="button" id="increase-qty" class="text-gray-600 hover:text-gray-800">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Side: Category and Subtotal -->
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600 mb-1">{{ $item->kategori }}</p>
+                            <div class="mt-4">
+                                <p class="text-sm text-gray-600 mb-1">Subtotal</p>
+                                <p class="text-xl font-bold text-gray-800" id="subtotal">Rp. {{ number_format($item->harga_satuan * $quantity, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
+                    <div class="flex gap-4 mb-6">
+                        @if($hasTransfer)
+                        <button type="button" 
+                                class="payment-method-btn {{ $defaultMethod == 'transfer' ? 'active' : '' }} flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                                data-method="transfer">
+                            Transfer
+                        </button>
+                        @endif
+                        
+                        @if($hasTunai)
+                        <button type="button" 
+                                class="payment-method-btn {{ $defaultMethod == 'tunai' ? 'active' : '' }} flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                                data-method="tunai">
+                            Tunai
+                        </button>
+                        @endif
+                    </div>
+                    <input type="hidden" name="payment_method" id="payment-method-hidden" value="{{ $defaultMethod }}">
+
+                    <!-- Transfer Payment Card -->
+                    <div id="transfer-payment" class="payment-content {{ $defaultMethod == 'transfer' ? '' : 'hidden' }}">
+                        <div class="rounded-2xl shadow-lg p-8 {{ $cardTextColor }}" style="{{ $cardStyle }}">
+                            <h4 class="text-2xl font-bold text-center mb-6">{{ $setting->bank_name ?? 'Bank Syariah Indonesia' }}</h4>
+                            
+                            <div class="flex items-start gap-6 mb-6">
+                                <!-- Bank Logo -->
+                                <div class="flex-shrink-0">
+                                    <div class="w-24 h-16 bg-white rounded-lg flex items-center justify-center shadow-md p-2">
+                                        <img src="{{ asset($bankLogoPath) }}" alt="{{ $setting->bank_name }}" class="w-full h-full object-contain">
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-1">
+                                    <p class="text-sm mb-1 opacity-90">Atas Nama</p>
+                                    <p class="text-lg font-bold mb-4">{{ $setting->bank_account_holder ?? 'BUMDes Desa Pematang Duku Timur' }}</p>
+                                    
+                                    <p class="text-sm mb-1 opacity-90">Nomor Rekening Tujuan</p>
+                                    <p class="text-3xl font-bold mb-2">{{ $setting->bank_account_number ?? '1234 5678 989' }}</p>
+                                </div>
+                                
+                                <div class="text-right">
+                                    <p class="text-sm mb-1 opacity-90">Jumlah Yang Harus Dibayar</p>
+                                    <p class="text-3xl font-bold {{ $amountColor }}" id="total-amount-transfer">Rp. {{ number_format($item->harga_satuan * $quantity, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t {{ $borderClass }} pt-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <label class="text-sm font-semibold">Upload Bukti Pembayaran</label>
+                                    <button type="button" 
+                                            onclick="document.getElementById('payment-proof').click()"
+                                            class="px-4 py-2 {{ $buttonClass }} rounded-lg transition-colors">
+                                        Pilih File
+                                    </button>
+                                </div>
+                                <input type="file" 
+                                       name="payment_proof" 
+                                       id="payment-proof" 
+                                       accept="image/*,application/pdf"
+                                       class="hidden">
+                                <p id="file-name" class="text-sm opacity-80 italic">Belum ada file dipilih</p>
+                                <a href="#" class="text-sm hover:underline mt-2 inline-block opacity-90">Kirim</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cash Payment Card -->
+                    <div id="cash-payment" class="payment-content {{ $defaultMethod == 'tunai' ? '' : 'hidden' }}">
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg p-8">
+                            <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">Silahkan Lakukan Pembayaran Ditempat</h4>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-lg text-gray-700">{{ $cashDescription }}</p>
+                                </div>
+                                
+                                <div class="text-right">
+                                    <p class="text-sm text-gray-600 mb-1">Jumlah Yang Harus Dibayar</p>
+                                    <p class="text-3xl font-bold text-red-600" id="total-amount-cash">Rp. {{ number_format($item->harga_satuan * $quantity, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end">
+                    <button type="button" 
+                            id="confirm-gas-booking-btn"
+                            class="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+                        Konfirmasi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Confirmation Modal -->
+    <div id="gas-confirmation-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
+            <div class="text-center">
+                <img src="{{ asset('admin/img/illustrations/isewalogo.png') }}" alt="iSewa Logo" class="w-40 mx-auto mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Anda akan Melakukan Pembelian Gas</h2>
+                <p class="text-gray-600 mb-2">Pesanan Anda Akan Diproses</p>
+                <p class="text-gray-500 text-sm mb-6">Apakah anda yakin?</p>
+                
+                <div class="flex gap-4">
+                    <button type="button" 
+                            id="cancel-gas-confirmation"
+                            class="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-full transition-colors">
+                        Tidak
+                    </button>
+                    <button type="button" 
+                            id="proceed-gas-confirmation"
+                            class="flex-1 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full transition-colors">
+                        Ya
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="gas-success-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all relative">
+            <button type="button" id="close-gas-success-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            
+            <div class="text-center">
+                <div class="mb-6">
+                    <div class="checkmark-circle mx-auto">
+                        <svg class="checkmark" viewBox="0 0 52 52">
+                            <circle class="checkmark-circle-path" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">Pembelian Berhasil</h2>
+                <p class="text-gray-700 font-medium mb-2">Pembelian Anda telah Berhasil</p>
+                <p class="text-gray-500 text-sm mb-8">Silahkan klik untuk menuju halaman selanjutnya</p>
+                
+                <div class="space-y-4">
+                    <div class="flex gap-4">
+                        <button type="button" 
+                                id="view-gas-receipt-btn"
+                                class="flex-1 px-5 py-3 border-2 border-blue-500 text-blue-500 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                            Lihat Bukti Transaksi
+                        </button>
+                        <button type="button" 
+                                id="download-gas-receipt-btn"
+                                class="flex-1 px-5 py-3 border-2 border-blue-500 text-blue-500 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                            Unduh Bukti Transaksi
+                        </button>
+                    </div>
+                    <button type="button" 
+                            id="view-gas-activity-btn"
+                            class="w-full px-6 py-3.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all">
+                        Lihat Aktivitas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+@include('partials.footer')
+@endsection
+
+@push('styles')
+<style>
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Payment Method Buttons */
+    .payment-method-btn.active {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .payment-method-btn:not(.active) {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
+
+    /* Remove spinner from number input */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    /* Checkmark Animation */
+    .checkmark-circle {
+        width: 80px;
+        height: 80px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .checkmark {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 3;
+        stroke: #4ade80;
+        stroke-miterlimit: 10;
+        box-shadow: inset 0px 0px 0px #4ade80;
+        animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+
+    .checkmark-circle-path {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 3;
+        stroke-miterlimit: 10;
+        stroke: #4ade80;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        stroke: #fff;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @keyframes scale {
+        0%, 100% {
+            transform: none;
+        }
+        50% {
+            transform: scale3d(1.1, 1.1, 1);
+        }
+    }
+
+    @keyframes fill {
+        100% {
+            box-shadow: inset 0px 0px 0px 30px #4ade80;
+        }
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    (function() {
+        'use strict';
+
+        const pricePerUnit = {{ $item->harga_satuan }};
+        const maxStock = {{ $item->stok }};
+
+        // Quantity Selector
+        const qtyInput = document.getElementById('quantity-display');
+        const hiddenQty = document.getElementById('hidden-quantity');
+        const decreaseBtn = document.getElementById('decrease-qty');
+        const increaseBtn = document.getElementById('increase-qty');
+        const subtotalEl = document.getElementById('subtotal');
+        const totalTransferEl = document.getElementById('total-amount-transfer');
+        const totalCashEl = document.getElementById('total-amount-cash');
+
+        function updateTotals() {
+            const qty = parseInt(qtyInput.value) || 1;
+            const total = pricePerUnit * qty;
+            const formattedTotal = 'Rp. ' + total.toLocaleString('id-ID');
+            
+            subtotalEl.textContent = formattedTotal;
+            if (totalTransferEl) totalTransferEl.textContent = formattedTotal;
+            if (totalCashEl) totalCashEl.textContent = formattedTotal;
+            hiddenQty.value = qty;
+        }
+
+        if (decreaseBtn && increaseBtn) {
+            decreaseBtn.addEventListener('click', () => {
+                let currentValue = parseInt(qtyInput.value) || 1;
+                if (currentValue > 1) {
+                    qtyInput.value = currentValue - 1;
+                    updateTotals();
+                }
+            });
+
+            increaseBtn.addEventListener('click', () => {
+                let currentValue = parseInt(qtyInput.value) || 1;
+                if (currentValue < maxStock) {
+                    qtyInput.value = currentValue + 1;
+                    updateTotals();
+                }
+            });
+
+            qtyInput.addEventListener('change', () => {
+                let value = parseInt(qtyInput.value) || 1;
+                if (value < 1) qtyInput.value = 1;
+                if (value > maxStock) qtyInput.value = maxStock;
+                updateTotals();
+            });
+        }
+
+        // Payment Method Toggle
+        const paymentBtns = document.querySelectorAll('.payment-method-btn');
+        const paymentMethodInput = document.getElementById('payment-method-hidden');
+        const transferPayment = document.getElementById('transfer-payment');
+        const cashPayment = document.getElementById('cash-payment');
+
+        paymentBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const method = btn.dataset.method;
+                
+                // Update button states
+                paymentBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update hidden input
+                paymentMethodInput.value = method;
+                
+                // Toggle payment content
+                if (method === 'transfer') {
+                    if (transferPayment) transferPayment.classList.remove('hidden');
+                    if (cashPayment) cashPayment.classList.add('hidden');
+                } else {
+                    if (transferPayment) transferPayment.classList.add('hidden');
+                    if (cashPayment) cashPayment.classList.remove('hidden');
+                }
+            });
+        });
+
+        // File Upload Display
+        const fileInput = document.getElementById('payment-proof');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        if (fileInput && fileNameDisplay) {
+            fileInput.addEventListener('change', (e) => {
+                const fileName = e.target.files[0]?.name || 'Belum ada file dipilih';
+                fileNameDisplay.textContent = fileName;
+                fileNameDisplay.classList.remove('italic');
+            });
+        }
+
+        // ============================================
+        // GAS BOOKING CONFIRMATION SYSTEM
+        // ============================================
+        
+        const gasConfirmationModal = document.getElementById('gas-confirmation-modal');
+        const gasSuccessModal = document.getElementById('gas-success-modal');
+        const confirmGasBookingBtn = document.getElementById('confirm-gas-booking-btn');
+        const cancelGasConfirmation = document.getElementById('cancel-gas-confirmation');
+        const proceedGasConfirmation = document.getElementById('proceed-gas-confirmation');
+        const closeGasSuccessModal = document.getElementById('close-gas-success-modal');
+        const viewGasReceiptBtn = document.getElementById('view-gas-receipt-btn');
+        const downloadGasReceiptBtn = document.getElementById('download-gas-receipt-btn');
+        const viewGasActivityBtn = document.getElementById('view-gas-activity-btn');
+        const gasBookingForm = document.getElementById('gas-booking-form');
+
+        let gasReceiptId = null;
+
+        // Show confirmation modal
+        if (confirmGasBookingBtn) {
+            confirmGasBookingBtn.addEventListener('click', function() {
+                const buyerName = document.getElementById('buyer-name')?.value;
+                const buyerAddress = document.getElementById('buyer-address')?.value;
+
+                if (!buyerName || !buyerAddress) {
+                    alert('Mohon lengkapi Nama dan Alamat Pembeli');
+                    return;
+                }
+
+                gasConfirmationModal.style.display = 'flex';
+                gasConfirmationModal.classList.remove('hidden');
+            });
+        }
+
+        // Cancel confirmation
+        if (cancelGasConfirmation) {
+            cancelGasConfirmation.addEventListener('click', function() {
+                gasConfirmationModal.style.display = 'none';
+                gasConfirmationModal.classList.add('hidden');
+            });
+        }
+
+        // Proceed with booking
+        if (proceedGasConfirmation) {
+            proceedGasConfirmation.addEventListener('click', function() {
+                gasConfirmationModal.style.display = 'none';
+                gasConfirmationModal.classList.add('hidden');
+
+                const formData = new FormData(gasBookingForm);
+
+                fetch('{{ route("gas.booking.store") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        gasReceiptId = data.receipt_id;
+                        gasSuccessModal.style.display = 'flex';
+                        gasSuccessModal.classList.remove('hidden');
+                    } else {
+                        alert(data.message || 'Terjadi kesalahan saat memproses pesanan');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat memproses pesanan');
+                });
+            });
+        }
+
+        // Close success modal
+        if (closeGasSuccessModal) {
+            closeGasSuccessModal.addEventListener('click', function() {
+                gasSuccessModal.style.display = 'none';
+                gasSuccessModal.classList.add('hidden');
+            });
+        }
+
+        // View receipt
+        if (viewGasReceiptBtn) {
+            viewGasReceiptBtn.addEventListener('click', function() {
+                if (gasReceiptId) {
+                    window.location.href = `/receipt/${gasReceiptId}`;
+                }
+            });
+        }
+
+        // Download receipt
+        if (downloadGasReceiptBtn) {
+            downloadGasReceiptBtn.addEventListener('click', function() {
+                if (gasReceiptId) {
+                    window.location.href = `/receipt/${gasReceiptId}/download`;
+                }
+            });
+        }
+
+        // View activity
+        if (viewGasActivityBtn) {
+            viewGasActivityBtn.addEventListener('click', function() {
+                window.location.href = '{{ route("user.activity") }}';
+            });
+        }
+    })();
+</script>
+@endpush

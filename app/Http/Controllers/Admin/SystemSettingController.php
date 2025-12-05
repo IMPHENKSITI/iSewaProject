@@ -22,6 +22,8 @@ class SystemSettingController extends Controller
                 'bank_account_number' => '12345678989',
                 'bank_account_holder' => 'BUMDes Desa Pematang Duku Timur',
                 'payment_methods' => ['transfer', 'tunai'],
+                'card_background_type' => 'gradient',
+                'card_gradient_style' => 'blue',
                 'whatsapp_number' => '+6281234567890',
                 'office_address' => 'Jl. Kantor BUMDes, Desa Pematang Duku Timur',
                 'operating_hours' => 'Senin - Sabtu, 08:00 - 17:00',
@@ -42,6 +44,9 @@ class SystemSettingController extends Controller
             'bank_account_number' => 'nullable|string|max:255',
             'bank_account_holder' => 'nullable|string|max:255',
             'card_background_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'card_background_type' => 'nullable|in:gradient,image',
+            'card_gradient_style' => 'nullable|string|max:50',
+            'cash_payment_description' => 'nullable|string|max:255',
             'whatsapp_number' => 'nullable|string|max:20',
             'office_address' => 'nullable|string',
             'operating_hours' => 'nullable|string',
@@ -60,19 +65,15 @@ class SystemSettingController extends Controller
         $setting->bank_name = $request->input('bank_name');
         $setting->bank_account_number = $request->input('bank_account_number');
         $setting->bank_account_holder = $request->input('bank_account_holder');
+        $setting->card_background_type = $request->input('card_background_type', 'gradient');
+        $setting->card_gradient_style = $request->input('card_gradient_style', 'blue');
+        $setting->cash_payment_description = $request->input('cash_payment_description');
         $setting->whatsapp_number = $request->input('whatsapp_number');
         $setting->office_address = $request->input('office_address');
         $setting->operating_hours = $request->input('operating_hours');
 
         // Handle payment methods (checkbox array)
-        $paymentMethods = [];
-        if ($request->has('payment_transfer')) {
-            $paymentMethods[] = 'transfer';
-        }
-        if ($request->has('payment_cash')) {
-            $paymentMethods[] = 'tunai';
-        }
-        $setting->payment_methods = $paymentMethods;
+        $setting->payment_methods = $request->input('payment_methods', []);
 
         // Handle card background image upload
         if ($request->hasFile('card_background_image')) {

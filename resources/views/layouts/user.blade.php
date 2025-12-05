@@ -111,8 +111,6 @@
             });
 
         })();
-    <script>
-        // ... existing navbar script ...
     </script>
 
     {{-- Trigger Login Modal if Session Exists --}}

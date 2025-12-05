@@ -57,6 +57,19 @@ Route::get('/unit-penjualan-gas', [App\Http\Controllers\User\GasSalesUserControl
     ->name('gas.sales');
 Route::get('/unit-penjualan-gas/{id}', [App\Http\Controllers\User\GasSalesUserController::class, 'show'])
     ->name('gas.sales.show');
+Route::get('/unit-penjualan-gas/{id}/booking', [App\Http\Controllers\User\GasSalesUserController::class, 'booking'])
+    ->name('gas.booking');
+Route::post('/gas/booking', [App\Http\Controllers\User\GasBookingController::class, 'store'])
+    ->name('gas.booking.store')
+    ->middleware('auth');
+
+// User Activity Route
+Route::get('/aktivitas', [App\Http\Controllers\User\ActivityController::class, 'index'])
+    ->name('user.activity')
+    ->middleware('auth');
+Route::post('/aktivitas/{type}/{id}/cancel', [App\Http\Controllers\User\ActivityController::class, 'requestCancellation'])
+    ->name('user.activity.cancel')
+    ->middleware('auth');
 
 // ============================================
 // USER AUTH ROUTES 
@@ -179,6 +192,11 @@ Route::prefix('admin/aktivitas')->group(function () {
     Route::get('/permintaan-pengajuan/{id}/{type}', [\App\Http\Controllers\Admin\RequestController::class, 'show'])->name('admin.aktivitas.permintaan-pengajuan.show');
     Route::post('/permintaan-pengajuan/{id}/{type}/approve', [\App\Http\Controllers\Admin\RequestController::class, 'approve'])->name('admin.aktivitas.permintaan-pengajuan.approve');
     Route::post('/permintaan-pengajuan/{id}/{type}/reject', [\App\Http\Controllers\Admin\RequestController::class, 'reject'])->name('admin.aktivitas.permintaan-pengajuan.reject');
+    
+    // Order Status Management Routes
+    Route::post('/permintaan-pengajuan/{type}/{id}/update-status', [\App\Http\Controllers\Admin\RequestController::class, 'updateStatus'])->name('admin.aktivitas.update-status');
+    Route::post('/permintaan-pengajuan/{type}/{id}/delivery-proof', [\App\Http\Controllers\Admin\RequestController::class, 'uploadDeliveryProof'])->name('admin.aktivitas.delivery-proof');
+    Route::post('/permintaan-pengajuan/{type}/{id}/cancellation/{action}', [\App\Http\Controllers\Admin\RequestController::class, 'handleCancellation'])->name('admin.aktivitas.cancellation');
 
     Route::get('/bukti-transaksi', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.aktivitas.bukti-transaksi.index');
     Route::get('/bukti-transaksi/{id}/{type}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.aktivitas.bukti-transaksi.show');

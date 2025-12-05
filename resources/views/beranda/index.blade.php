@@ -325,7 +325,7 @@
                                     <span class="font-semibold text-gray-800">iSewa</span> merupakan platform digital
                                     terpadu yang dirancang untuk mendukung kegiatan operasional dan pelayanan BUMDes secara
                                     modern dan efisien. Sistem ini hadir sebagai solusi inovatif untuk mengelola berbagai
-                                    unit usaha desa seperti penyewaan alat, layanan pembelian gas, serta simpan pinjam.
+                                    unit usaha desa seperti penyewaan alat, dan layanan pembelian gas.
                                     Melalui iSewa, proses administrasi dan transaksi menjadi lebih cepat, transparan, dan
                                     mudah dijangkau oleh masyarakat.
                                 </p>

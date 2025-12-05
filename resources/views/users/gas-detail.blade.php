@@ -189,6 +189,7 @@
 
                             <!-- Order Button -->
                             <button type="button" 
+                                    id="order-btn"
                                     class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                                 Pesan
                             </button>
@@ -365,6 +366,15 @@
                 carouselContainer.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
                 carouselContainer.addEventListener('mouseleave', startAutoSlide);
             }
+        }
+
+        // Order Button - Redirect to Booking Page
+        const orderBtn = document.getElementById('order-btn');
+        if (orderBtn && qtyInput) {
+            orderBtn.addEventListener('click', () => {
+                const quantity = qtyInput.value || 1;
+                window.location.href = '{{ route("gas.booking", ["id" => $item->id]) }}?quantity=' + quantity;
+            });
         }
 
         // Smooth scroll to top on page load

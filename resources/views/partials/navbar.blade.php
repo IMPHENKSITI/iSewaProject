@@ -90,7 +90,7 @@
 
                                 <div class="h-px bg-gray-100 mx-3"></div>
 
-                                <a href="#aktivitas"
+                                <a href="{{ route('user.activity') }}"
                                     class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

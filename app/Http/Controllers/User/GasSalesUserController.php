@@ -26,4 +26,26 @@ class GasSalesUserController extends Controller
         
         return view('users.gas-detail', compact('item', 'setting'));
     }
+
+    public function booking($id)
+    {
+        // Fetch specific gas product
+        $item = Gas::findOrFail($id);
+        
+        // Get quantity from query parameter, default to 1
+        $quantity = request()->query('quantity', 1);
+        
+        // Validate quantity
+        if ($quantity < 1) {
+            $quantity = 1;
+        }
+        if ($quantity > $item->stok) {
+            $quantity = $item->stok;
+        }
+        
+        // Fetch system settings for payment methods and bank details
+        $setting = \App\Models\SystemSetting::first();
+        
+        return view('users.gas-booking', compact('item', 'quantity', 'setting'));
+    }
 }
