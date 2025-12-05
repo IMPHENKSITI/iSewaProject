@@ -339,20 +339,6 @@
             });
         }
 
-<<<<<<< HEAD
-        // Order Button - Redirect to Booking Page
-        const orderBtn = document.getElementById('order-btn');
-        if (orderBtn && qtyInput) {
-            orderBtn.addEventListener('click', () => {
-                const quantity = qtyInput.value || 1;
-                window.location.href = '{{ route("gas.booking", ["id" => $item->id]) }}?quantity=' + quantity;
-            });
-        }
-
-        // Smooth scroll to top on page load
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    })();
-=======
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
                 nextSlide();
@@ -379,9 +365,17 @@
         }
     }
 
+    // Order Button - Redirect to Booking Page
+    const orderBtn = document.getElementById('order-btn');
+    if (orderBtn && qtyInput) {
+        orderBtn.addEventListener('click', () => {
+            const quantity = qtyInput.value || 1;
+            window.location.href = '{{ route("gas.booking", ["id" => $item->id]) }}?quantity=' + quantity;
+        });
+    }
+
     // Smooth scroll to top on page load
     window.scrollTo({ top: 0, behavior: 'smooth' });
->>>>>>> 9291aa651412ef0d9bc6baefcedd947ab2483923
 </script>
 @endpush
 ```
