@@ -150,11 +150,7 @@
 
 @push('scripts')
 <script>
-    (function() {
-        'use strict';
-        
-        // Smooth scroll to top on page load
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    })();
+    // Smooth scroll to top on page load
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 </script>
 @endpush

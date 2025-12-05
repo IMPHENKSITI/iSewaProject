@@ -288,121 +288,107 @@
 
 @push('scripts')
 <script>
-    (function() {
-        'use strict';
+    const BumdesDetailPage = {
+        init() {
+            this.initUnitCarousel();
+        },
 
-        const BumdesDetailPage = {
-            init() {
-                this.initUnitCarousel();
-            },
+        initUnitCarousel() {
+            const cards = Array.from(document.querySelectorAll('.unit-card'));
+            if (cards.length === 0) return;
 
-            initUnitCarousel() {
-                const cards = Array.from(document.querySelectorAll('.unit-card'));
-                if (cards.length === 0) return;
+            const titleElement = document.getElementById('unit-title');
+            const nextBtn = document.getElementById('unit-next');
+            const prevBtn = document.getElementById('unit-prev');
 
-                const titleElement = document.getElementById('unit-title');
-                const nextBtn = document.getElementById('unit-next');
-                const prevBtn = document.getElementById('unit-prev');
+            const stateClasses = ['state-0', 'state-1', 'state-2', 'state-3'];
+            let positions = [1, 2, 3, 0];
 
-                const stateClasses = ['state-0', 'state-1', 'state-2', 'state-3'];
-                let positions = [1, 2, 3, 0];
+            let autoSlideInterval;
+            const autoSlideDelay = 3000;
 
-                let autoSlideInterval;
-                const autoSlideDelay = 3000;
+            const updateCarousel = () => {
+                cards.forEach((card, index) => {
+                    card.classList.remove(...stateClasses);
+                    const currentPos = positions[index];
+                    card.classList.add(stateClasses[currentPos]);
 
-                const updateCarousel = () => {
-                    cards.forEach((card, index) => {
-                        card.classList.remove(...stateClasses);
-                        const currentPos = positions[index];
-                        card.classList.add(stateClasses[currentPos]);
+                    if (currentPos === 1 && titleElement) {
+                        titleElement.style.opacity = '0';
+                        setTimeout(() => {
+                            titleElement.textContent = card.getAttribute('data-name');
+                            titleElement.style.opacity = '1';
+                        }, 200);
+                    }
+                });
+            };
 
-                        if (currentPos === 1 && titleElement) {
-                            titleElement.style.opacity = '0';
-                            setTimeout(() => {
-                                titleElement.textContent = card.getAttribute('data-name');
-                                titleElement.style.opacity = '1';
-                            }, 200);
-                        }
-                    });
-                };
-
-                const handleNext = () => {
-                    positions = positions.map(pos => (pos - 1 < 0 ? 3 : pos - 1));
-                    updateCarousel();
-                };
-
-                const handlePrev = () => {
-                    positions = positions.map(pos => (pos + 1 > 3 ? 0 : pos + 1));
-                    updateCarousel();
-                };
-
-                const startAutoSlide = () => {
-                    clearInterval(autoSlideInterval);
-                    autoSlideInterval = setInterval(handleNext, autoSlideDelay);
-                };
-
-                const resetAutoSlide = () => {
-                    clearInterval(autoSlideInterval);
-                    startAutoSlide();
-                };
-
-                if (nextBtn) {
-                    const newNext = nextBtn.cloneNode(true);
-                    nextBtn.parentNode.replaceChild(newNext, nextBtn);
-                    newNext.addEventListener('click', () => {
-                        handleNext();
-                        resetAutoSlide();
-                    });
-                }
-                if (prevBtn) {
-                    const newPrev = prevBtn.cloneNode(true);
-                    prevBtn.parentNode.replaceChild(newPrev, prevBtn);
-                    newPrev.addEventListener('click', () => {
-                        handlePrev();
-                        resetAutoSlide();
-                    });
-                }
-
-                const container = document.getElementById('unit-carousel-container');
-                if (container) {
-                    container.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
-                    container.addEventListener('mouseleave', startAutoSlide);
-                }
-
+            const handleNext = () => {
+                positions = positions.map(pos => (pos - 1 < 0 ? 3 : pos - 1));
                 updateCarousel();
+            };
+
+            const handlePrev = () => {
+                positions = positions.map(pos => (pos + 1 > 3 ? 0 : pos + 1));
+                updateCarousel();
+            };
+
+            const startAutoSlide = () => {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = setInterval(handleNext, autoSlideDelay);
+            };
+
+            const resetAutoSlide = () => {
+                clearInterval(autoSlideInterval);
                 startAutoSlide();
+            };
 
-                // Add click handler for rental equipment cards
-                const rentalCards = document.querySelectorAll('.unit-card[data-name="Unit Penyewaan Alat"]');
-                rentalCards.forEach(card => {
-                    card.style.cursor = 'pointer';
-                    card.addEventListener('click', () => {
-                        window.location.href = "{{ route('rental.equipment') }}";
-                    });
+            if (nextBtn) {
+                const newNext = nextBtn.cloneNode(true);
+                nextBtn.parentNode.replaceChild(newNext, nextBtn);
+                newNext.addEventListener('click', () => {
+                    handleNext();
+                    resetAutoSlide();
                 });
-
-                // Add click handler for gas sales cards
-                const gasCards = document.querySelectorAll('.unit-card[data-name="Unit Penjualan Gas"]');
-                gasCards.forEach(card => {
-                    card.style.cursor = 'pointer';
-                    card.addEventListener('click', () => {
-                        window.location.href = "{{ route('gas.sales') }}";
-                    });
-                });
-            },
-        };
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => BumdesDetailPage.init());
-        } else {
-            BumdesDetailPage.init();
-        }
-
-        document.addEventListener('ajaxContentLoaded', (e) => {
-            if (e.detail.url.includes('bumdes/desa-pematang-duku-timur')) {
-                setTimeout(() => BumdesDetailPage.init(), 100);
             }
-        });
-    })();
-</script>
+            if (prevBtn) {
+                const newPrev = prevBtn.cloneNode(true);
+                prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+                newPrev.addEventListener('click', () => {
+                    handlePrev();
+                    resetAutoSlide();
+                });
+            }
+
+            const container = document.getElementById('unit-carousel-container');
+            if (container) {
+                container.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
+                container.addEventListener('mouseleave', startAutoSlide);
+            }
+
+            updateCarousel();
+            startAutoSlide();
+
+            // Add click handler for rental equipment cards
+            const rentalCards = document.querySelectorAll('.unit-card[data-name="Unit Penyewaan Alat"]');
+            rentalCards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', () => {
+                    window.location.href = "{{ route('rental.equipment') }}";
+                });
+            });
+
+            // Add click handler for gas sales cards
+            const gasCards = document.querySelectorAll('.unit-card[data-name="Unit Penjualan Gas"]');
+            gasCards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', () => {
+                    window.location.href = "{{ route('gas.sales') }}";
+                });
+            });
+        },
+    };
+    // Initialize
+    BumdesDetailPage.init();
+ </script>
 @endpush

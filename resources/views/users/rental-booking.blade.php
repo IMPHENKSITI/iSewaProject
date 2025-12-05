@@ -564,9 +564,6 @@
 
 @push('scripts')
 <script>
-    (function() {
-        'use strict';
-
         const pricePerUnit = {{ $item->harga_sewa }};
         const maxStock = {{ $item->stok }};
         
@@ -886,6 +883,5 @@
                 }, 50);
             });
         });
-    })();
 </script>
 @endpush

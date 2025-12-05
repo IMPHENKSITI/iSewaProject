@@ -13,15 +13,16 @@
 
             <div class="flex flex-col md:items-center md:pt-2">
                 <div class="flex flex-col space-y-5">
-                    <a href="{{ route('beranda') }}" data-route="beranda"
-                        class="ajax-nav text-lg font-medium hover:text-blue-300 transition-colors duration-200">
+                    <a href="{{ route('beranda') }}"
+                        class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
                         Beranda
                     </a>
-                    <a href="{{ route('pelayanan') }}" data-route="pelayanan"
-                        class="ajax-nav text-lg font-medium hover:text-blue-300 transition-colors duration-200">
+                    <a href="{{ route('pelayanan') }}"
+                        class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
                         Pelayanan
                     </a>
-                    <a href="#bumdes" class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
+                    <a href="{{ route('bumdes.profil') }}"
+                        class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
                         BUMDes
                     </a>
                     <a href="#profil" class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
@@ -106,82 +107,5 @@
     </div>
 </footer>
 
-{{-- AJAX Navigation System --}}
-<script>
-   /**
- * Simple AJAX Navigation
- * Same page = smooth scroll only, different page = AJAX load
- */
-(function() {
-    let isLoading = false;
-    
-    document.addEventListener('click', (e) => {
-        const link = e.target.closest('a[href^="/"]');
-        if (!link || link.target === '_blank') return;
-        
-        e.preventDefault();
-        
-        const url = link.getAttribute('href');
-        const currentPath = window.location.pathname;
-        
-        // SAME PAGE - Just scroll
-        if (url === currentPath) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
-        }
-        
-        // DIFFERENT PAGE - AJAX load
-        if (isLoading) return;
-        isLoading = true;
-        
-        const main = document.querySelector('main');
-        if (!main) {
-            window.location.href = url;
-            return;
-        }
-        
-        main.style.opacity = '0';
-        
-        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(r => r.text())
-            .then(html => {
-                const doc = new DOMParser().parseFromString(html, 'text/html');
-                const newMain = doc.querySelector('main');
-                
-                if (!newMain) throw new Error('Main not found');
-                
-                setTimeout(() => {
-                    main.innerHTML = newMain.innerHTML;
-                    main.className = newMain.className;
-                    window.scrollTo(0, 0);
-                    main.style.opacity = '1';
-                    
-                    document.title = doc.querySelector('title')?.textContent || '';
-                    history.pushState({ url }, '', url);
-                    
-                    document.querySelectorAll('nav a').forEach(a => {
-                        const active = a.getAttribute('href') === url;
-                        a.classList.toggle('border-b-2', active);
-                        a.classList.toggle('border-blue-500', active);
-                        a.classList.toggle('pb-0.5', active);
-                    });
-                    
-                    document.dispatchEvent(new CustomEvent('ajaxContentLoaded', { detail: { url } }));
-                    isLoading = false;
-                }, 150);
-            })
-            .catch(() => {
-                window.location.href = url;
-                isLoading = false;
-            });
-    });
-    
-    window.addEventListener('popstate', () => location.reload());
-    
-    const style = document.createElement('style');
-    style.textContent = 'main{transition:opacity .15s ease}';
-    document.head.appendChild(style);
-    
-    history.replaceState({ url: location.href }, '', location.href);
-})();
-</script>
+
+

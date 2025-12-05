@@ -19,10 +19,10 @@
 
                 <!-- BUMDes Dropdown -->
                 <div class="relative group">
-                    <button
+                    <a href="{{ route('bumdes.profil') }}"
                         class="text-gray-900 hover:text-blue-600 text-[15px] font-medium transition-colors duration-200 {{ request()->routeIs('bumdes.*') ? 'text-blue-600 border-b-2 border-blue-500 pb-0.5' : '' }}">
                         BUMDes
-                    </button>
+                    </a>
 
                     <!-- Dropdown Menu -->
                     <div
@@ -151,36 +151,36 @@
             </div>
 
             <nav class="mt-2 space-y-1 font-medium">
-                <a href="#beranda" class="block px-6 py-3 hover:text-blue-600 transition">Beranda</a>
-                <a href="#pelayanan" class="block px-6 py-3 hover:text-blue-600 transition">Pelayanan</a>
+                <a href="{{ route('beranda') }}" class="block px-6 py-3 hover:text-blue-600 transition">Beranda</a>
+                <a href="{{ route('pelayanan') }}" class="block px-6 py-3 hover:text-blue-600 transition">Pelayanan</a>
 
                 <button id="bumdes-toggle"
                     class="w-full text-left px-6 py-3 flex items-center justify-between hover:text-blue-600 transition">
                     BUMDes
-                    <svg id="bumdes-arrow" class="w-4 h-4 transition-transform duration-200">
+                    <svg id="bumdes-arrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
 
                 <div id="bumdes-sub" class="hidden pl-8 space-y-1">
-                    <a href="#layanan" class="block py-2 hover:text-blue-600 transition">Profil & Layanan</a>
-                    <a href="#laporan" class="block py-2 hover:text-blue-600 transition">Laporan</a>
+                    <a href="{{ route('bumdes.profil') }}" class="block py-2 hover:text-blue-600 transition">Profil & Layanan</a>
+                    <a href="{{ route('bumdes.laporan') }}" class="block py-2 hover:text-blue-600 transition">Laporan</a>
                 </div>
 
                 <a href="#profil" class="block px-6 py-3 hover:text-blue-600 transition">Profil iSewa</a>
             </nav>
 
             <div class="px-6 pt-6 pb-12 border-t mt-4 space-y-3">
-                <a href=/login
-                    class="block text-center px-6 py-2 rounded-full font-medium bg-white text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white transition">
+                <button id="btn-open-login-mobile" type="button"
+                    class="block w-full text-center px-6 py-2 rounded-full font-medium bg-white text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white transition">
                     Masuk
-                </a>
+                </button>
 
-                <a href=/register
-                    class="block text-center px-6 py-2 rounded-full font-medium text-white hover:shadow-lg transition"
+                <button id="btn-open-register-mobile" type="button"
+                    class="block w-full text-center px-6 py-2 rounded-full font-medium text-white hover:shadow-lg transition"
                     style="background: linear-gradient(to right, #7dc8f0 0%, #45aaf2 100%);">
                     Daftar
-                </a>
+                </button>
             </div>
         </div>
 </nav>
