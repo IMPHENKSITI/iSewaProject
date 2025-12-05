@@ -772,14 +772,10 @@
 
 @push('scripts')
 <script>
-<<<<<<< HEAD
     document.addEventListener('DOMContentLoaded', function() {
         'use strict';
 
         const pricePerUnit = {{ number_format($item->harga_sewa, 0, '.', '') }};
-=======
-        const pricePerUnit = {{ $item->harga_sewa }};
->>>>>>> 9291aa651412ef0d9bc6baefcedd947ab2483923
         const maxStock = {{ $item->stok }};
         
         // Helper to safely get element
@@ -1125,7 +1121,6 @@
                 confirmationModal.style.display = 'flex';
                 confirmationModal.classList.remove('hidden');
             });
-<<<<<<< HEAD
         }
 
         // Cancel confirmation

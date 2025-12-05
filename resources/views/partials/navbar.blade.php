@@ -78,7 +78,6 @@
                                     <span class="text-[15px] font-normal text-center block">Profil</span>
                                 </a>
 
-<<<<<<< HEAD
                                 <div class="h-px bg-gray-100 mx-3"></div>
 
                                 <a href="{{ route('user.activity') }}"
@@ -88,11 +87,6 @@
                                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                     <span class="text-sm font-medium">Aktivitas</span>
-=======
-                                <a href="#aktivitas"
-                                    class="block px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:border-l-[3px] hover:border-l-blue-500 transition-all duration-150">
-                                    <span class="text-[15px] font-normal text-center block">Aktivitas</span>
->>>>>>> 9291aa651412ef0d9bc6baefcedd947ab2483923
                                 </a>
 
                                 <a href="#notifikasi"
