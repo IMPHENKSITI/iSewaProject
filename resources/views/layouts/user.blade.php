@@ -94,17 +94,7 @@
                     }
                 });
             }
-<<<<<<< HEAD
-            
-            // Re-init on AJAX navigation
-            document.addEventListener('ajaxContentLoaded', () => {
-                setTimeout(() => Navbar.init(), 100);
-            });
-
-        })();
-=======
         };
->>>>>>> 9291aa651412ef0d9bc6baefcedd947ab2483923
     </script>
 
     {{-- Trigger Login Modal if Session Exists --}}
