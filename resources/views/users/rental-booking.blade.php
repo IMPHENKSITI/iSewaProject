@@ -62,10 +62,19 @@
     ];
     $bankLogoPath = $bankLogos[$setting->bank_name ?? ''] ?? 'admin/img/banks/bsi.png';
     
-    // Determine available payment methods
-    $methods = $setting->payment_methods ?? ['transfer', 'tunai'];
+    // Determine available payment methods with better fallback
+    $methods = $setting?->payment_methods ?? ['transfer', 'tunai'];
+    if (!is_array($methods) || empty($methods)) {
+        $methods = ['transfer', 'tunai'];
+    }
     $hasTransfer = in_array('transfer', $methods);
     $hasTunai = in_array('tunai', $methods);
+    
+    // Ensure at least one method is available
+    if (!$hasTransfer && !$hasTunai) {
+        $hasTransfer = true;
+        $hasTunai = true;
+    }
     
     // Determine default active method
     $defaultMethod = $hasTransfer ? 'transfer' : 'tunai';
