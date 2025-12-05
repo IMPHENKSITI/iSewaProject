@@ -81,12 +81,8 @@
                                 <div class="h-px bg-gray-100 mx-3"></div>
 
                                 <a href="{{ route('user.activity') }}"
-                                    class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-150">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span class="text-sm font-medium">Aktivitas</span>
+                                    class="block px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:border-l-[3px] hover:border-l-blue-500 transition-all duration-150">
+                                    <span class="text-[15px] font-normal text-center block">Aktivitas</span>
                                 </a>
 
                                 <a href="#notifikasi"
