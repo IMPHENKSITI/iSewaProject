@@ -76,3 +76,6 @@ Catatan yang perlu diperbaikii:
 - Penambahan Fitur Bumdes
 - Navigasi yang ga terduga interaktifnya
 - Sudah bisa update profile dan login (Beta)
+
+## Version 0.6.0
+- Major Update
