@@ -39,8 +39,6 @@
                                 <div class="d-flex flex-column flex-sm-row gap-2 mt-3 mt-sm-0">
                                     <select class="form-select form-select-sm" id="desaSelect" style="min-width: 200px;">
                                         <option selected>Desa Pematang Duku Timur</option>
-                                        <option>Desa Pematang Duku Barat</option>
-                                        <option>Sungai Pakning</option>
                                     </select>
                                     <select class="form-select form-select-sm" id="tahunSelect" style="min-width: 100px;">
                                         <option selected>2025</option>
@@ -503,21 +501,6 @@
                                     <div class="body">
                                         <div class="chart-wrapper">
                                             <div id="totalRevenueChart" class="px-2"></div>
-                                        </div>
-                                        <div class="text-center mt-3">
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-primary dropdown-toggle"
-                                                    type="button" id="growthReportId" data-bs-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                    2025
-                                                </button>
-                                                <div class="dropdown-menu dropdown-menu-end"
-                                                    aria-labelledby="growthReportId">
-                                                    <a class="dropdown-item" href="javascript:void(0);">2024</a>
-                                                    <a class="dropdown-item" href="javascript:void(0);">2023</a>
-                                                    <a class="dropdown-item" href="javascript:void(0);">2022</a>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

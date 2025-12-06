@@ -228,8 +228,6 @@
                                     <select
                                         class="px-4 py-2 text-sm border border-white/40 rounded-lg bg-white/60 backdrop-blur-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/80 transition-all">
                                         <option>Desa Pematang Duku Timur</option>
-                                        <option>Desa Pematang Duku Barat</option>
-                                        <option>Sungai Pakning</option>
                                     </select>
                                     <select
                                         class="px-4 py-2 text-sm border border-white/40 rounded-lg bg-white/60 backdrop-blur-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/80 transition-all">
