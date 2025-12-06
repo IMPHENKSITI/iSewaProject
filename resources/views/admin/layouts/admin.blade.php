@@ -493,10 +493,25 @@
                     </div>
                     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                         <div class="navbar-nav align-items-center">
-                            <div class="nav-item d-flex align-items-center">
-                                <i class="bx bx-search fs-4 lh-0"></i>
-                                <input type="text" class="form-control border-0 shadow-none" placeholder="Cari..."
-                                    aria-label="Search..." />
+                            <div class="nav-item d-flex align-items-center position-relative">
+                                <form action="{{ route('admin.search') }}" method="GET" class="d-flex align-items-center w-100" id="headerSearchForm">
+                                    <i class="bx bx-search fs-4 lh-0"></i>
+                                    <input type="text" 
+                                           name="search" 
+                                           id="headerSearchInput"
+                                           class="form-control border-0 shadow-none" 
+                                           placeholder="Cari..."
+                                           value="{{ request('search') }}"
+                                           aria-label="Search..." />
+                                    @if(request('search'))
+                                        <a href="{{ url()->current() }}" 
+                                           class="btn btn-sm btn-link text-muted p-0 ms-2" 
+                                           title="Hapus pencarian"
+                                           style="text-decoration: none;">
+                                            <i class="bx bx-x fs-5"></i>
+                                        </a>
+                                    @endif
+                                </form>
                             </div>
                         </div>
                         <ul class="navbar-nav flex-row align-items-center ms-auto">

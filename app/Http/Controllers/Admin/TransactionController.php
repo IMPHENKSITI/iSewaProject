@@ -16,10 +16,28 @@ class TransactionController extends Controller
         // Get filter parameters
         $category = $request->get('category', 'all');
         $paymentMethod = $request->get('payment_method', 'all');
+        $search = $request->get('search');
 
         // Build queries
         $rentalQuery = RentalRequest::with('user')->whereNotNull('proof_of_payment');
         $gasQuery = GasOrder::with('user')->whereNotNull('proof_of_payment');
+
+        // Filter by search
+        if ($search) {
+            $rentalQuery->where(function($q) use ($search) {
+                $q->where('status', 'LIKE', "%{$search}%")
+                  ->orWhereHas('user', function($userQuery) use ($search) {
+                      $userQuery->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+            
+            $gasQuery->where(function($q) use ($search) {
+                $q->where('status', 'LIKE', "%{$search}%")
+                  ->orWhereHas('user', function($userQuery) use ($search) {
+                      $userQuery->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
 
         // Filter by payment method
         if ($paymentMethod !== 'all') {
@@ -50,7 +68,7 @@ class TransactionController extends Controller
                            GasOrder::where('payment_method', 'tunai')->whereNotNull('proof_of_payment')->count(),
         ];
 
-        return view('admin.aktivitas.transactions', compact('rentalPayments', 'gasPayments', 'stats', 'category', 'paymentMethod'));
+        return view('admin.aktivitas.transactions', compact('rentalPayments', 'gasPayments', 'stats', 'category', 'paymentMethod', 'search'));
     }
 
     public function verify(Request $request, $id, $type)

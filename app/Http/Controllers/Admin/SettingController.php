@@ -33,10 +33,42 @@ class SettingController extends Controller
     /**
      * Menampilkan halaman Profil iSewa (profil sistem)
      */
-    public function showIsewaProfile()
+    public function showIsewaProfile(Request $request)
     {
-        // Ini akan memanggil view yang sudah kita buat
-        return view('admin.isewa.profile');
+        $search = $request->get('search');
+        
+        $developers = [
+            'wahid' => [
+                'name' => 'Wahid Riono',
+                'prodi' => 'D4 Information System Security',
+                'jurusan' => 'Teknik Informatika',
+                'kampus' => 'Politeknik Negeri Bengkalis',
+                'image' => 'wahid.jpg'
+            ],
+            'mushlihul' => [
+                'name' => 'Mushlihul Arif',
+                'prodi' => 'D4 Information System Security',
+                'jurusan' => 'Teknik Informatika',
+                'kampus' => 'Politeknik Negeri Bengkalis',
+                'image' => 'mushlihul.jpg'
+            ],
+            'safika' => [
+                'name' => 'Safika',
+                'prodi' => 'D4 Information System Security',
+                'jurusan' => 'Teknik Informatika',
+                'kampus' => 'Politeknik Negeri Bengkalis',
+                'image' => 'safika.jpg'
+            ]
+        ];
+        
+        // Filter developers by search
+        if ($search) {
+            $developers = array_filter($developers, function($dev) use ($search) {
+                return stripos($dev['name'], $search) !== false;
+            });
+        }
+        
+        return view('admin.isewa.profile', compact('developers', 'search'));
     }
 
     /**

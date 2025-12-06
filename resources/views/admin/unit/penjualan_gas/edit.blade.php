@@ -8,7 +8,7 @@
     <!-- Form Card -->
     <div class="row">
         <div class="col-xl-12">
-            <div class="card mb-4 animate-fade-in">
+            <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Form Edit Gas</h5>
                 </div>
@@ -25,7 +25,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.unit.penjualan_gas.update', ['gas' => $gas->id]) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.unit.penjualan_gas.update', $gas->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 

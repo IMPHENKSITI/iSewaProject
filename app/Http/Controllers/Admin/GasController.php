@@ -12,11 +12,20 @@ class GasController extends Controller
     // ===========================
     // INDEX
     // ===========================
-    public function index()
+    public function index(Request $request)
     {
-        $gases = Gas::orderBy('created_at', 'desc')->paginate(9);
+        $search = $request->get('search');
+        
+        $gases = Gas::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('jenis_gas', 'LIKE', "%{$search}%")
+                           ->orWhere('kategori', 'LIKE', "%{$search}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(9)
+            ->appends(['search' => $search]);
 
-        return view('admin.unit.penjualan_gas.index', compact('gases'));
+        return view('admin.unit.penjualan_gas.index', compact('gases', 'search'));
     }
 
 

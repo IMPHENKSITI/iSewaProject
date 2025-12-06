@@ -9,15 +9,24 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
+        
         // Ambil semua notifikasi untuk admin, diurutkan dari yang terbaru
-        // Kita asumsikan semua notifikasi untuk admin ditampilkan di sini
         $notifications = Notification::with(['user', 'admin'])
+            ->when($search, function ($query, $search) {
+                return $query->where('title', 'LIKE', "%{$search}%")
+                           ->orWhere('message', 'LIKE', "%{$search}%")
+                           ->orWhereHas('user', function($q) use ($search) {
+                               $q->where('name', 'LIKE', "%{$search}%");
+                           });
+            })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->appends(['search' => $search]);
 
-        return view('admin.notifications.index', compact('notifications'));
+        return view('admin.notifications.index', compact('notifications', 'search'));
     }
 
     public function create()

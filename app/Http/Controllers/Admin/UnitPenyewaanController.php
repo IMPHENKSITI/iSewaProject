@@ -12,11 +12,19 @@ class UnitPenyewaanController extends Controller
     /**
      * Menampilkan daftar barang.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua barang tanpa filter kategori
-        $barangs = Barang::paginate(6);
-        return view('admin.unit.penyewaan.index', compact('barangs'));
+        $search = $request->get('search');
+        
+        $barangs = Barang::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('nama_barang', 'LIKE', "%{$search}%")
+                           ->orWhere('kategori', 'LIKE', "%{$search}%");
+            })
+            ->paginate(6)
+            ->appends(['search' => $search]);
+        
+        return view('admin.unit.penyewaan.index', compact('barangs', 'search'));
     }
 
     /**

@@ -158,6 +158,141 @@ public function index()
 }
 
     /**
+     * Global Search - Search across all tables
+     */
+    public function globalSearch(Request $request)
+    {
+        $search = $request->get('search');
+        
+        if (!$search) {
+            return redirect()->route('admin.dashboard');
+        }
+        
+        // Search in Rental Products (Barang)
+        $rentalProducts = Barang::where('nama_barang', 'LIKE', "%{$search}%")
+            ->orWhere('kategori', 'LIKE', "%{$search}%")
+            ->get()
+            ->map(function($item) {
+                return [
+                    'type' => 'rental_product',
+                    'title' => $item->nama_barang,
+                    'subtitle' => 'Kategori: ' . $item->kategori,
+                    'description' => $item->deskripsi,
+                    'image' => $item->foto,
+                    'link' => route('admin.unit.penyewaan.index'),
+                    'badge' => 'Penyewaan Alat',
+                    'badge_color' => 'primary'
+                ];
+            });
+        
+        // Search in Gas Products
+        $gasProducts = Gas::where('jenis_gas', 'LIKE', "%{$search}%")
+            ->orWhere('kategori', 'LIKE', "%{$search}%")
+            ->get()
+            ->map(function($item) {
+                return [
+                    'type' => 'gas_product',
+                    'title' => $item->jenis_gas,
+                    'subtitle' => 'Kategori: ' . $item->kategori,
+                    'description' => $item->deskripsi,
+                    'image' => $item->foto,
+                    'link' => route('admin.unit.penjualan_gas.index'),
+                    'badge' => 'Penjualan Gas',
+                    'badge_color' => 'warning'
+                ];
+            });
+        
+        // Search in Users
+        $users = User::where('name', 'LIKE', "%{$search}%")
+            ->orWhere('email', 'LIKE', "%{$search}%")
+            ->get()
+            ->map(function($item) {
+                return [
+                    'type' => 'user',
+                    'title' => $item->name,
+                    'subtitle' => $item->email,
+                    'description' => 'Bergabung: ' . $item->created_at->format('d M Y'),
+                    'image' => $item->avatar,
+                    'link' => route('admin.manajemen-pengguna.index'),
+                    'badge' => 'Pengguna',
+                    'badge_color' => 'success'
+                ];
+            });
+        
+        // Search in BUMDes Members
+        $bumdesMembers = \App\Models\BumdesMember::where('name', 'LIKE', "%{$search}%")
+            ->orWhere('position', 'LIKE', "%{$search}%")
+            ->get()
+            ->map(function($item) {
+                return [
+                    'type' => 'bumdes_member',
+                    'title' => $item->name,
+                    'subtitle' => $item->position,
+                    'description' => 'Anggota Struktur BUMDes',
+                    'image' => $item->photo,
+                    'link' => route('admin.isewa.bumdes.index'),
+                    'badge' => 'Profil BUMDes',
+                    'badge_color' => 'info'
+                ];
+            });
+        
+        // Search in Transactions (Rental)
+        $rentalTransactions = RentalBooking::with('user')
+            ->where('status', 'LIKE', "%{$search}%")
+            ->orWhereHas('user', function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%");
+            })
+            ->get()
+            ->map(function($item) {
+                return [
+                    'type' => 'rental_transaction',
+                    'title' => 'Transaksi Penyewaan #' . $item->id,
+                    'subtitle' => 'User: ' . ($item->user->name ?? 'N/A'),
+                    'description' => 'Status: ' . ucfirst($item->status) . ' | Tanggal: ' . $item->created_at->format('d M Y'),
+                    'image' => null,
+                    'link' => route('admin.aktivitas.permintaan-pengajuan.index'),
+                    'badge' => 'Transaksi',
+                    'badge_color' => 'secondary'
+                ];
+            });
+        
+        
+        // Search in Transactions (Gas)
+        $gasTransactions = GasOrder::with('user')
+            ->where('status', 'LIKE', "%{$search}%")
+            ->orWhereHas('user', function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%");
+            })
+            ->get()
+            ->map(function($item) {
+                return [
+                    'type' => 'gas_transaction',
+                    'title' => 'Transaksi Gas #' . $item->id,
+                    'subtitle' => 'User: ' . ($item->user->name ?? 'N/A'),
+                    'description' => 'Status: ' . ucfirst($item->status) . ' | Rp ' . number_format($item->price * $item->quantity, 0, ',', '.'),
+                    'image' => null,
+                    'link' => route('admin.aktivitas.permintaan-pengajuan.index'),
+                    'badge' => 'Transaksi',
+                    'badge_color' => 'secondary'
+                ];
+            });
+        
+        // Merge all results
+        $results = collect()
+            ->concat($rentalProducts)
+            ->concat($gasProducts)
+            ->concat($users)
+            ->concat($bumdesMembers)
+            ->concat($rentalTransactions)
+            ->concat($gasTransactions);
+        
+        $totalResults = $results->count();
+        
+        return view('admin.dashboard.search-results', compact('results', 'search', 'totalResults'));
+    }
+
+
+    /**
      * Display Profile Page
      */
     public function profile()

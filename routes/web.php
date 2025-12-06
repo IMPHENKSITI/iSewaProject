@@ -156,6 +156,7 @@ Route::get('/maintenance', [DashboardController::class, 'maintenance'])->name('m
 Route::prefix('admin')->middleware('role:admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/search', [DashboardController::class, 'globalSearch'])->name('admin.search');
     
     // Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings');

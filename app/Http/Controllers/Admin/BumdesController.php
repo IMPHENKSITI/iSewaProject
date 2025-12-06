@@ -9,11 +9,20 @@ use App\Http\Controllers\Controller;
 
 class BumdesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $members = BumdesMember::orderBy('order')->get();
+        $search = $request->get('search');
+        
+        $members = BumdesMember::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'LIKE', "%{$search}%")
+                           ->orWhere('position', 'LIKE', "%{$search}%");
+            })
+            ->orderBy('order')
+            ->get();
+            
         $whatsapp = env('BUMDES_WHATSAPP', '+6283846078693');
-        return view('admin.isewa.profile-bumdes', compact('members', 'whatsapp'));
+        return view('admin.isewa.profile-bumdes', compact('members', 'whatsapp', 'search'));
     }
 
     public function create()

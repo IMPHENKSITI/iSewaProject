@@ -1,7 +1,7 @@
 @extends('layouts.user')
 
 @section('page')
-<section class="relative z-10 min-h-screen pt-32 pb-16">
+<section class="relative z-10 min-h-screen pt-40 pb-16">
     {{-- Background Image with Overlay --}}
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <img src="{{ asset('User/img/backgrounds/3.webp') }}" alt="Background" 
