@@ -93,9 +93,13 @@
 
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-[60] transform transition-all duration-300 translate-x-full ${
-            type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        }`;
+            
+            let bgClass = 'bg-green-500';
+            if (type === 'error') bgClass = 'bg-red-500';
+            else if (type === 'warning') bgClass = 'bg-yellow-500';
+            else if (type === 'info') bgClass = 'bg-blue-500';
+
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-[60] transform transition-all duration-300 translate-x-full ${bgClass}`;
             toast.textContent = message;
             document.body.appendChild(toast);
 
@@ -105,6 +109,23 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
+
+        // ⭐ NEW: Handle Session Flash Messages on Page Load
+        @if(session('success'))
+            showToast("{{ session('success') }}", 'success');
+        @endif
+
+        @if(session('error'))
+            showToast("{{ session('error') }}", 'error');
+        @endif
+
+        @if(session('info'))
+            showToast("{{ session('info') }}", 'info');
+        @endif
+
+        @if(session('warning'))
+            showToast("{{ session('warning') }}", 'warning');
+        @endif
 
         // ========================================
         // MODAL TRIGGERS

@@ -780,16 +780,18 @@
         <script>
             // Tunggu sampai halaman selesai load
             window.addEventListener('load', function() {
-                console.log('Page loaded, initializing charts...');
+                // Add delay to ensure layout is stable (prevent glitch when toast appears)
+                setTimeout(function() {
+                    console.log('Page loaded, initializing charts...');
 
-                // Cek apakah element ada
-                const chartElement = document.querySelector("#kinerjaChart");
-                console.log('Chart element:', chartElement);
+                    // Cek apakah element ada
+                    const chartElement = document.querySelector("#kinerjaChart");
+                    console.log('Chart element:', chartElement);
 
-                if (!chartElement) {
-                    console.error('Chart element not found!');
-                    return;
-                }
+                    if (!chartElement) {
+                        console.error('Chart element not found!');
+                        return;
+                    }
 
                 // ========================================
                 // GRAFIK KINERJA BUMDES (AREA CHART) - REAL DATA
@@ -1114,7 +1116,8 @@
                     } catch (error) {
                         console.error('Error rendering order chart:', error);
                     }
-                }
+                } // End if orderChartElement
+            }, 500); // End Timeout
             });
         </script>
     @endsection
