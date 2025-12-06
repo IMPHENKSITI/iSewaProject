@@ -275,10 +275,10 @@
                     </div>
                     <!-- Tombol Lihat Lainnya -->
                     <div class="text-center">
-                        <button
-                            class="px-10 py-3 bg-white/70 backdrop-blur-sm text-[#45aaf2] border-2 border-[#45aaf2] rounded-full font-semibold hover:bg-[#45aaf2] hover:text-white transition-all duration-300 shadow-md hover:shadow-xl">
+                        <a href="{{ route('bumdes.laporan') }}"
+                            class="inline-block px-10 py-3 bg-white/70 backdrop-blur-sm text-[#45aaf2] border-2 border-[#45aaf2] rounded-full font-semibold hover:bg-[#45aaf2] hover:text-white transition-all duration-300 shadow-md hover:shadow-xl">
                             Lihat Lainnya
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -667,8 +667,8 @@
 
                 const options = {
                     series: [{
-                        name: 'Kinerja',
-                        data: [25, 20.8, 17.6, 20.2, 19.8, 22.5]
+                        name: 'Kinerja (Juta Rupiah)',
+                        data: @json($kinerjaData['data'])
                     }],
                     chart: {
                         type: 'area',
@@ -705,7 +705,7 @@
                         }
                     },
                     xaxis: {
-                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
+                        categories: @json($kinerjaData['categories']),
                         labels: {
                             style: {
                                 colors: '#374151',
@@ -754,7 +754,7 @@
                     },
                     tooltip: {
                         y: {
-                            formatter: (val) => val.toFixed(1) + 'Jt'
+                            formatter: (val) => 'Rp ' + val.toFixed(1) + ' Juta'
                         }
                     }
                 };
@@ -773,11 +773,11 @@
                 const options = {
                     series: [{
                             name: 'Unit Penyewaan Alat',
-                            data: [20, 15, 30, 22, 17]
+                            data: @json($unitPopulerData['rental'])
                         },
                         {
                             name: 'Unit Penjualan Gas',
-                            data: [16, 17, 18, 20, 10]
+                            data: @json($unitPopulerData['gas'])
                         }
                     ],
                     chart: {
@@ -804,7 +804,7 @@
                         enabled: false
                     },
                     xaxis: {
-                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
+                        categories: @json($unitPopulerData['categories']),
                         labels: {
                             style: {
                                 colors: '#374151',

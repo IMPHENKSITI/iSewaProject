@@ -7,23 +7,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
     public function index()
     {
-        // Simulasikan data user, seolah-olah sudah login
-        $user = (object)[
-            'id' => 1,
-            'username' => 'admin_user',
-            'name' => 'Admin Nama',
-            'email' => 'admin@example.com',
-            'phone' => '081234567890',
-            'address' => 'Jl. Admin No. 1',
-            'gender' => 'laki-laki',
-            'avatar' => null, // atau path jika ada
-        ];
-
+        // Get the authenticated admin user
+        $user = Auth::user();
+        
+        // Pass real admin data to view
         return view('admin.profile.index', compact('user'));
     }
 

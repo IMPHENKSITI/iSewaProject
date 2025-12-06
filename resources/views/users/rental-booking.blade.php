@@ -157,18 +157,18 @@
                     <div class="delivery-method-card active cursor-pointer bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent" data-method="antar">
                         <!-- Placeholder for Truck Icon -->
                         <div class="mb-4 flex justify-center">
-                            <img src="{{ asset('admin/img/elements/antar.png') }}" alt="Antar" class="w-20 h-20 object-contain pointer-events-none">
+                            <img src="{{ asset('admin/img/elements/antar.png') }}" alt="Antar" class="w-20 h-20 object-contain">
                         </div>
-                        <p class="font-bold text-lg text-gray-800 pointer-events-none">Antar</p>
+                        <p class="font-bold text-lg text-gray-800">Antar</p>
                     </div>
 
                     <!-- Jemput Card -->
                     <div class="delivery-method-card cursor-pointer bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent" data-method="jemput">
                         <!-- Placeholder for Warehouse Icon -->
                         <div class="mb-4 flex justify-center">
-                            <img src="{{ asset('admin/img/elements/jemput.png') }}" alt="Jemput" class="w-20 h-20 object-contain pointer-events-none">
+                            <img src="{{ asset('admin/img/elements/jemput.png') }}" alt="Jemput" class="w-20 h-20 object-contain">
                         </div>
-                        <p class="font-bold text-lg text-gray-800 pointer-events-none">Jemput</p>
+                        <p class="font-bold text-lg text-gray-800">Jemput</p>
                     </div>
                 </div>
 
@@ -690,8 +690,18 @@
     }
 
     /* Delivery Method Cards */
+    .delivery-method-card {
+        cursor: pointer !important;
+        user-select: none;
+    }
+    
     .delivery-method-card.active {
-        border-color: #3b82f6;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .delivery-method-card:hover {
+        transform: translateY(-2px);
     }
 
     /* Payment Method Buttons */
@@ -789,44 +799,102 @@
         // Helper to safely get element
         const getEl = (id) => document.getElementById(id);
 
-        // Delivery Method Toggle
+        // Get all element references first
         const deliveryCards = document.querySelectorAll('.delivery-method-card');
         const deliveryMethodInput = getEl('delivery-method-input');
         const antarForm = getEl('antar-form');
         const jemputForm = getEl('jemput-form');
-
-        if (deliveryCards.length > 0 && deliveryMethodInput && antarForm && jemputForm) {
-            deliveryCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const method = this.dataset.method;
-                    
-                    // Update active state
-                    deliveryCards.forEach(c => c.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Update hidden input
-                    deliveryMethodInput.value = method;
-                    
-                    // Show/hide forms
-                    if (method === 'antar') {
-                        antarForm.classList.remove('hidden');
-                        jemputForm.classList.add('hidden');
-                        updateTotals();
-                    } else {
-                        antarForm.classList.add('hidden');
-                        jemputForm.classList.remove('hidden');
-                        updateTotalsJemput();
-                    }
-                });
-            });
-        }
-
-        // Quantity Controls for Antar
         const qtyDisplay = getEl('quantity-display');
         const hiddenQty = getEl('hidden-quantity');
         const decreaseBtn = getEl('decrease-qty');
         const increaseBtn = getEl('increase-qty');
+        const qtyDisplayJemput = getEl('quantity-display-jemput');
+        const decreaseBtnJemput = getEl('decrease-qty-jemput');
+        const increaseBtnJemput = getEl('increase-qty-jemput');
+        const startDate = getEl('start-date');
+        const endDate = getEl('end-date');
+        const daysCount = getEl('days-count');
+        const startDateJemput = getEl('start-date-jemput');
+        const endDateJemput = getEl('end-date-jemput');
+        const daysCountJemput = getEl('days-count-jemput');
 
+        // Define update functions FIRST before using them
+        function updateTotals() {
+            if (!qtyDisplay) return;
+            const qty = parseInt(qtyDisplay.value) || 1;
+            const subtotal = pricePerUnit * qty;
+            const total = subtotal;
+            
+            const subtotalEl = getEl('subtotal');
+            const totalTransferEl = getEl('total-amount-transfer');
+            const totalCashEl = getEl('total-amount-cash');
+
+            if (subtotalEl) subtotalEl.textContent = 'Rp. ' + subtotal.toLocaleString('id-ID');
+            if (totalTransferEl) totalTransferEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
+            if (totalCashEl) totalCashEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
+        }
+
+        function updateTotalsJemput() {
+            if (!qtyDisplayJemput) return;
+            const qty = parseInt(qtyDisplayJemput.value) || 1;
+            const subtotal = pricePerUnit * qty;
+            const total = subtotal;
+            
+            const subtotalEl = getEl('subtotal-jemput');
+            const totalTransferEl = getEl('total-amount-transfer-jemput');
+            const totalCashEl = getEl('total-amount-cash-jemput');
+
+            if (subtotalEl) subtotalEl.textContent = 'Rp. ' + subtotal.toLocaleString('id-ID');
+            if (totalTransferEl) totalTransferEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
+            if (totalCashEl) totalCashEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
+        }
+
+        function calculateDays() {
+            if (startDate && endDate && daysCount && startDate.value && endDate.value) {
+                const start = new Date(startDate.value);
+                const end = new Date(endDate.value);
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                daysCount.textContent = diffDays;
+                updateTotals();
+            }
+        }
+
+        function calculateDaysJemput() {
+            if (startDateJemput && endDateJemput && daysCountJemput && startDateJemput.value && endDateJemput.value) {
+                const start = new Date(startDateJemput.value);
+                const end = new Date(endDateJemput.value);
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                daysCountJemput.textContent = diffDays;
+                updateTotalsJemput();
+            }
+        }
+
+        // NOW set up event listeners using the functions defined above
+        // Delivery Method Toggle
+        deliveryCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const method = this.dataset.method;
+                
+                deliveryCards.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                deliveryMethodInput.value = method;
+                
+                if (method === 'antar') {
+                    antarForm.classList.remove('hidden');
+                    jemputForm.classList.add('hidden');
+                    updateTotals();
+                } else {
+                    antarForm.classList.add('hidden');
+                    jemputForm.classList.remove('hidden');
+                    updateTotalsJemput();
+                }
+            });
+        });
+
+        // Quantity Controls for Antar
         if (qtyDisplay && hiddenQty && decreaseBtn && increaseBtn) {
             decreaseBtn.addEventListener('click', () => {
                 let val = parseInt(qtyDisplay.value);
@@ -857,10 +925,6 @@
         }
 
         // Quantity Controls for Jemput
-        const qtyDisplayJemput = getEl('quantity-display-jemput');
-        const decreaseBtnJemput = getEl('decrease-qty-jemput');
-        const increaseBtnJemput = getEl('increase-qty-jemput');
-
         if (qtyDisplayJemput && decreaseBtnJemput && increaseBtnJemput) {
             decreaseBtnJemput.addEventListener('click', () => {
                 let val = parseInt(qtyDisplayJemput.value);
@@ -891,77 +955,15 @@
         }
 
         // Date Calculation for Antar
-        const startDate = getEl('start-date');
-        const endDate = getEl('end-date');
-        const daysCount = getEl('days-count');
-
-        function calculateDays() {
-            if (startDate && endDate && daysCount && startDate.value && endDate.value) {
-                const start = new Date(startDate.value);
-                const end = new Date(endDate.value);
-                const diffTime = Math.abs(end - start);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                daysCount.textContent = diffDays;
-                updateTotals();
-            }
-        }
-
         if (startDate && endDate) {
             startDate.addEventListener('change', calculateDays);
             endDate.addEventListener('change', calculateDays);
         }
 
         // Date Calculation for Jemput
-        const startDateJemput = getEl('start-date-jemput');
-        const endDateJemput = getEl('end-date-jemput');
-        const daysCountJemput = getEl('days-count-jemput');
-
-        function calculateDaysJemput() {
-            if (startDateJemput && endDateJemput && daysCountJemput && startDateJemput.value && endDateJemput.value) {
-                const start = new Date(startDateJemput.value);
-                const end = new Date(endDateJemput.value);
-                const diffTime = Math.abs(end - start);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                daysCountJemput.textContent = diffDays;
-                updateTotalsJemput();
-            }
-        }
-
         if (startDateJemput && endDateJemput) {
             startDateJemput.addEventListener('change', calculateDaysJemput);
             endDateJemput.addEventListener('change', calculateDaysJemput);
-        }
-
-        // Update Totals for Antar
-        function updateTotals() {
-            if (!qtyDisplay) return;
-            const qty = parseInt(qtyDisplay.value) || 1;
-            const subtotal = pricePerUnit * qty;
-            const total = subtotal; // Total equals subtotal, no days multiplication
-            
-            const subtotalEl = getEl('subtotal');
-            const totalTransferEl = getEl('total-amount-transfer');
-            const totalCashEl = getEl('total-amount-cash');
-
-            if (subtotalEl) subtotalEl.textContent = 'Rp. ' + subtotal.toLocaleString('id-ID');
-            if (totalTransferEl) totalTransferEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
-            if (totalCashEl) totalCashEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
-        }
-
-        // Update Totals for Jemput
-        function updateTotalsJemput() {
-            if (!qtyDisplayJemput) return;
-            const qty = parseInt(qtyDisplayJemput.value) || 1;
-            const subtotal = pricePerUnit * qty;
-            const total = subtotal; // Total equals subtotal, no days multiplication
-            
-            const subtotalEl = getEl('subtotal-jemput');
-            const totalTransferEl = getEl('total-amount-transfer-jemput');
-            const totalCashEl = getEl('total-amount-cash-jemput');
-
-            if (subtotalEl) subtotalEl.textContent = 'Rp. ' + subtotal.toLocaleString('id-ID');
-            if (totalTransferEl) totalTransferEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
-            if (totalCashEl) totalCashEl.textContent = 'Rp. ' + total.toLocaleString('id-ID');
         }
 
         // Payment Method Toggle for Antar
@@ -970,52 +972,49 @@
         const transferPayment = getEl('transfer-payment');
         const cashPayment = getEl('cash-payment');
 
-        if (paymentBtns.length > 0 && paymentMethodHidden && transferPayment && cashPayment) {
-            paymentBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const method = this.dataset.method;
-                    
-                    paymentBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    paymentMethodHidden.value = method;
-                    
-                    if (method === 'transfer') {
-                        transferPayment.classList.remove('hidden');
-                        cashPayment.classList.add('hidden');
-                    } else {
-                        transferPayment.classList.add('hidden');
-                        cashPayment.classList.remove('hidden');
-                    }
-                });
+        paymentBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const method = this.dataset.method;
+                
+                paymentBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                paymentMethodHidden.value = method;
+                
+                if (method === 'transfer') {
+                    if (transferPayment) transferPayment.classList.remove('hidden');
+                    if (cashPayment) cashPayment.classList.add('hidden');
+                } else {
+                    if (transferPayment) transferPayment.classList.add('hidden');
+                    if (cashPayment) cashPayment.classList.remove('hidden');
+                }
             });
-        }
+        });
 
         // Payment Method Toggle for Jemput
         const paymentBtnsJemput = document.querySelectorAll('.payment-method-btn-jemput');
+        const paymentMethodHiddenJemput = getEl('payment-method-jemput-hidden');
         const transferPaymentJemput = getEl('transfer-payment-jemput');
         const cashPaymentJemput = getEl('cash-payment-jemput');
 
-        if (paymentBtnsJemput.length > 0 && paymentMethodHidden && transferPaymentJemput && cashPaymentJemput) {
-            paymentBtnsJemput.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const method = this.dataset.method;
-                    
-                    paymentBtnsJemput.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    paymentMethodHidden.value = method;
-                    
-                    if (method === 'transfer') {
-                        transferPaymentJemput.classList.remove('hidden');
-                        cashPaymentJemput.classList.add('hidden');
-                    } else {
-                        transferPaymentJemput.classList.add('hidden');
-                        cashPaymentJemput.classList.remove('hidden');
-                    }
-                });
+        paymentBtnsJemput.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const method = this.dataset.method;
+                
+                paymentBtnsJemput.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                paymentMethodHiddenJemput.value = method;
+                
+                if (method === 'transfer') {
+                    if (transferPaymentJemput) transferPaymentJemput.classList.remove('hidden');
+                    if (cashPaymentJemput) cashPaymentJemput.classList.add('hidden');
+                } else {
+                    if (transferPaymentJemput) transferPaymentJemput.classList.add('hidden');
+                    if (cashPaymentJemput) cashPaymentJemput.classList.remove('hidden');
+                }
             });
-        }
+        });
 
         // File Upload Preview
         const paymentProof = getEl('payment-proof');

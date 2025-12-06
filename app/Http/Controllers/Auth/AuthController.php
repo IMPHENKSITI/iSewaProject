@@ -209,6 +209,7 @@ class AuthController extends Controller
 
             Auth::login($user, $validated['remember'] ?? false);
 
+            // Redirect based on user role
             $redirectUrl = $user->role === 'admin' ? route('admin.dashboard') : route('beranda');
 
             return response()->json([
@@ -220,7 +221,7 @@ class AuthController extends Controller
             Log::error('Login error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan'
+                'message' => 'Terjadi kesalahan saat login'
             ], 500);
         }
     }
