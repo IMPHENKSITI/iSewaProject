@@ -313,6 +313,22 @@
         .section-gap {
             margin-bottom: 2rem;
         }
+
+        /* Navbar avatar default styling */
+        .navbar-avatar-default {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0099ff 0%, #ffb300 100%);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar-avatar-initials {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
     </style>
     <script src="{{ asset('Admin/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('Admin/js/config.js') }}"></script>
@@ -486,25 +502,40 @@
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
                             <!-- Nama Admin -->
                             <li class="nav-item lh-1 me-3">
-                                <span class="fw-semibold">Hamizul Fuad</span>
+                                <span class="fw-semibold">{{ Auth::user()->name ?? 'Admin' }}</span>
                             </li>
                             <!-- Profil Admin -->
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
-                                    <img src="{{ asset('Admin/img/avatars/hamizulf.jpg') }}" alt
-                                        class="w-px-40 h-auto rounded-circle" />
+                                    @if(Auth::user() && Auth::user()->avatar)
+                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar"
+                                            class="w-px-40 h-auto rounded-circle" />
+                                    @else
+                                        <div class="navbar-avatar-default rounded-circle">
+                                            <span class="navbar-avatar-initials">{{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}</span>
+                                        </div>
+                                    @endif
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
                                         <a class="dropdown-item" href="{{ route('admin.profile') }}">
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
-                                                    <div class="flex-grow-1">
-                                                        <span class="fw-semibold d-block">Hamizul Fuad</span>
-                                                        <small class="text-muted">Admin</small>
-                                                    </div>
+                                                    @if(Auth::user() && Auth::user()->avatar)
+                                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar"
+                                                            class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
+                                                    @else
+                                                        <div class="navbar-avatar-default rounded-circle" style="width: 40px; height: 40px;">
+                                                            <span class="navbar-avatar-initials" style="font-size: 16px;">{{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}</span>
+                                                        </div>
+                                                    @endif
                                                 </div>
+                                                <div class="flex-grow-1">
+                                                    <span class="fw-semibold d-block">{{ Auth::user()->name ?? 'Admin' }}</span>
+                                                    <small class="text-muted">{{ Auth::user()->position ?? 'Admin' }}</small>
+                                                </div>
+                                            </div>
                                         </a>
                                     </li>
                                     <li>

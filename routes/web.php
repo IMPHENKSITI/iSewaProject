@@ -167,6 +167,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     // Route untuk Profil Admin (menggunakan ProfileController)
     Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+    Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('admin.profile.delete-avatar');
     Route::post('/profile/change-password', [ProfileController::class, 'changePassword'])->name('admin.profile.change-password');
     Route::post('/profile/verify-otp', [ProfileController::class, 'verifyOtp'])->name('admin.profile.verify-otp');
     Route::post('/admin/profile/resend-otp', [App\Http\Controllers\Admin\ProfileController::class, 'resendOtp'])->name('admin.profile.resend-otp');
@@ -191,7 +192,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     // Unit Routes
     Route::prefix('unit')->group(function () {
         // Penyewaan Alat
-        Route::resource('penyewaan', RentalEquipmentController::class)->names([
+        Route::resource('penyewaan', UnitPenyewaanController::class)->names([
             'index' => 'admin.unit.penyewaan.index',
             'create' => 'admin.unit.penyewaan.create',
             'store' => 'admin.unit.penyewaan.store',

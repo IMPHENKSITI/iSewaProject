@@ -23,6 +23,8 @@ class User extends Authenticatable
         'phone',
         'address',
         'gender',
+        'avatar',                  // Avatar profile photo
+        'position',                // Jabatan/Position
         'status',
         'role',                    // ✅ TAMBAH INI
         'email_verified_at',       // ✅ TAMBAH INI (PENTING!)
