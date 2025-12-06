@@ -593,7 +593,7 @@
                                                     <div class="mt-3 pt-3 border-top">
                                                         <div class="d-flex justify-content-between text-muted small">
                                                             <span><i class="bx bx-package me-1"></i>Stok: 50</span>
-                                                            <span><i class="bx bx-shopping-bag me-1"></i>125 Terjual</span>
+                                                            <span><i class="bx bx-shopping-bag me-1"></i>{{ $popularItems['gas_lpg_3kg'] ?? 0 }} Terjual</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -633,7 +633,7 @@
                                                     <div class="mt-3 pt-3 border-top">
                                                         <div class="d-flex justify-content-between text-muted small">
                                                             <span><i class="bx bx-check-circle me-1"></i>Tersedia</span>
-                                                            <span><i class="bx bx-time me-1"></i>98 Booking</span>
+                                                            <span><i class="bx bx-time me-1"></i>{{ $popularItems['sound_system'] ?? 0 }} Booking</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -673,7 +673,7 @@
                                                     <div class="mt-3 pt-3 border-top">
                                                         <div class="d-flex justify-content-between text-muted small">
                                                             <span><i class="bx bx-check-circle me-1"></i>Tersedia</span>
-                                                            <span><i class="bx bx-time me-1"></i>87 Booking</span>
+                                                            <span><i class="bx bx-time me-1"></i>{{ $popularItems['tenda_komplit'] ?? 0 }} Booking</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -713,7 +713,7 @@
                                                     <div class="mt-3 pt-3 border-top">
                                                         <div class="d-flex justify-content-between text-muted small">
                                                             <span><i class="bx bx-check-circle me-1"></i>Tersedia</span>
-                                                            <span><i class="bx bx-time me-1"></i>156 Booking</span>
+                                                            <span><i class="bx bx-time me-1"></i>{{ $popularItems['meja_kursi'] ?? 0 }} Booking</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -809,12 +809,12 @@
                 }
 
                 // ========================================
-                // GRAFIK KINERJA BUMDES (AREA CHART)
+                // GRAFIK KINERJA BUMDES (AREA CHART) - REAL DATA
                 // ========================================
                 const kinerjaOptions = {
                     series: [{
-                        name: 'Kinerja',
-                        data: [25, 20.8, 17.6, 20.2, 19.8, 22.5]
+                        name: 'Transaksi',
+                        data: {!! json_encode($monthlyPerformance ?? [0,0,0,0,0,0,0,0,0,0,0,0]) !!}
                     }],
                     chart: {
                         type: 'area',
@@ -850,7 +850,7 @@
                         }
                     },
                     xaxis: {
-                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
+                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                         labels: {
                             style: {
                                 colors: '#374151',
@@ -866,12 +866,9 @@
                         }
                     },
                     yaxis: {
-                        min: 15,
-                        max: 26,
-                        tickAmount: 5,
                         labels: {
                             formatter: function(val) {
-                                return val.toFixed(1);
+                                return Math.round(val);
                             },
                             style: {
                                 colors: '#6b7280',
@@ -902,7 +899,7 @@
                     tooltip: {
                         y: {
                             formatter: function(val) {
-                                return val.toFixed(1);
+                                return val + ' transaksi';
                             }
                         }
                     }
@@ -915,6 +912,121 @@
                 } catch (error) {
                     console.error('Error rendering kinerja chart:', error);
                 }
+
+                // ========================================
+                // GRAFIK PENDAPATAN DAN PENGELUARAN - REAL DATA
+                // ========================================
+                const revenueChartElement = document.querySelector("#totalRevenueChart");
+                if (revenueChartElement) {
+                    const revenueOptions = {
+                        series: [
+                            {
+                                name: 'Pendapatan',
+                                data: {!! json_encode(array_values($monthlyIncome)) !!}
+                            },
+                            {
+                                name: 'Pengeluaran',
+                                data: {!! json_encode(array_map(function($val) { return -abs($val); }, $monthlyExpenses)) !!}
+                            }
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 350,
+                            stacked: true,
+                            toolbar: { show: false }
+                        },
+                        colors: ['#696cff', '#03c3ec'],
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                columnWidth: '33%',
+                                borderRadius: 8,
+                                startingShape: 'rounded',
+                                endingShape: 'rounded'
+                            },
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        stroke: {
+                            curve: 'smooth',
+                            width: 6,
+                            lineCap: 'round',
+                            colors: ['transparent']
+                        },
+                        xaxis: {
+                            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                            labels: {
+                                style: {
+                                    fontSize: '13px',
+                                    colors: '#6e6b7b'
+                                }
+                            },
+                            axisTicks: {
+                                show: false
+                            },
+                            axisBorder: {
+                                show: false
+                            }
+                        },
+                        yaxis: {
+                            labels: {
+                                formatter: function(val) {
+                                    return 'Rp ' + Math.abs(val).toLocaleString('id-ID');
+                                },
+                                style: {
+                                    fontSize: '13px',
+                                    colors: '#6e6b7b'
+                                }
+                            }
+                        },
+                        fill: {
+                            opacity: 1
+                        },
+                        tooltip: {
+                            y: {
+                                formatter: function(val) {
+                                    return 'Rp ' + Math.abs(val).toLocaleString('id-ID');
+                                }
+                            }
+                        },
+                        legend: {
+                            show: true,
+                            horizontalAlign: 'left',
+                            position: 'top',
+                            markers: {
+                                height: 8,
+                                width: 8,
+                                radius: 12,
+                                offsetX: -3
+                            },
+                            labels: {
+                                colors: '#6e6b7b'
+                            },
+                            itemMargin: {
+                                horizontal: 10
+                            }
+                        },
+                        grid: {
+                            borderColor: '#e7e7e7',
+                            padding: {
+                                top: 0,
+                                bottom: -8,
+                                left: 20,
+                                right: 20
+                            }
+                        }
+                    };
+                    
+                    try {
+                        const revenueChart = new ApexCharts(revenueChartElement, revenueOptions);
+                        revenueChart.render();
+                        console.log('Revenue chart rendered successfully!');
+                    } catch (error) {
+                        console.error('Error rendering revenue chart:', error);
+                    }
+                }
+
 
                 // Donut Chart untuk Transaksi (Large centered chart)
                 const orderChartElement = document.querySelector("#transactionDonutChart");

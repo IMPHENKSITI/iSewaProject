@@ -652,13 +652,93 @@
         </div>
     </div>
 
-    <!-- Leaflet CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&libraries=places&callback=initMap" async defer></script>
 
     <style>
+        /* Enhanced Card Styles */
+        .card {
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Form Floating Enhancements */
+        .form-floating > .form-control:focus ~ label,
+        .form-floating > .form-control:not(:placeholder-shown) ~ label,
+        .form-floating > .form-select ~ label {
+            opacity: 0.65;
+            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        }
+
+        /* Nav Pills Enhancement */
+        .nav-pills .nav-link {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: rgba(105, 108, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #0099ff 0%, #0077cc 100%);
+            box-shadow: 0 4px 15px rgba(0, 153, 255, 0.4);
+        }
+
+        /* Map Container */
+        #map {
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Alert Enhancement */
+        .alert {
+            border-radius: 0.75rem;
+            border: none;
+        }
+
+        /* Button Enhancements */
+        .btn {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0099ff 0%, #0077cc 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0088ee 0%, #0066bb 100%);
+        }
+
+        /* Tab Content Animation */
+        .tab-pane {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Enhanced ATM Card Styles */
         .atm-card {
             width: 360px;
@@ -711,68 +791,144 @@
             justify-content: space-between;
         }
 
-        .chip {
-            width: 52px;
-            height: 38px;
-            background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
-            border-radius: 6px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        .card-style-btn {
+            transition: all 0.3s ease;
         }
 
-        .chip-line {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.15);
-            height: 1px;
-            width: 100%;
+        .card-style-btn:hover {
+            transform: scale(1.1);
         }
-
-        .chip-line:nth-child(1) {
-            top: 33%;
-        }
-
-        .chip-line:nth-child(2) {
-            top: 66%;
-        }
-
-        .chip-line:nth-child(3) {
-            left: 33%;
-            width: 1px;
-            height: 100%;
-            top: 0;
-        }
-
-        .chip-line:nth-child(4) {
-            left: 66%;
-            width: 1px;
-            height: 100%;
-            top: 0;
-        }
-
-        .contactless-icon {
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .atm-card:hover .contactless-icon {
-            opacity: 1;
-        }
-
-        .bank-logo-container {
-            height: 40px;
-            display: flex;
-
-            .card-style-btn {
-                transition: all 0.3s ease;
-            }
-
-            .card-style-btn:hover {
-                transform: scale(1.1);
-            }
     </style>
 
     <script>
+        let map;
+        let marker;
+        let geocoder;
+        let autocomplete;
+
+        // Initialize Google Map
+        function initMap() {
+            const lat = {{ old('latitude', $setting->latitude) ?? -0.52000 }};
+            const lng = {{ old('longitude', $setting->longitude) ?? 101.00000 }};
+
+            // Create map with default view (not satellite)
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: lat, lng: lng },
+                zoom: 16,
+                mapTypeId: 'roadmap', // Default map view
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.TOP_RIGHT,
+                    mapTypeIds: ['roadmap', 'satellite']
+                },
+                streetViewControl: true,
+                fullscreenControl: true,
+                zoomControl: true
+            });
+
+            // Create draggable marker
+            marker = new google.maps.Marker({
+                position: { lat: lat, lng: lng },
+                map: map,
+                draggable: true,
+                title: 'Lokasi BUMDes',
+                animation: google.maps.Animation.DROP
+            });
+
+            // Initialize geocoder
+            geocoder = new google.maps.Geocoder();
+
+            // Update coordinates when marker is dragged
+            marker.addListener('dragend', function(event) {
+                const position = event.latLng;
+                document.getElementById('latitude').value = position.lat().toFixed(7);
+                document.getElementById('longitude').value = position.lng().toFixed(7);
+                
+                // Reverse geocode to get address
+                geocoder.geocode({ location: position }, function(results, status) {
+                    if (status === 'OK' && results[0]) {
+                        document.getElementById('address').value = results[0].formatted_address;
+                    }
+                });
+            });
+
+            // Initialize autocomplete for search
+            const searchInput = document.getElementById('map_search');
+            autocomplete = new google.maps.places.Autocomplete(searchInput, {
+                componentRestrictions: { country: 'id' } // Restrict to Indonesia
+            });
+
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                if (place.geometry) {
+                    const location = place.geometry.location;
+                    map.setCenter(location);
+                    map.setZoom(16);
+                    marker.setPosition(location);
+                    
+                    document.getElementById('latitude').value = location.lat().toFixed(7);
+                    document.getElementById('longitude').value = location.lng().toFixed(7);
+                    document.getElementById('address').value = place.formatted_address || place.name;
+                }
+            });
+
+            // Handle tab shown event to resize map
+            const tabEl = document.querySelector('button[data-bs-target="#v-pills-location"]');
+            if (tabEl) {
+                tabEl.addEventListener('shown.bs.tab', function() {
+                    google.maps.event.trigger(map, 'resize');
+                    map.setCenter(marker.getPosition());
+                });
+            }
+
+            // Initialize other previews
+            updateCardPreview();
+            updateContactPreview();
+
+            const currentStyle = document.getElementById('card_gradient_style').value;
+            const btn = document.querySelector(`.card-style-btn[data-style="${currentStyle}"]`);
+            if (btn) {
+                btn.click();
+            }
+
+            @if ($setting->card_background_image)
+                setCardBackgroundImage("{{ asset('storage/' . $setting->card_background_image) }}");
+            @endif
+
+            // Enable Enter key for search
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchLocation();
+                }
+            });
+        }
+
+        // Search Location Function
+        function searchLocation() {
+            const query = document.getElementById('map_search').value;
+            if (!query) {
+                alert('Silakan masukkan alamat atau nama lokasi yang ingin dicari');
+                return;
+            }
+
+            geocoder.geocode({ address: query, componentRestrictions: { country: 'id' } }, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    const location = results[0].geometry.location;
+                    map.setCenter(location);
+                    map.setZoom(16);
+                    marker.setPosition(location);
+                    
+                    document.getElementById('latitude').value = location.lat().toFixed(7);
+                    document.getElementById('longitude').value = location.lng().toFixed(7);
+                    document.getElementById('address').value = results[0].formatted_address;
+                } else {
+                    alert('Lokasi tidak ditemukan. Coba gunakan kata kunci yang lebih spesifik.');
+                }
+            });
+        }
+
         // Bank Logos SVG
         const bankLogos = {
             'Bank Syariah Indonesia': `<svg width="180" height="40" viewBox="0 0 180 40" fill="none">
@@ -799,118 +955,11 @@
             <rect width="180" height="40" rx="4" fill="white" opacity="0.95"/>
             <text x="90" y="25" text-anchor="middle" fill="#00A884" font-size="12" font-weight="bold" font-family="Arial">RIAU KEPRI</text>
         </svg>`,
-            'CIMB Niaga': `<svg width="180" height="40" viewBox="0 0 180 40" fill="none">
+            'Bank Mega': `<svg width="180" height="40" viewBox="0 0 180 40" fill="none">
             <rect width="180" height="40" rx="4" fill="white" opacity="0.95"/>
-            <text x="90" y="25" text-anchor="middle" fill="#CC0000" font-size="14" font-weight="bold" font-family="Arial">CIMB NIAGA</text>
-        </svg>`,
-            'Danamon': `<svg width="180" height="40" viewBox="0 0 180 40" fill="none">
-            <rect width="180" height="40" rx="4" fill="white" opacity="0.95"/>
-            <text x="90" y="25" text-anchor="middle" fill="#0066CC" font-size="14" font-weight="bold" font-family="Arial">DANAMON</text>
+            <text x="90" y="25" text-anchor="middle" fill="#0066CC" font-size="14" font-weight="bold" font-family="Arial">MEGA</text>
         </svg>`
         };
-
-        // Map Initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            var lat = {{ old('latitude', $setting->latitude) ?? -1.1445 }};
-            var lng = {{ old('longitude', $setting->longitude) ?? 102.1601 }};
-
-            var map = L.map('map').setView([lat, lng], 16);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{y}/{x}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                maxZoom: 19
-            }).addTo(map);
-
-            var marker = L.marker([lat, lng], {
-                draggable: true
-            }).addTo(map);
-
-            // Store map and marker globally for search function
-            window.mapInstance = map;
-            window.markerInstance = marker;
-
-            marker.on('dragend', function(e) {
-                var position = marker.getLatLng();
-                document.getElementById('latitude').value = position.lat.toFixed(7);
-                document.getElementById('longitude').value = position.lng.toFixed(7);
-            });
-
-            var tabEl = document.querySelector('button[data-bs-target="#v-pills-location"]');
-            tabEl.addEventListener('shown.bs.tab', function(event) {
-                map.invalidateSize();
-            });
-
-            updateCardPreview();
-            updateContactPreview();
-
-            var currentStyle = document.getElementById('card_gradient_style').value;
-            var btn = document.querySelector(`.card-style-btn[data-style="${currentStyle}"]`);
-            if (btn) {
-                btn.click();
-            }
-
-            @if ($setting->card_background_image)
-                setCardBackgroundImage("{{ asset('storage/' . $setting->card_background_image) }}");
-            @endif
-
-            // Enable Enter key for search
-            var searchInput = document.getElementById('map_search');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        searchLocation();
-                    }
-                });
-            }
-        });
-
-        // Search Location Function using Nominatim Geocoding
-        function searchLocation() {
-            var query = document.getElementById('map_search').value;
-            if (!query) {
-                alert('Silakan masukkan alamat atau nama lokasi yang ingin dicari');
-                return;
-            }
-
-            // Show loading state
-            var searchBtn = event.target;
-            var originalText = searchBtn.innerHTML;
-            searchBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Mencari...';
-            searchBtn.disabled = true;
-
-            // Use Nominatim API for geocoding
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`)
-                .then(response => response.json())
-                .then(data => {
-                    searchBtn.innerHTML = originalText;
-                    searchBtn.disabled = false;
-
-                    if (data && data.length > 0) {
-                        var lat = parseFloat(data[0].lat);
-                        var lon = parseFloat(data[0].lon);
-
-                        // Update map view and marker
-                        window.mapInstance.setView([lat, lon], 16);
-                        window.markerInstance.setLatLng([lat, lon]);
-
-                        // Update form fields
-                        document.getElementById('latitude').value = lat.toFixed(7);
-                        document.getElementById('longitude').value = lon.toFixed(7);
-
-                        // Show success message
-                        alert(`Lokasi ditemukan: ${data[0].display_name}`);
-                    } else {
-                        alert('Lokasi tidak ditemukan. Coba gunakan kata kunci yang lebih spesifik.');
-                    }
-                })
-                .catch(error => {
-                    searchBtn.innerHTML = originalText;
-                    searchBtn.disabled = false;
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan saat mencari lokasi. Silakan coba lagi.');
-                });
-        }
 
         function updateCardPreview() {
             var bankName = document.getElementById('bank_name').value || 'BANK NAME';
@@ -922,9 +971,9 @@
 
             // Update bank logo
             var logoContainer = document.getElementById('bank_logo_container');
-            if (bankLogos[bankName]) {
+            if (logoContainer && bankLogos[bankName]) {
                 logoContainer.innerHTML = bankLogos[bankName];
-            } else {
+            } else if (logoContainer) {
                 logoContainer.innerHTML =
                     `<div style="color: white; font-size: 1.2rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">${bankName}</div>`;
             }

@@ -24,7 +24,7 @@ class ReportController extends Controller
     {
         // Hitung total pendapatan per unit dari sistem
         $totalPenyewaan = RentalRequest::sum('price');
-        $totalGas = GasOrder::sum('price');
+        $totalGas = GasOrder::selectRaw('SUM(price * quantity) as total')->value('total') ?? 0;
         
         // Hitung total dari manual reports
         $manualPenyewaan = ManualReport::where('category', 'penyewaan')->sum(\DB::raw('amount * quantity'));
@@ -59,7 +59,7 @@ class ReportController extends Controller
             $monthlyIncome[getMonthName($month)] += $amount;
         }
 
-        foreach (GasOrder::selectRaw('SUM(price) as total, MONTH(created_at) as month')
+        foreach (GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
             ->groupBy('month')
             ->pluck('total', 'month') as $month => $amount) {
             $monthlyIncome[getMonthName($month)] += $amount;

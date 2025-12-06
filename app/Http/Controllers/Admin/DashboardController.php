@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use App\Models\Barang; 
-use App\Models\Gas; 
+use App\Models\Barang;
+use App\Models\Gas;
 use App\Models\RentalBooking;
+use App\Models\RentalRequest;
 use App\Models\GasOrder;
+use App\Models\ManualReport;
 
 class DashboardController extends Controller
 {
@@ -35,7 +37,6 @@ public function index()
         ->get()
         ->map(function ($item) {
             $item->type = 'gas';
-            // item_name is already in GasOrder or we use generic name
             $item->item_name = $item->item_name ?? 'Gas Order'; 
             return $item;
         });
@@ -53,9 +54,85 @@ public function index()
 
     // Hitung statistik untuk Donut Chart (Total Transaksi per Kategori)
     $rentalCount = RentalBooking::where('status', '!=', 'cancelled')->count();
-    $gasCount = GasOrder::count(); // Gas orders don't have 'cancelled' status usually, but check if needed
+    $gasCount = GasOrder::count();
 
     $totalPending = $rentalRequests->count() + $gasRequests->count();
+
+    // ========================================
+    // REAL DATA CALCULATIONS FOR CHARTS
+    // ========================================
+    
+    // Calculate monthly performance (total transactions per month)
+    $monthlyPerformance = [];
+    $currentYear = date('Y');
+    
+    for ($month = 1; $month <= 12; $month++) {
+        $rentalMonthCount = RentalBooking::whereMonth('created_at', $month)
+            ->whereYear('created_at', $currentYear)
+            ->where('status', '!=', 'cancelled')
+            ->count();
+        
+        $gasMonthCount = GasOrder::whereMonth('created_at', $month)
+            ->whereYear('created_at', $currentYear)
+            ->count();
+        
+        $monthlyPerformance[] = $rentalMonthCount + $gasMonthCount;
+    }
+    
+    // Calculate monthly income and expenses (SAME AS ReportController)
+    $monthlyIncome = [
+        'Januari' => 0,
+        'Februari' => 0,
+        'Maret' => 0,
+        'April' => 0,
+        'Mei' => 0,
+        'Juni' => 0,
+        'Juli' => 0,
+        'Agustus' => 0,
+        'September' => 0,
+        'Oktober' => 0,
+        'November' => 0,
+        'Desember' => 0,
+    ];
+    
+    // Pendapatan dari sistem (RentalRequest)
+    foreach (RentalRequest::selectRaw('SUM(price) as total, MONTH(created_at) as month')
+        ->groupBy('month')
+        ->pluck('total', 'month') as $month => $amount) {
+        $monthlyIncome[getMonthName($month)] += $amount;
+    }
+
+    // Pendapatan dari gas orders
+    foreach (GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
+        ->groupBy('month')
+        ->pluck('total', 'month') as $month => $amount) {
+        $monthlyIncome[getMonthName($month)] += $amount;
+    }
+    
+    // Pendapatan dari manual reports
+    foreach (ManualReport::selectRaw('SUM(amount * quantity) as total, MONTH(transaction_date) as month')
+        ->groupBy('month')
+        ->pluck('total', 'month') as $month => $amount) {
+        $monthlyIncome[getMonthName($month)] += $amount;
+    }
+    
+    // Expenses - set to 0 for now
+    $monthlyExpenses = array_fill(0, 12, 0);
+    
+    // Calculate popular items statistics (real data from database)
+    $popularItems = [
+        'gas_lpg_3kg' => GasOrder::where('item_name', 'LIKE', '%3%')->count(),
+        'sound_system' => RentalBooking::whereHas('barang', function($q) {
+                $q->where('nama_barang', 'LIKE', '%Sound%');
+            })->count(),
+        'tenda_komplit' => RentalBooking::whereHas('barang', function($q) {
+                $q->where('nama_barang', 'LIKE', '%Tenda%');
+            })->count(),
+        'meja_kursi' => RentalBooking::whereHas('barang', function($q) {
+                $q->where('nama_barang', 'LIKE', '%Meja%')
+                  ->orWhere('nama_barang', 'LIKE', '%Kursi%');
+            })->count(),
+    ];
 
     $data = [
         'totalUsers' => User::count(),
@@ -65,14 +142,18 @@ public function index()
         'latestRequests' => $latestRequests,
         'totalPending' => $totalPending,
         'rentalCount' => $rentalCount,
-        'gasCount' => $gasCount
+        'gasCount' => $gasCount,
+        // Real data for charts
+        'monthlyPerformance' => $monthlyPerformance,
+        'monthlyIncome' => $monthlyIncome,
+        'monthlyExpenses' => $monthlyExpenses,
+        'popularItems' => $popularItems,
     ];
 
     // Ambil jumlah item untuk setiap unit layanan
     $data['unitPenyewaan'] = Barang::count(); 
     $data['unitGas'] = Gas::count();
 
-    // Kembalikan view dengan data tambahan
     return view('admin.dashboard.index', $data);
 }
 
@@ -291,5 +372,28 @@ public function index()
     public function maintenance()
     {
         return view('maintenance');
+    }
+}
+
+// Helper function for month names (same as in ReportController)
+if (!function_exists('getMonthName')) {
+    function getMonthName($month)
+    {
+        $months = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
+
+        return $months[$month] ?? 'Unknown';
     }
 }

@@ -502,8 +502,8 @@
             if (kinerjaElement) {
                 const kinerjaOptions = {
                     series: [{
-                        name: 'Kinerja',
-                        data: [25, 20.8, 17.6, 20.2, 19.8, 22.5]
+                        name: 'Pendapatan',
+                        data: {!! json_encode(array_values($monthlyIncome)) !!}
                     }],
                     chart: {
                         type: 'area',
@@ -539,7 +539,7 @@
                         }
                     },
                     xaxis: {
-                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
+                        categories: {!! json_encode(array_keys($monthlyIncome)) !!},
                         labels: {
                             style: {
                                 colors: '#374151',
@@ -604,11 +604,11 @@
                 const unitOptions = {
                     series: [{
                             name: 'Unit Penyewaan Alat',
-                            data: [20, 15, 30, 22, 17]
+                            data: {!! json_encode(array_slice(array_values($monthlyIncome), 0, 5)) !!}
                         },
                         {
                             name: 'Unit Penjualan Gas',
-                            data: [16, 17, 18, 20, 10]
+                            data: {!! json_encode(array_slice(array_values($monthlyIncome), 0, 5)) !!}
                         }
                     ],
                     chart: {
@@ -635,7 +635,7 @@
                         enabled: false
                     },
                     xaxis: {
-                        categories: ['Januari', 'Februari', 'Maret', 'April', 'Mei'],
+                        categories: {!! json_encode(array_slice(array_keys($monthlyIncome), 0, 5)) !!},
                         labels: {
                             style: {
                                 colors: '#374151',
@@ -693,11 +693,11 @@
                 const totalRevenueOptions = {
                     series: [{
                             name: 'Pendapatan 2025',
-                            data: [15, 10, 20, 25, 15, 25, 20]
+                            data: {!! json_encode(array_slice(array_values($monthlyIncome), 0, 7)) !!}
                         },
                         {
-                            name: 'Pengeluaran 2020',
-                            data: [-10, -15, -11, -18, -20, -17, -13]
+                            name: 'Pengeluaran 2025',
+                            data: [0, 0, 0, 0, 0, 0, 0]
                         }
                     ],
                     chart: {
@@ -754,7 +754,7 @@
                         }
                     },
                     xaxis: {
-                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                        categories: {!! json_encode(array_slice(array_keys($monthlyIncome), 0, 7)) !!},
                         labels: {
                             style: {
                                 fontSize: '13px',
