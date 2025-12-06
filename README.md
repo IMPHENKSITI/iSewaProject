@@ -79,3 +79,4 @@ Catatan yang perlu diperbaikii:
 
 ## Version 0.6.0
 - Major Update
+- Penambahan Middleware Guard untuk Keamanan
