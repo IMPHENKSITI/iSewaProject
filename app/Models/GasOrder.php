@@ -33,6 +33,7 @@ class GasOrder extends Model
         'cancellation_requested_at',
         'cancellation_status',
         'admin_cancellation_response',
+        'receipt_path',
     ];
 
     protected $casts = [

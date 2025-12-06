@@ -94,7 +94,7 @@
                                         $statusConfig = [
                                             'completed' => ['text' => 'Selesai', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                             'resolved' => ['text' => 'Selesai', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
-                                            'pending' => ['text' => 'Belum Bayar', 'color' => 'text-yellow-600', 'dot' => 'bg-yellow-600'],
+                                            'pending' => ['text' => 'Di Proses', 'color' => 'text-yellow-600', 'dot' => 'bg-yellow-600'],
                                             'paid' => ['text' => 'Sudah Bayar', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'confirmed' => ['text' => 'Dikonfirmasi', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'approved' => ['text' => 'Disetujui', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
@@ -211,6 +211,40 @@
                                             <p class="text-gray-400 text-sm">Belum ada bukti transaksi</p>
                                             @endif
                                         </div>
+                                    </div>
+
+                                    <!-- Auto-Generated Receipt -->
+                                    <div>
+                                        <p class="text-sm text-gray-500 mb-2">Bukti Transaksi Resmi</p>
+                                        @if($booking->receipt_path && Storage::disk('public')->exists($booking->receipt_path))
+                                        <div class="flex gap-2">
+                                            <a href="{{ route('receipt.rental.view', $booking->id) }}" 
+                                               target="_blank"
+                                               class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-sm font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg">
+                                                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                                Lihat Bukti
+                                            </a>
+                                            <a href="{{ route('receipt.rental.download', $booking->id) }}" 
+                                               class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg text-sm font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
+                                                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                                </svg>
+                                                Unduh Bukti
+                                            </a>
+                                        </div>
+                                        @else
+                                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                            <p class="text-xs text-yellow-700">
+                                                <svg class="w-4 h-4 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Bukti transaksi sedang diproses...
+                                            </p>
+                                        </div>
+                                        @endif
                                     </div>
 
                                     <!-- Delivery Status Timeline -->
@@ -364,7 +398,7 @@
                                         $statusConfig = [
                                             'completed' => ['text' => 'Selesai', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                             'resolved' => ['text' => 'Selesai', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
-                                            'pending' => ['text' => 'Belum Bayar', 'color' => 'text-yellow-600', 'dot' => 'bg-yellow-600'],
+                                            'pending' => ['text' => 'Di Proses', 'color' => 'text-yellow-600', 'dot' => 'bg-yellow-600'],
                                             'paid' => ['text' => 'Sudah Bayar', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'confirmed' => ['text' => 'Dikonfirmasi', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'approved' => ['text' => 'Disetujui', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
@@ -473,6 +507,40 @@
                                             <p class="text-gray-400 text-sm">Belum ada bukti transaksi</p>
                                             @endif
                                         </div>
+                                    </div>
+
+                                    <!-- Auto-Generated Receipt -->
+                                    <div>
+                                        <p class="text-sm text-gray-500 mb-2">Bukti Transaksi Resmi</p>
+                                        @if($order->receipt_path && Storage::disk('public')->exists($order->receipt_path))
+                                        <div class="flex gap-2">
+                                            <a href="{{ route('receipt.gas.view', $order->id) }}" 
+                                               target="_blank"
+                                               class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-sm font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg">
+                                                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                                Lihat Bukti
+                                            </a>
+                                            <a href="{{ route('receipt.gas.download', $order->id) }}" 
+                                               class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg text-sm font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
+                                                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                                </svg>
+                                                Unduh Bukti
+                                            </a>
+                                        </div>
+                                        @else
+                                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                            <p class="text-xs text-yellow-700">
+                                                <svg class="w-4 h-4 inline-block mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                Bukti transaksi sedang diproses...
+                                            </p>
+                                        </div>
+                                        @endif
                                     </div>
 
                                     <!-- Cancellation Request -->

@@ -112,7 +112,7 @@ class RentalBookingController extends Controller
             'success' => true,
             'message' => 'Pemesanan berhasil dibuat!',
             'booking_id' => $booking->id,
-            'receipt_id' => $receipt->id,
+            'receipt_id' => $booking->id, // Use booking ID for receipt routes
             'receipt_number' => $receipt->receipt_number,
         ]);
     }

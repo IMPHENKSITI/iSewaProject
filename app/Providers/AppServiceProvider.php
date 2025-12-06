@@ -19,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register model observers for automatic receipt generation
+        \App\Models\RentalBooking::observe(\App\Observers\RentalBookingObserver::class);
+        \App\Models\GasOrder::observe(\App\Observers\GasOrderObserver::class);
     }
 }

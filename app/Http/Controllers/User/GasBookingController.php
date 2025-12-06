@@ -85,7 +85,7 @@ class GasBookingController extends Controller
             'success' => true,
             'message' => 'Pembelian gas berhasil dibuat!',
             'order_id' => $order->id,
-            'receipt_id' => $receipt->id,
+            'receipt_id' => $order->id, // Use order ID for receipt routes
             'receipt_number' => $receipt->receipt_number,
         ]);
     }

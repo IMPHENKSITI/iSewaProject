@@ -1256,11 +1256,12 @@
         </div>
     </div>
 
+
         // View receipt
         if (viewReceiptBtn) {
             viewReceiptBtn.addEventListener('click', function() {
                 if (receiptId) {
-                    window.location.href = `/receipt/${receiptId}`;
+                    window.open(`/receipt/rental/${receiptId}/view`, '_blank');
                 }
             });
         }
@@ -1269,7 +1270,7 @@
         if (downloadReceiptBtn) {
             downloadReceiptBtn.addEventListener('click', function() {
                 if (receiptId) {
-                    window.location.href = `/receipt/${receiptId}/download`;
+                    window.location.href = `/receipt/rental/${receiptId}/download`;
                 }
             });
         }

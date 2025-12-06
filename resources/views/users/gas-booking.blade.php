@@ -616,7 +616,7 @@
         if (viewGasReceiptBtn) {
             viewGasReceiptBtn.addEventListener('click', function() {
                 if (gasReceiptId) {
-                    window.location.href = `/receipt/${gasReceiptId}`;
+                    window.open(`/receipt/gas/${gasReceiptId}/view`, '_blank');
                 }
             });
         }
@@ -625,7 +625,7 @@
         if (downloadGasReceiptBtn) {
             downloadGasReceiptBtn.addEventListener('click', function() {
                 if (gasReceiptId) {
-                    window.location.href = `/receipt/${gasReceiptId}/download`;
+                    window.location.href = `/receipt/gas/${gasReceiptId}/download`;
                 }
             });
         }

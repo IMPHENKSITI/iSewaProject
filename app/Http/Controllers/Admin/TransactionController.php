@@ -138,6 +138,11 @@ class TransactionController extends Controller
             abort(404, 'Bukti pembayaran tidak ditemukan.');
         }
 
-        return Storage::download($model->proof_of_payment);
+        // Check if file exists in storage
+        if (!Storage::disk('public')->exists($model->proof_of_payment)) {
+            abort(404, 'File bukti pembayaran tidak ditemukan di storage.');
+        }
+
+        return Storage::disk('public')->download($model->proof_of_payment);
     }
 }

@@ -99,6 +99,20 @@ Route::post('/notifikasi/read-all', [App\Http\Controllers\User\NotificationContr
     ->name('user.notifications.readAll')
     ->middleware('role:user');
 
+// Receipt Routes
+Route::get('/receipt/rental/{id}/view', [App\Http\Controllers\User\ReceiptController::class, 'viewRentalReceipt'])
+    ->name('receipt.rental.view')
+    ->middleware('role:user');
+Route::get('/receipt/rental/{id}/download', [App\Http\Controllers\User\ReceiptController::class, 'downloadRentalReceipt'])
+    ->name('receipt.rental.download')
+    ->middleware('role:user');
+Route::get('/receipt/gas/{id}/view', [App\Http\Controllers\User\ReceiptController::class, 'viewGasReceipt'])
+    ->name('receipt.gas.view')
+    ->middleware('role:user');
+Route::get('/receipt/gas/{id}/download', [App\Http\Controllers\User\ReceiptController::class, 'downloadGasReceipt'])
+    ->name('receipt.gas.download')
+    ->middleware('role:user');
+
 
 
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
