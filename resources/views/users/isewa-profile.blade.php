@@ -14,17 +14,17 @@
             <div class="mb-20 relative animate-section">
                 <div class="flex items-start justify-between gap-8">
                     <div class="flex-1">
-                        <h2 class="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">
                             Cerita Kami
                         </h2>
-                        <p class="text-lg font-semibold text-gray-800 mb-4">
-                            Membangun Solusi Digital untuk Kemajuan Desa
+                        <p class="text-lg font-bold text-gray-800 mb-4">
+                            Memberikan Solusi Digital untuk Kemajuan Desa
                         </p>
                         <p class="text-gray-700 leading-relaxed mb-4">
-                            iSewa (Inventarisasi Sewa) adalah platform digital yang dirancang untuk membantu desa dalam mengelola aset dan layanan penyewaan secara lebih efisien dan transparan. Kami percaya bahwa teknologi dapat menjadi jembatan untuk meningkatkan kesejahteraan masyarakat desa melalui pengelolaan sumber daya yang lebih baik.
+                            iSewa merupakan platform digital terpadu yang dirancang untuk mendukung kegiatan operasional dan pelayanan BUMDes secara modern dan efisien. Sistem ini hadir sebagai solusi inovatif untuk mengelola berbagai unit usaha desa, seperti penyewaan alat dan layanan pembelian gas.
                         </p>
                         <p class="text-gray-700 leading-relaxed">
-                            Melalui iSewa, proses pencatatan aset desa, penyewaan alat, pembelian gas, dan pelaporan keuangan dapat dilakukan secara digital. Sistem ini tidak hanya memudahkan administrasi, tetapi juga memberikan transparansi kepada masyarakat dalam setiap transaksi yang terjadi. Dengan fitur-fitur yang intuitif dan mudah digunakan, iSewa hadir sebagai solusi modern untuk tantangan pengelolaan desa di era digital.
+                            Melalui iSewa, proses administrasi dan transaksi menjadi lebih cepat, transparan, dan mudah dijangkau oleh masyarakat desa. Dengan berbasis sistem terintegrasi, seluruh data penyewaan, transaksi, dan laporan dapat dikelola secara otomatis dan terdokumentasi dengan baik. Dengan mengedepankan kemudahan akses dan efisiensi layanan, iSewa membantu BUMDes dalam meningkatkan produktivitas, serta memperkuat perekonomian desa secara berkelanjutan.
                         </p>
                     </div>
                     
@@ -42,7 +42,7 @@
 
             <!-- Nilai Kami Section -->
             <div class="mb-20 animate-section">
-                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">
                     Nilai Kami
                 </h2>
                 <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8 border border-gray-200 hover:-translate-y-2 transition-all duration-300">
@@ -88,7 +88,7 @@
 
             <!-- Fungsi Utama Section -->
             <div class="mb-20 animate-section">
-                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">
                     Fungsi Utama
                 </h2>
                 <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8 border border-gray-200 hover:-translate-y-2 transition-all duration-300">
@@ -99,8 +99,8 @@
                                 <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <div>
-                                <h3 class="font-bold text-lg text-gray-900">Digitalisasi Pencatatan Alat Desa</h3>
-                                <p class="text-gray-600">Mencatat, menyimpan, dan mengelola data inventaris alat desa, termasuk spesifikasi, kondisi, dan lokasi penyimpanan</p>
+                                <h3 class="font-bold text-lg text-gray-900">Digitalisasi Penyewaan Alat Desa</h3>
+                                <p class="text-gray-600">Menyediakan layanan pemesanan alat (tenda, kursi, meja, sound system, diesel) secara online dengan pencatatan otomatis</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4">
@@ -109,8 +109,8 @@
                                 <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <div>
-                                <h3 class="font-bold text-lg text-gray-900">Manajemen Penyewaan</h3>
-                                <p class="text-gray-600">Mengelola proses penyewaan alat dari pemesanan, persetujuan, hingga pengembalian dengan sistem yang terintegrasi</p>
+                                <h3 class="font-bold text-lg text-gray-900">Pengelolaan Unit Usaha</h3>
+                                <p class="text-gray-600">Mengelola proses penyewaan alat dan pembelian gas dengan sistem yang terintegrasi</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4">
@@ -119,28 +119,8 @@
                                 <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <div>
-                                <h3 class="font-bold text-lg text-gray-900">Pelacakan dan Monitoring</h3>
-                                <p class="text-gray-600">Memantau status penyewaan, riwayat penggunaan alat, dan mengidentifikasi alat yang sering disewa</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-4">
-                            <svg class="w-6 h-6 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="10" fill="#10B981"/>
-                                <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-900">Laporan Keuangan</h3>
-                                <p class="text-gray-600">Menghasilkan laporan otomatis terkait pendapatan dari penyewaan alat dan penjualan gas untuk transparansi keuangan desa</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-4">
-                            <svg class="w-6 h-6 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="10" fill="#10B981"/>
-                                <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-900">Manajemen Layanan Sistem</h3>
-                                <p class="text-gray-600">Mengelola berbagai layanan seperti penyewaan alat, penjualan gas, dan layanan lainnya dalam satu platform terpadu</p>
+                                <h3 class="font-bold text-lg text-gray-900">Pelaporan dan Monitoring</h3>
+                                <p class="text-gray-600">Menyediakan laporan penyewaan, transaksi, dan keuangan yang dapat diakses oleh BUMDes dan Pemerintah Desa</p>
                             </div>
                         </div>
                     </div>
@@ -149,7 +129,7 @@
 
             <!-- Misi Section -->
             <div class="mb-20 animate-section">
-                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">
                     Misi
                 </h2>
                 <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-8 border border-gray-200 hover:-translate-y-2 transition-all duration-300">
@@ -159,28 +139,28 @@
                                 <circle cx="12" cy="12" r="10" fill="#10B981"/>
                                 <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <p class="text-gray-700 leading-relaxed">Menyediakan platform digital yang memudahkan pengelolaan aset dan layanan desa secara efisien dan transparan</p>
+                            <p class="text-gray-700 leading-relaxed">Meningkatkan efisiensi dan profesionalitas pengelolaan unit usaha desa</p>
                         </div>
                         <div class="flex items-start gap-4">
                             <svg class="w-6 h-6 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="12" cy="12" r="10" fill="#10B981"/>
                                 <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <p class="text-gray-700 leading-relaxed">Meningkatkan transparansi tata kelola desa melalui sistem pelaporan yang akurat, real-time, dan mudah diakses oleh masyarakat</p>
+                            <p class="text-gray-700 leading-relaxed">Menyediakan layanan digital yang mudah diakses oleh masyarakat dan pelaku usaha desa</p>
                         </div>
                         <div class="flex items-start gap-4">
                             <svg class="w-6 h-6 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="12" cy="12" r="10" fill="#10B981"/>
                                 <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <p class="text-gray-700 leading-relaxed">Mendorong transformasi digital di tingkat desa untuk meningkatkan kualitas pelayanan publik dan kesejahteraan masyarakat</p>
+                            <p class="text-gray-700 leading-relaxed">Membangun kepercayaan masyarakat melalui transparansi data digital</p>
                         </div>
                         <div class="flex items-start gap-4">
                             <svg class="w-6 h-6 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="12" cy="12" r="10" fill="#10B981"/>
                                 <path d="M8 12.5L10.5 15L16 9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            <p class="text-gray-700 leading-relaxed">Memfasilitasi akses informasi dan layanan desa yang cepat, mudah, dan dapat diandalkan oleh seluruh masyarakat</p>
+                            <p class="text-gray-700 leading-relaxed">Mendorong digitalisasi desa menuju tata kelola ekonomi mandiri & modern</p>
                         </div>
                     </div>
                 </div>
@@ -188,15 +168,14 @@
 
             <!-- Struktur Pengembang iSewa Section -->
             <div class="mb-16 animate-section">
-                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">
-                    <span class="text-gray-900">Struktur </span>
-                    <span class="bg-gradient-to-r from-[#3B82F6] via-[#60a5fa] to-[#3B82F6] bg-clip-text text-transparent">Pengembang iSewa</span>
+                <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">
+                    Struktur Pengembang iSewa
                 </h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                     <!-- Card 1: Wahid Riono -->
                     <div class="group">
-                        <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-sm p-8">
+                        <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 bg-white/70 backdrop-blur-sm p-8">
                             <div class="flex flex-col items-center text-center">
                                 <!-- Avatar with Gradient Border -->
                                 <div class="relative mb-4">
@@ -215,7 +194,7 @@
 
                     <!-- Card 2: Mushlihul Arif -->
                     <div class="group">
-                        <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-sm p-8">
+                        <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 bg-white/70 backdrop-blur-sm p-8">
                             <div class="flex flex-col items-center text-center">
                                 <!-- Avatar with Gradient Border -->
                                 <div class="relative mb-4">
@@ -234,7 +213,7 @@
 
                     <!-- Card 3: Safika -->
                     <div class="group">
-                        <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-white/70 backdrop-blur-sm p-8">
+                        <div class="relative rounded-3xl overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-3 transition-all duration-300 bg-white/70 backdrop-blur-sm p-8">
                             <div class="flex flex-col items-center text-center">
                                 <!-- Avatar with Gradient Border -->
                                 <div class="relative mb-4">

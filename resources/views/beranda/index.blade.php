@@ -955,5 +955,18 @@
         };
         // Initialize
         BerandaPage.init();
+
+        // Check if user just logged out and show login modal
+        @if(session('logout_success'))
+            document.addEventListener('DOMContentLoaded', function() {
+                // Wait a bit for the page to fully load
+                setTimeout(function() {
+                    const loginButton = document.getElementById('btn-open-login');
+                    if (loginButton) {
+                        loginButton.click();
+                    }
+                }, 300);
+            });
+        @endif
     </script>
 @endpush

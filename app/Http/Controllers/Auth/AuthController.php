@@ -231,10 +231,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return response()->json([
-            'success' => true,
-            'redirect' => route('beranda')
-        ]);
+        return redirect()->route('beranda')->with('logout_success', true);
     }
 
     public function forgotPassword(Request $request)
