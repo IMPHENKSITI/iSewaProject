@@ -17,11 +17,6 @@ class RentalBookingController extends Controller
      */
     public function create($itemId)
     {
-        // Check if user is authenticated
-        if (!Auth::check()) {
-            return redirect()->route('beranda')->with('open_login_modal', true);
-        }
-
         // Fetch the rental item
         $item = Barang::findOrFail($itemId);
         
@@ -39,11 +34,6 @@ class RentalBookingController extends Controller
      */
     public function store(Request $request)
     {
-        // Check if user is authenticated
-        if (!Auth::check()) {
-            return response()->json(['success' => false, 'message' => 'Anda harus login terlebih dahulu'], 401);
-        }
-
         // Validate the request
         $validated = $request->validate([
             'barang_id' => 'required|exists:barang,id',

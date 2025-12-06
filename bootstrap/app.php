@@ -13,7 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // Register custom middleware aliases
         $middleware->alias([
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'auth' => \App\Http\Middleware\CheckRole::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
+            'admin' => \App\Http\Middleware\CheckRole::class, // For backward compatibility
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

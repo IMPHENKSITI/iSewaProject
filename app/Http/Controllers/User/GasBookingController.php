@@ -18,11 +18,6 @@ class GasBookingController extends Controller
      */
     public function store(Request $request)
     {
-        // Check if user is authenticated
-        if (!Auth::check()) {
-            return response()->json(['success' => false, 'message' => 'Anda harus login terlebih dahulu'], 401);
-        }
-
         // Validate the request
         $validated = $request->validate([
             'gas_id' => 'required|exists:gas,id',

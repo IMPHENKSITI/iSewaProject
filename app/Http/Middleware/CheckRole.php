@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
+
+class CheckRole
+{
+    /**
+     * Handle an incoming request.
+     *
+     * Middleware untuk check authentication dan role-based access control.
+     * 
+     * Usage:
+     * - middleware('auth') -> hanya cek sudah login
+     * - middleware('role:admin') -> cek login + role admin
+     * - middleware('role:user') -> cek login + role user
+     * - middleware('role:user,guest') -> allow user atau guest (tidak login)
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  string|null  ...$roles
+     */
+    public function handle(Request $request, Closure $next, ...$roles): Response
+    {
+        // Check if 'guest' is allowed
+        $allowGuest = in_array('guest', $roles);
+        
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            // If guest is allowed, let them through
+            if ($allowGuest) {
+                return $next($request);
+            }
+            
+            // Handle AJAX request
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda harus login terlebih dahulu'
+                ], 401);
+            }
+            
+            // Handle web request - redirect to beranda with login modal trigger
+            return redirect()->route('beranda')->with('open_login_modal', true);
+        }
+
+        // User is authenticated
+        $user = Auth::user();
+        
+        // If no roles specified (only 'auth'), just check authentication (already passed above)
+        if (empty($roles)) {
+            return $next($request);
+        }
+        
+        // Check if user has one of the required roles (excluding 'guest' from check)
+        $requiredRoles = array_filter($roles, fn($role) => $role !== 'guest');
+        
+        // If no required roles (only 'guest' was specified), allow authenticated user too
+        if (empty($requiredRoles)) {
+            return $next($request);
+        }
+        
+        foreach ($requiredRoles as $role) {
+            if ($user->role === $role) {
+                return $next($request);
+            }
+        }
+
+        // User is authenticated but doesn't have required role
+        // Special case: If admin tries to access user-only pages, redirect to admin dashboard
+        if ($user->role === 'admin' && (in_array('user', $requiredRoles) || $allowGuest)) {
+            // Handle AJAX request
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Admin harus menggunakan halaman admin',
+                    'redirect' => route('admin.dashboard')
+                ], 403);
+            }
+            
+            // Handle web request
+            return redirect()->route('admin.dashboard')->with('info', 'Silakan gunakan halaman admin.');
+        }
+        
+        // Handle AJAX request
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses ke halaman ini'
+            ], 403);
+        }
+
+        // Handle web request
+        return redirect()->route('beranda')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+    }
+}

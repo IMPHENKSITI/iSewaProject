@@ -2,9 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-// ===============================
-// IMPORT CONTROLLERS
-// ===============================
+
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingController;
@@ -15,82 +13,94 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\ProfileController; 
 
-// Welcome Page
+
 Route::get('/', function () {
     return redirect('beranda');
 });
 Route::get('/beranda', [App\Http\Controllers\User\BerandaController::class, 'index'])
-    ->name('beranda');
+    ->name('beranda')
+    ->middleware('role:user,guest');
 
-// User Pages
+
 Route::get('/pelayanan', function () {
     return view('users.pelayanan');
-})->name('pelayanan');
+})->name('pelayanan')
+  ->middleware('role:user,guest');
 
-// BUMDes Routes
+
 Route::get('/bumdes/profil-layanan', function () {
     return view('users.bumdes-profil');
-})->name('bumdes.profil');
+})->name('bumdes.profil')
+  ->middleware('role:user,guest');
 
 Route::get('/bumdes/desa-pematang-duku-timur', [App\Http\Controllers\User\BumdesUserController::class, 'show'])
-    ->name('bumdes.detail');
+    ->name('bumdes.detail')
+    ->middleware('role:user,guest');
 
 Route::get('/bumdes/laporan', [App\Http\Controllers\User\BumdesLaporanController::class, 'index'])
-    ->name('bumdes.laporan');
+    ->name('bumdes.laporan')
+    ->middleware('role:user,guest');
 
-// Profil iSewa Route
+
 Route::get('/pelayanan/profil', [App\Http\Controllers\User\IsewaProfileController::class, 'index'])
-    ->name('isewa.profile');
+    ->name('isewa.profile')
+    ->middleware('role:user,guest');
 
 
-// Rental Equipment Route
+
 Route::get('/unit-penyewaan-alat', [App\Http\Controllers\User\RentalUserController::class, 'index'])
-    ->name('rental.equipment');
+    ->name('rental.equipment')
+    ->middleware('role:user,guest');
 Route::get('/unit-penyewaan-alat/{id}', [App\Http\Controllers\User\RentalUserController::class, 'show'])
-    ->name('rental.equipment.show');
+    ->name('rental.equipment.show')
+    ->middleware('role:user,guest');
 
-// Rental Booking Routes
+
 Route::get('/unit-penyewaan-alat/{id}/booking', [App\Http\Controllers\User\RentalBookingController::class, 'create'])
-    ->name('rental.booking');
+    ->name('rental.booking')
+    ->middleware('auth');
 Route::post('/rental/booking', [App\Http\Controllers\User\RentalBookingController::class, 'store'])
-    ->name('rental.booking.store');
+    ->name('rental.booking.store')
+    ->middleware('auth');
 
-// Gas Sales Route
+
 Route::get('/unit-penjualan-gas', [App\Http\Controllers\User\GasSalesUserController::class, 'index'])
-    ->name('gas.sales');
+    ->name('gas.sales')
+    ->middleware('role:user,guest');
 Route::get('/unit-penjualan-gas/{id}', [App\Http\Controllers\User\GasSalesUserController::class, 'show'])
-    ->name('gas.sales.show');
+    ->name('gas.sales.show')
+    ->middleware('role:user,guest');
 Route::get('/unit-penjualan-gas/{id}/booking', [App\Http\Controllers\User\GasSalesUserController::class, 'booking'])
-    ->name('gas.booking');
+    ->name('gas.booking')
+    ->middleware('auth');
 Route::post('/gas/booking', [App\Http\Controllers\User\GasBookingController::class, 'store'])
-    ->name('gas.booking.store');
+    ->name('gas.booking.store')
+    ->middleware('auth');
 
-// User Activity Route
+
 Route::get('/aktivitas', [App\Http\Controllers\User\ActivityController::class, 'index'])
     ->name('user.activity')
-    ->middleware('auth');
+    ->middleware('role:user');
 Route::post('/aktivitas/{type}/{id}/cancel', [App\Http\Controllers\User\ActivityController::class, 'requestCancellation'])
     ->name('user.activity.cancel')
-    ->middleware('auth');
+    ->middleware('role:user');
 Route::delete('/aktivitas/{type}/{id}', [App\Http\Controllers\User\ActivityController::class, 'destroy'])
     ->name('user.activity.destroy')
-    ->middleware('auth');
+    ->middleware('role:user');
 
-// User Notification Routes
+
 Route::get('/notifikasi', [App\Http\Controllers\User\NotificationController::class, 'index'])
     ->name('user.notifications')
-    ->middleware('auth');
+    ->middleware('role:user');
 Route::post('/notifikasi/{id}/read', [App\Http\Controllers\User\NotificationController::class, 'markAsRead'])
     ->name('user.notifications.read')
-    ->middleware('auth');
+    ->middleware('role:user');
 Route::post('/notifikasi/read-all', [App\Http\Controllers\User\NotificationController::class, 'markAllAsRead'])
     ->name('user.notifications.readAll')
-    ->middleware('auth');
+    ->middleware('role:user');
 
 
-// ============================================
-// USER AUTH ROUTES 
-// ============================================
+
 Route::post('/auth/register', [AuthController::class, 'register'])->name('auth.register');
 Route::post('/auth/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.verify-otp');
 Route::post('/auth/resend-otp', [AuthController::class, 'resendOtp'])->name('auth.resend-otp');
@@ -101,26 +111,26 @@ Route::post('/auth/forgot-password/verify-otp', [AuthController::class, 'verifyF
 Route::post('/auth/forgot-password/reset', [AuthController::class, 'resetForgotPassword'])->name('auth.forgot-password.reset');
 Route::post('/auth/forgot-password/resend-otp', [AuthController::class, 'resendForgotPasswordOtp'])->name('auth.forgot-password.resend-otp');
 
-// ============================================
-// USER PROFILE ROUTES (Manual auth check di controller)
-// ============================================
-Route::get('/profile', [App\Http\Controllers\User\ProfileController::class, 'index'])->name('profile');
-Route::put('/profile', [App\Http\Controllers\User\ProfileController::class, 'update'])->name('profile.update');
-Route::post('/profile/change-password', [App\Http\Controllers\User\ProfileController::class, 'changePassword'])->name('profile.change-password');
-// ============================================
-// USER PROFILE ROUTES
-// ============================================
-Route::get('/profile', [App\Http\Controllers\User\ProfileController::class, 'index'])->name('profile');
-Route::put('/profile', [App\Http\Controllers\User\ProfileController::class, 'update'])->name('profile.update');
 
-// Profile Password Change Flow (3 steps dengan OTP)
-Route::post('/profile/change-password', [App\Http\Controllers\User\ProfileController::class, 'changePassword'])->name('profile.change-password');
-Route::post('/profile/verify-otp', [App\Http\Controllers\User\ProfileController::class, 'verifyOtp'])->name('profile.verify-otp');
-Route::post('/profile/resend-otp', [App\Http\Controllers\User\ProfileController::class, 'resendOtp'])->name('profile.resend-otp');
+Route::get('/profile', [App\Http\Controllers\User\ProfileController::class, 'index'])
+    ->name('profile')
+    ->middleware('role:user');
+Route::put('/profile', [App\Http\Controllers\User\ProfileController::class, 'update'])
+    ->name('profile.update')
+    ->middleware('role:user');
 
-// ============================================
-// AUTH ROUTES (Tanpa Middleware)
-// ============================================
+
+Route::post('/profile/change-password', [App\Http\Controllers\User\ProfileController::class, 'changePassword'])
+    ->name('profile.change-password')
+    ->middleware('role:user');
+Route::post('/profile/verify-otp', [App\Http\Controllers\User\ProfileController::class, 'verifyOtp'])
+    ->name('profile.verify-otp')
+    ->middleware('role:user');
+Route::post('/profile/resend-otp', [App\Http\Controllers\User\ProfileController::class, 'resendOtp'])
+    ->name('profile.resend-otp')
+    ->middleware('role:user');
+
+
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.post');
 Route::get('/admin/register', [AuthController::class, 'showRegisterForm'])->name('admin.register');
@@ -131,134 +141,19 @@ Route::get('/admin/reset-password/{token}', [AuthController::class, 'showResetPa
 Route::post('/admin/reset-password', [AuthController::class, 'resetPassword'])->name('admin.reset-password.post');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-// ============================================
-// FILE ACCESS ROUTES (Public)
-// ============================================
+
 Route::get('/files/{id}/{action}', function ($id, $action) {
     $file = \App\Models\File::findOrFail($id);
     return $file->handleAction($action);
 })->name('files.action')->where('action', 'stream|download');
 
-// ============================================
-// DASHBOARD ROUTES - MOVED TO PROTECTED GROUP BELOW
-// ============================================
-// Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-
-// ============================================
-// PROFILE ROUTES (Hanya untuk akses login via DashboardController)
-// ============================================
-// Hapus atau komentari baris-baris ini karena kita akan gunakan ProfileController
-// Route::get('/admin/profile', [DashboardController::class, 'profile'])->name('admin.profile');
-// Route::post('/admin/profile', [DashboardController::class, 'profileUpdate'])->name('admin.profile.update');
-
-// ============================================
-// SETTINGS ROUTES - MOVED TO PROTECTED GROUP BELOW
-// ============================================
-// Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
-// Route::post('/admin/settings', [SettingController::class, 'update'])->name('admin.settings.update');
-
-// ============================================
-// CONNECTIONS & NOTIFICATIONS ROUTES - MOVED TO PROTECTED GROUP BELOW
-// ============================================
-// Route::get('/admin/settings/connections', [DashboardController::class, 'connections'])->name('admin.settings.connections');
-// Route::get('/admin/settings/notifications', [DashboardController::class, 'notifications'])->name('admin.settings.notifications');
-// Route::post('/admin/settings/notifications', [DashboardController::class, 'notificationsUpdate'])->name('admin.settings.notifications.update');
-
-// ============================================
-// MAINTENANCE ROUTE
-// ============================================
 Route::get('/maintenance', [DashboardController::class, 'maintenance'])->name('maintenance');
-// Hapus atau komentari baris ini karena logout sudah ada di AuthController
-// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-// ============================================
-// ROUTES SESUAI STRUKTUR MENU UNTUK SIDEBAR
-// ============================================
-// ALL ROUTES BELOW HAVE BEEN MOVED TO THE PROTECTED ADMIN GROUP BELOW
-// ============================================
-
-/*
-// Grup Rute untuk Unit Layanan
-Route::prefix('admin/unit')->group(function () {
-    Route::get('/penyewaan', [UnitPenyewaanController::class, 'index'])->name('admin.unit.penyewaan.index');
-    Route::resource('penyewaan', UnitPenyewaanController::class)->names([
-        'index' => 'admin.unit.penyewaan.index',
-        'create' => 'admin.unit.penyewaan.create',
-        'store' => 'admin.unit.penyewaan.store',
-        'show' => 'admin.unit.penyewaan.show',
-        'edit' => 'admin.unit.penyewaan.edit',
-        'update' => 'admin.unit.penyewaan.update',
-        'destroy' => 'admin.unit.penyewaan.destroy',
-    ]);
-
-    Route::resource('gas', GasController::class)->parameters(['gas' => 'gas'])->names([
-        'index' => 'admin.unit.penjualan_gas.index',
-        'create' => 'admin.unit.penjualan_gas.create',
-        'store' => 'admin.unit.penjualan_gas.store',
-        'show' => 'admin.unit.penjualan_gas.show',
-        'edit' => 'admin.unit.penjualan_gas.edit',
-        'update' => 'admin.unit.penjualan_gas.update',
-        'destroy' => 'admin.unit.penjualan_gas.destroy',
-    ]);
-});
-
-// Grup Rute untuk Aktivitas
-Route::prefix('admin/aktivitas')->group(function () {
-    Route::get('/kajian', [DashboardController::class, 'index'])->name('admin.aktivitas.kajian.index');
-    Route::get('/transaksi', [DashboardController::class, 'index'])->name('admin.aktivitas.transaksi.index');
-    Route::get('/kemitraan', [DashboardController::class, 'index'])->name('admin.aktivitas.kemitraan.index');
-
-    Route::get('/permintaan-pengajuan', [\App\Http\Controllers\Admin\RequestController::class, 'index'])->name('admin.aktivitas.permintaan-pengajuan.index');
-    Route::get('/permintaan-pengajuan/{id}/{type}', [\App\Http\Controllers\Admin\RequestController::class, 'show'])->name('admin.aktivitas.permintaan-pengajuan.show');
-    Route::post('/permintaan-pengajuan/{id}/{type}/approve', [\App\Http\Controllers\Admin\RequestController::class, 'approve'])->name('admin.aktivitas.permintaan-pengajuan.approve');
-    Route::post('/permintaan-pengajuan/{id}/{type}/reject', [\App\Http\Controllers\Admin\RequestController::class, 'reject'])->name('admin.aktivitas.permintaan-pengajuan.reject');
-    
-    // Order Status Management Routes
-    Route::post('/permintaan-pengajuan/{type}/{id}/update-status', [\App\Http\Controllers\Admin\RequestController::class, 'updateStatus'])->name('admin.aktivitas.update-status');
-    Route::post('/permintaan-pengajuan/{type}/{id}/delivery-proof', [\App\Http\Controllers\Admin\RequestController::class, 'uploadDeliveryProof'])->name('admin.aktivitas.delivery-proof');
-    Route::post('/permintaan-pengajuan/{type}/{id}/cancellation/{action}', [\App\Http\Controllers\Admin\RequestController::class, 'handleCancellation'])->name('admin.aktivitas.cancellation');
-
-    Route::get('/bukti-transaksi', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.aktivitas.bukti-transaksi.index');
-    Route::get('/bukti-transaksi/{id}/{type}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.aktivitas.bukti-transaksi.show');
-    Route::post('/bukti-transaksi/{id}/{type}/verify', [\App\Http\Controllers\Admin\TransactionController::class, 'verify'])->name('admin.aktivitas.bukti-transaksi.verify');
-    Route::post('/bukti-transaksi/{id}/{type}/reject', [\App\Http\Controllers\Admin\TransactionController::class, 'reject'])->name('admin.aktivitas.bukti-transaksi.reject');
-    Route::get('/bukti-transaksi/{id}/{type}/download', [\App\Http\Controllers\Admin\TransactionController::class, 'downloadProof'])->name('admin.aktivitas.bukti-transaksi.download');
-});
-
-// Grup Rute untuk Data & Laporan
-Route::prefix('admin/laporan')->group(function () {
-    Route::get('/transaksi', [\App\Http\Controllers\Admin\ReportController::class, 'transactions'])->name('admin.laporan.transaksi');
-    Route::get('/pendapatan', [\App\Http\Controllers\Admin\ReportController::class, 'income'])->name('admin.laporan.pendapatan');
-    Route::get('/log', [\App\Http\Controllers\Admin\ReportController::class, 'logs'])->name('admin.laporan.log');
-    
-    // Manual Transaction Routes
-    Route::post('/manual-transaction', [\App\Http\Controllers\Admin\ReportController::class, 'storeManualTransaction'])->name('admin.laporan.manual.store');
-    Route::put('/manual-transaction/{id}', [\App\Http\Controllers\Admin\ReportController::class, 'updateManualTransaction'])->name('admin.laporan.manual.update');
-    Route::delete('/manual-transaction/{id}', [\App\Http\Controllers\Admin\ReportController::class, 'destroyManualTransaction'])->name('admin.laporan.manual.destroy');
-});
-
-// Rute untuk Profil iSewa
-Route::get('/admin/isewa/profile', [\App\Http\Controllers\Admin\SettingController::class, 'showIsewaProfile'])->name('admin.isewa.profile');
-Route::get('/admin/isewa/developer/{name}', [\App\Http\Controllers\Admin\SettingController::class, 'showDeveloperProfile'])->name('admin.isewa.developer.profile');
-
-// Profil & Manajemen BUMDes
-Route::get('/admin/isewa/profil-bumdes', [\App\Http\Controllers\Admin\BumdesController::class, 'index'])->name('admin.isewa.profile-bumdes');
-Route::prefix('admin/isewa/bumdes')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Admin\BumdesController::class, 'index'])->name('admin.isewa.bumdes.index');
-    Route::get('/create', [\App\Http\Controllers\Admin\BumdesController::class, 'create'])->name('admin.isewa.bumdes.create');
-    Route::post('/', [\App\Http\Controllers\Admin\BumdesController::class, 'store'])->name('admin.isewa.bumdes.store');
-    Route::get('/{id}/edit', [\App\Http\Controllers\Admin\BumdesController::class, 'edit'])->name('admin.isewa.bumdes.edit');
-    Route::put('/{id}', [\App\Http\Controllers\Admin\BumdesController::class, 'update'])->name('admin.isewa.bumdes.update');
-    Route::delete('/{id}', [\App\Http\Controllers\Admin\BumdesController::class, 'destroy'])->name('admin.isewa.bumdes.destroy');
-});
-Route::post('/admin/isewa/bumdes/update-whatsapp', [\App\Http\Controllers\Admin\BumdesController::class, 'updateWhatsapp'])->name('admin.isewa.bumdes.update.whatsapp');
-*/
 
 
-// ============================================
-// 🔹 GABUNGKAN SEMUA ROUTE ADMIN YANG DIPROTEKSI DI SINI
-// ============================================
-Route::prefix('admin')->middleware('admin')->group(function () {
+
+
+// Admin Routes
+Route::prefix('admin')->middleware('role:admin')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     

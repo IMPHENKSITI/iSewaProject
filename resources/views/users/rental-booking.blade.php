@@ -1174,7 +1174,35 @@
                         'Accept': 'application/json'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    // Handle 401 Unauthorized - trigger login modal
+                    if (response.status === 401) {
+                        return response.json().then(data => {
+                            // Open login modal using the existing modal system
+                            const overlay = document.getElementById('auth-modal-overlay');
+                            const modalLogin = document.getElementById('modal-login');
+                            
+                            if (overlay && modalLogin) {
+                                document.querySelectorAll('.modal-content').forEach(m => {
+                                    m.classList.add('hidden');
+                                    m.classList.remove('scale-100', 'opacity-100');
+                                });
+
+                                overlay.classList.remove('hidden');
+                                setTimeout(() => {
+                                    overlay.classList.add('show');
+                                    modalLogin.classList.remove('hidden');
+                                    setTimeout(() => {
+                                        modalLogin.classList.add('scale-100', 'opacity-100');
+                                    }, 50);
+                                }, 10);
+                            }
+                            
+                            throw new Error(data.message || 'Anda harus login terlebih dahulu');
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         receiptId = data.receipt_id;
