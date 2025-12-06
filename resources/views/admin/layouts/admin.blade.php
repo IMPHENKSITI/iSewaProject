@@ -329,6 +329,40 @@
             font-weight: bold;
             color: white;
         }
+
+        /* Colored Toast SweetAlert2 */
+        .colored-toast.swal2-icon-success {
+            background-color: #28c76f !important;
+        }
+
+        .colored-toast.swal2-icon-error {
+            background-color: #ea5455 !important;
+        }
+
+        .colored-toast.swal2-icon-warning {
+            background-color: #ff9f43 !important;
+        }
+
+        .colored-toast.swal2-icon-info {
+            background-color: #00cfe8 !important;
+        }
+
+        .colored-toast .swal2-title {
+            color: white !important;
+        }
+
+        .colored-toast .swal2-close {
+            color: white !important;
+        }
+        
+        .colored-toast .swal2-html-container {
+            color: white !important;
+        }
+
+        /* Ensure SweetAlert z-index is higher than anything else (Navbar, Sidebar) */
+        .swal2-container {
+            z-index: 100000 !important;
+        }
     </style>
     <script src="{{ asset('Admin/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('Admin/js/config.js') }}"></script>
@@ -626,36 +660,30 @@
 
                 // Function to show toast notifications
                 function showToast(type, message) {
-                    // Create toast element
-                    const toast = document.createElement('div');
-                    toast.className = `toast align-items-center text-white bg-${type} border-0`;
-                    toast.style.position = 'fixed';
-                    toast.style.top = '20px';
-                    toast.style.right = '20px';
-                    toast.style.zIndex = '10000';
-                    toast.innerHTML = `
-                <div class="d-flex">
-                    <div class="toast-body">${message}</div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            `;
-
-                    // Add to body
-                    document.body.appendChild(toast);
-
-                    // Initialize bootstrap toast
-                    const bsToast = new bootstrap.Toast(toast, {
-                        delay: 3000,
-                        autohide: true
-                    });
-
-                    // Show toast
-                    bsToast.show();
-
-                    // Remove toast after it's hidden
-                    toast.addEventListener('hidden.bs.toast', () => {
-                        toast.remove();
-                    });
+                    if (typeof Swal !== 'undefined') {
+                        // Map bootstrap types to sweetalert types
+                        const iconType = type === 'danger' ? 'error' : type;
+                        
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: iconType,
+                            title: message,
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            },
+                            customClass: {
+                                popup: 'colored-toast'
+                            }
+                        });
+                    } else {
+                        console.warn('SweetAlert2 is not loaded, falling back to alert');
+                        alert(message);
+                    }
                 }
 
                 // Animation on scroll
@@ -687,7 +715,24 @@
                         });
                     });
                 });
-                });
+            // ⭐ Handle Session Flash Messages on Page Load
+            document.addEventListener('DOMContentLoaded', function() {
+                @if(session('success'))
+                    showToast('success', "{{ session('success') }}");
+                @endif
+
+                @if(session('error'))
+                    showToast('danger', "{{ session('error') }}");
+                @endif
+
+                @if(session('info'))
+                    showToast('info', "{{ session('info') }}");
+                @endif
+
+                @if(session('warning'))
+                    showToast('warning', "{{ session('warning') }}");
+                @endif
+            });
             </script>
             @yield('scripts')
 </body>

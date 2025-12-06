@@ -34,6 +34,20 @@ class CheckRole
             if ($allowGuest) {
                 return $next($request);
             }
+
+            // Custom handle for Guest accessing Admin routes
+            if (in_array('admin', $roles)) {
+                 // Handle AJAX request
+                 if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Anda tidak memiliki akses ke halaman ini'
+                    ], 403);
+                }
+        
+                // Handle web request
+                return redirect()->route('beranda')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+            }
             
             // Handle AJAX request
             if ($request->expectsJson() || $request->ajax()) {
@@ -44,7 +58,7 @@ class CheckRole
             }
             
             // Handle web request - redirect to beranda with login modal trigger
-            return redirect()->route('beranda')->with('open_login_modal', true);
+            return redirect()->route('beranda')->with('open_login_modal', true)->with('error', 'Anda harus login terlebih dahulu.');
         }
 
         // User is authenticated
@@ -82,7 +96,7 @@ class CheckRole
             }
             
             // Handle web request
-            return redirect()->route('admin.dashboard')->with('info', 'Silakan gunakan halaman admin.');
+            return redirect()->route('admin.dashboard')->with('warning', 'Admin harus menggunakan halaman admin.');
         }
         
         // Handle AJAX request
