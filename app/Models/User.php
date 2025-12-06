@@ -72,12 +72,12 @@ class User extends Authenticatable
     // Relasi ke transaksi penyewaan
     public function rentalTransactions()
     {
-        return $this->hasMany(RentalTransaction::class, 'user_id');
+        return $this->hasMany(RentalBooking::class, 'user_id');
     }
 
     // Relasi ke transaksi gas
     public function gasTransactions()
     {
-        return $this->hasMany(GasTransaction::class, 'user_id');
+        return $this->hasMany(GasOrder::class, 'user_id');
     }
 }
