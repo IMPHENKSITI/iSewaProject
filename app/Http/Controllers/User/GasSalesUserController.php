@@ -29,6 +29,11 @@ class GasSalesUserController extends Controller
 
     public function booking($id)
     {
+        // Check if user is authenticated
+        if (!\Illuminate\Support\Facades\Auth::check()) {
+            return redirect()->route('beranda')->with('open_login_modal', true);
+        }
+
         // Fetch specific gas product
         $item = Gas::findOrFail($id);
         

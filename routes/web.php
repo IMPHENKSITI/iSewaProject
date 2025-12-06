@@ -63,8 +63,7 @@ Route::get('/unit-penjualan-gas/{id}', [App\Http\Controllers\User\GasSalesUserCo
 Route::get('/unit-penjualan-gas/{id}/booking', [App\Http\Controllers\User\GasSalesUserController::class, 'booking'])
     ->name('gas.booking');
 Route::post('/gas/booking', [App\Http\Controllers\User\GasBookingController::class, 'store'])
-    ->name('gas.booking.store')
-    ->middleware('auth');
+    ->name('gas.booking.store');
 
 // User Activity Route
 Route::get('/aktivitas', [App\Http\Controllers\User\ActivityController::class, 'index'])
