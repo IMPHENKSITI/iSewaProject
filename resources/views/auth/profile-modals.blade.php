@@ -94,30 +94,37 @@
             MODAL 2: OTP VERIFICATION
             (4 digit input boxes)
         ================================ --}}
-        <div id="modal-change-password-otp" class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
-            <button type="button" class="modal-close-profile absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+        <div id="modal-change-password-otp" class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-10 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
+            <button type="button" class="modal-close-profile absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition z-10">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
 
             <div class="text-center mb-8">
-                <img src="{{ asset('User/img/elemen/verifff.png') }}" alt="iSewa Logo" class="h-48">
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Verifikasi Kode</h2>
-                <p class="text-sm text-gray-600 mb-1">Masukkan Kode Untuk Melanjutkan</p>
+                {{-- Title at the top --}}
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Verifikasi Kode</h2>
+                
+                {{-- Image below title --}}
+                <div class="flex justify-center mb-6">
+                    <img src="{{ asset('User/img/elemen/verifff.png') }}" alt="Verification Icon" class="h-48 w-auto">
+                </div>
+
+                {{-- Subtitles --}}
+                <p class="text-lg font-semibold text-gray-800 mb-2">Masukkan Kode Untuk Melanjutkan</p>
                 <p class="text-sm text-gray-500">Silahkan masukkan kode konfirmasi yang anda terima</p>
             </div>
 
-            <form id="form-change-password-otp" class="space-y-6">
+            <form id="form-change-password-otp">
                 {{-- 4 OTP Input Boxes --}}
-                <div class="flex justify-center gap-3">
-                    <input type="text" maxlength="1" class="profile-otp-input w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" data-index="0">
-                    <input type="text" maxlength="1" class="profile-otp-input w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" data-index="1">
-                    <input type="text" maxlength="1" class="profile-otp-input w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" data-index="2">
-                    <input type="text" maxlength="1" class="profile-otp-input w-14 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition" data-index="3">
+                <div class="flex justify-center gap-4 mb-8">
+                    <input type="text" maxlength="1" class="profile-otp-input w-16 h-16 text-center text-2xl font-bold border border-gray-300 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition bg-white shadow-sm" data-index="0">
+                    <input type="text" maxlength="1" class="profile-otp-input w-16 h-16 text-center text-2xl font-bold border border-gray-300 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition bg-white shadow-sm" data-index="1">
+                    <input type="text" maxlength="1" class="profile-otp-input w-16 h-16 text-center text-2xl font-bold border border-gray-300 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition bg-white shadow-sm" data-index="2">
+                    <input type="text" maxlength="1" class="profile-otp-input w-16 h-16 text-center text-2xl font-bold border border-gray-300 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition bg-white shadow-sm" data-index="3">
                 </div>
 
-                <button type="submit" class="w-full py-3 bg-blue-500 text-white rounded-full font-semibold hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" class="w-full py-4 bg-blue-500 text-white rounded-full font-bold text-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl mb-6">
                     <span class="btn-text">Konfirmasi</span>
                     <span class="btn-loading hidden">
                         <svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24">
@@ -130,7 +137,7 @@
                 <div class="text-center">
                     <p class="text-sm text-gray-600">
                         Belum Terima Kode? 
-                        <button type="button" id="btn-resend-profile-otp" class="text-blue-500 hover:underline font-medium">
+                        <button type="button" id="btn-resend-profile-otp" class="text-blue-500 hover:text-blue-600 hover:underline font-bold transition">
                             Kirim Ulang Kode
                         </button>
                     </p>
@@ -141,18 +148,20 @@
         {{-- ================================
             MODAL 3: SUCCESS MESSAGE
         ================================ --}}
-        <div id="modal-change-password-success" class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
+        <div id="modal-change-password-success" class="modal-content bg-white rounded-3xl shadow-2xl max-w-md w-full p-10 transform scale-95 opacity-0 transition-all duration-300 hidden relative">
             <div class="text-center">
-                {{-- iSewa Logo --}}
-                <div class="w-32 h-32 mx-auto mb-6">
-                    <img src="{{ asset('User/img/logo/iSewaT.png') }}" alt="iSewa Logo" class="w-full h-full object-contain">
+                {{-- Title at the top --}}
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">Berhasil Diperbarui</h2>
+                
+                {{-- iSewa Logo below title --}}
+                <div class="flex justify-center mb-8">
+                    <img src="{{ asset('User/img/logo/iSewaT.png') }}" alt="iSewa Logo" class="h-32 w-auto object-contain">
                 </div>
 
-                <h2 class="text-2xl font-bold text-gray-900 mb-3">Berhasil Diperbarui</h2>
-                <p class="text-gray-600 mb-2">Kata Sandi Telah Diperbarui</p>
-                <p class="text-sm text-gray-500">Silahkan konfirmasi untuk melanjutkan</p>
+                <p class="text-lg font-semibold text-gray-800 mb-2">Kata Sandi Telah Diperbarui</p>
+                <p class="text-sm text-gray-500 mb-8">Silahkan konfirmasi untuk melanjutkan</p>
 
-                <button type="button" id="btn-confirm-change-password-success" class="mt-8 w-full py-3 bg-blue-500 text-white rounded-full font-semibold hover:bg-blue-600 transition">
+                <button type="button" id="btn-confirm-change-password-success" class="w-full py-4 bg-blue-500 text-white rounded-full font-bold text-lg hover:bg-blue-600 transition shadow-lg hover:shadow-xl">
                     Konfirmasi
                 </button>
             </div>
