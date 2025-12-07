@@ -80,3 +80,14 @@ Catatan yang perlu diperbaikii:
 ## Version 0.6.0
 - Major Update
 - Penambahan Middleware Guard untuk Keamanan
+
+## Version 0.7.0
+- Prequisites untuk mencoba versi ini
+```bash
+php artisan storage:link
+php artisan migrate
+```
+- Fix Profile Picture Mechanism Both User or Admin
+- Ubah Kata Sandi di profile Admin udah Bekerja
+- Fix Bug yang terjadi pada Admin/Penyewaan Alat dan Admin/Penjualan Gas
+- NEW! Transaksi Unlocked (Beta)
