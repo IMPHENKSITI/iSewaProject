@@ -563,10 +563,10 @@
                     });
                     return;
                 }
-                }
 
                 gasConfirmationModal.style.display = 'flex';
                 gasConfirmationModal.classList.remove('hidden');
+
             });
         }
 

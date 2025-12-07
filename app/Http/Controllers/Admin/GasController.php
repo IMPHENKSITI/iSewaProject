@@ -51,9 +51,9 @@ class GasController extends Controller
             'kategori' => 'required|string|max:255',
             'lokasi' => 'required|string|max:255',
             'satuan' => 'required|string|max:255',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
-            'foto_2' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
-            'foto_3' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
+            'foto_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
+            'foto_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
         ]);
 
         // Bersihkan harga dari karakter non-angka
@@ -108,7 +108,7 @@ class GasController extends Controller
     // ===========================
     // UPDATE
     // ===========================
-    public function update(Request $request, Gas $gas)
+    public function update(Request $request, $id)
     {
         $validated = $request->validate([
             'jenis_gas' => 'required|string|max:255',
@@ -119,9 +119,9 @@ class GasController extends Controller
             'kategori' => 'required|string|max:255',
             'lokasi' => 'required|string|max:255',
             'satuan' => 'required|string|max:255',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
-            'foto_2' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
-            'foto_3' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
+            'foto_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
+            'foto_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
         ]);
 
         // Bersihkan harga
@@ -130,7 +130,11 @@ class GasController extends Controller
             return back()->withErrors(['harga_satuan' => 'Harga satuan harus angka valid dan lebih dari 0.'])->withInput();
         }
 
-        $gas->update([
+        // Cari data gas
+        $gas = Gas::findOrFail($id);
+
+        // Siapkan data untuk update
+        $dataUpdate = [
             'jenis_gas' => $validated['jenis_gas'],
             'deskripsi' => $validated['deskripsi'],
             'harga_satuan' => $hargaBersih,
@@ -139,28 +143,43 @@ class GasController extends Controller
             'kategori' => $validated['kategori'],
             'lokasi' => $validated['lokasi'],
             'satuan' => $validated['satuan'],
-        ]);
+        ];
 
-        // Foto
+        // Foto Utama
         if ($request->hasFile('foto')) {
             if ($gas->foto)
                 Storage::disk('public')->delete($gas->foto);
-            $gas->foto = $request->file('foto')->store('gas', 'public');
+            $dataUpdate['foto'] = $request->file('foto')->store('gas', 'public');
+        } elseif ($request->input('delete_foto') == '1') {
+            if ($gas->foto)
+                Storage::disk('public')->delete($gas->foto);
+            $dataUpdate['foto'] = null;
         }
 
+        // Foto 2
         if ($request->hasFile('foto_2')) {
             if ($gas->foto_2)
                 Storage::disk('public')->delete($gas->foto_2);
-            $gas->foto_2 = $request->file('foto_2')->store('gas', 'public');
+            $dataUpdate['foto_2'] = $request->file('foto_2')->store('gas', 'public');
+        } elseif ($request->input('delete_foto_2') == '1') {
+            if ($gas->foto_2)
+                Storage::disk('public')->delete($gas->foto_2);
+            $dataUpdate['foto_2'] = null;
         }
 
+        // Foto 3
         if ($request->hasFile('foto_3')) {
             if ($gas->foto_3)
                 Storage::disk('public')->delete($gas->foto_3);
-            $gas->foto_3 = $request->file('foto_3')->store('gas', 'public');
+            $dataUpdate['foto_3'] = $request->file('foto_3')->store('gas', 'public');
+        } elseif ($request->input('delete_foto_3') == '1') {
+            if ($gas->foto_3)
+                Storage::disk('public')->delete($gas->foto_3);
+            $dataUpdate['foto_3'] = null;
         }
 
-        $gas->save();
+        // Eksekusi Update Satu Kali
+        $gas->update($dataUpdate);
 
         return redirect()->route('admin.unit.penjualan_gas.index')->with('success', 'Gas berhasil diubah.');
     }

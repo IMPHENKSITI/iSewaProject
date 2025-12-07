@@ -79,6 +79,11 @@ class BumdesController extends Controller
             }
             $path = $request->file('photo')->store('bumdes', 'public');
             $member->photo = $path;
+        } elseif ($request->input('delete_photo') == '1') {
+            if ($member->photo) {
+                Storage::disk('public')->delete($member->photo);
+            }
+            $member->photo = null;
         }
 
         $member->save();

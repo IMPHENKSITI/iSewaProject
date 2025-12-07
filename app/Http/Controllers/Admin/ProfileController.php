@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -30,20 +31,35 @@ class ProfileController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'gender' => 'nullable|in:laki-laki,perempuan',
-            'position' => 'nullable|string|max:255',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Handle avatar upload
-        if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
+        // Handle avatar upload or deletion
+        if ($request->hasFile('avatar') || $request->input('delete_avatar') == '1') {
+            // Delete old file if exists
+            if ($user->file) {
+                if (Storage::disk('local')->exists($user->file->path)) {
+                    Storage::disk('local')->delete($user->file->path);
+                }
+                $user->file()->delete();
             }
-            
-            // Store new avatar
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $avatarPath;
+        }
+
+        if ($request->hasFile('avatar')) {
+            // Store new avatar in private storage (local disk)
+            $file = $request->file('avatar');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $user->id . '_' . time() . '.' . $extension;
+            $path = $file->storeAs('profiles', $filename, ['disk' => 'local']);
+
+            // Create new file record
+            $user->file()->create([
+                'alias' => 'admin_avatar',
+                'filename' => $filename,
+                'path' => $path,
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
+            ]);
         }
 
         // Update user data
@@ -53,7 +69,6 @@ class ProfileController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'gender' => $request->gender,
-            'position' => $request->position,
         ]);
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
@@ -63,10 +78,17 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'current_password' => 'required',
             'new_password' => 'required|min:8|confirmed',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
 
         // Verify current password
         if (!Hash::check($request->current_password, $user->password)) {
@@ -74,62 +96,96 @@ class ProfileController extends Controller
         }
 
         // Generate OTP
-        $otp = rand(100000, 999999);
-        session(['otp_code' => $otp]);
-        session(['otp_expires_at' => now()->addMinutes(5)]);
+        $otp = rand(1000, 9999);
+        
+        // Save OTP to Database
+        $user->otp_code = $otp;
+        $user->otp_expires_at = now()->addMinutes(5);
+        $user->save();
+
+        // Store new password in session only (temp)
         session(['new_password' => $request->new_password]);
 
-        // In production, send OTP via email
-        // Mail::to($user->email)->send(new OtpMail($otp));
+        // Log OTP
+        Log::info("OTP Ganti Password Admin ({$user->email}): {$otp}");
 
-        return response()->json(['success' => true, 'message' => 'OTP telah dikirim.']);
+        return response()->json([
+            'success' => true, 
+            'message' => 'OTP telah dikirim.',
+            'debug_otp' => $otp
+        ]);
     }
 
     public function verifyOtp(Request $request)
     {
         $user = Auth::user();
         
-        $request->validate([
-            'otp' => 'required|digits:6',
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'otp' => 'required|digits:4',
         ]);
 
-        $otp = session('otp_code');
-        $expiresAt = session('otp_expires_at');
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
 
-        if (!$otp || !$expiresAt || now()->gt($expiresAt)) {
+        // Check OTP from Database
+        if (!$user->otp_code || !$user->otp_expires_at || now()->gt($user->otp_expires_at)) {
             return response()->json(['success' => false, 'message' => 'Kode OTP telah kedaluwarsa.']);
         }
 
-        if ($request->otp != $otp) {
+        if ($request->otp != $user->otp_code) {
             return response()->json(['success' => false, 'message' => 'Kode OTP tidak valid.']);
         }
 
         // Update password
         $user->password = Hash::make(session('new_password'));
+        
+        // Clear OTP in Database
+        $user->otp_code = null;
+        $user->otp_expires_at = null;
         $user->save();
 
         // Clear session
-        session()->forget(['otp_code', 'otp_expires_at', 'new_password']);
+        session()->forget(['new_password']);
 
         return response()->json(['success' => true, 'message' => 'Kata sandi berhasil diperbarui.']);
     }
 
     public function resendOtp()
     {
-        // Simulasikan kirim ulang OTP
-        return response()->json(['success' => true, 'message' => 'Kode OTP telah dikirim ulang.']);
+        $user = Auth::user();
+
+        // Generate New OTP
+        $otp = rand(1000, 9999);
+        
+        // Update to Database
+        $user->otp_code = $otp;
+        $user->otp_expires_at = now()->addMinutes(5);
+        $user->save();
+
+        // Log OTP
+        Log::info("Resend OTP Ganti Password Admin ({$user->email}): {$otp}");
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Kode OTP baru telah dikirim.',
+            'debug_otp' => $otp
+        ]);
     }
 
     public function deleteAvatar()
     {
         $user = Auth::user();
         
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+        if ($user->file) {
+            if (Storage::disk('local')->exists($user->file->path)) {
+                Storage::disk('local')->delete($user->file->path);
+            }
+            $user->file()->delete();
         }
-        
-        $user->avatar = null;
-        $user->save();
         
         return response()->json(['success' => true, 'message' => 'Avatar berhasil dihapus.']);
     }

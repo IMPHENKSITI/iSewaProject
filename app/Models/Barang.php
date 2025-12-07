@@ -28,4 +28,38 @@ class Barang extends Model
     protected $casts = [
         'harga_sewa' => 'decimal:2',
     ];
+
+    /**
+     * Check if stock is sufficient
+     */
+    public function hasStock($quantity)
+    {
+        return $this->stok >= $quantity;
+    }
+
+    /**
+     * Decrease stock with validation (for rental)
+     */
+    public function decreaseStock($quantity)
+    {
+        if (!$this->hasStock($quantity)) {
+            throw new \Exception("Stok tidak mencukupi. Tersedia: {$this->stok}, diminta: {$quantity}");
+        }
+
+        $this->stok -= $quantity;
+        $this->save();
+
+        return $this;
+    }
+
+    /**
+     * Increase stock (when rental is returned)
+     */
+    public function increaseStock($quantity)
+    {
+        $this->stok += $quantity;
+        $this->save();
+
+        return $this;
+    }
 }

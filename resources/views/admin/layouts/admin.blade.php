@@ -7,6 +7,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>Dashboard - iSewa Admin</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="" />
     <link rel="icon" type="image/x-icon" href="{{ asset('Admin/img/favicon/isewalogo.png') }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -557,12 +558,14 @@
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
-                                    @if(Auth::user() && Auth::user()->avatar)
-                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar"
+                                    @if(Auth::user() && Auth::user()->file)
+                                        <img src="{{ route('media.avatar', ['filename' => basename(Auth::user()->file->path)]) }}" alt="Avatar"
                                             class="w-px-40 h-auto rounded-circle" />
                                     @else
-                                        <div class="navbar-avatar-default rounded-circle">
-                                            <span class="navbar-avatar-initials">{{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}</span>
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #D1D5DB;">
+                                            <svg viewBox="0 0 24 24" fill="currentColor" style="width: 24px; height: 24px; color: white;">
+                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
                                         </div>
                                     @endif
                                 </a>
@@ -571,12 +574,14 @@
                                         <a class="dropdown-item" href="{{ route('admin.profile') }}">
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
-                                                    @if(Auth::user() && Auth::user()->avatar)
-                                                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar"
+                                                    @if(Auth::user() && Auth::user()->file)
+                                                        <img src="{{ route('media.avatar', ['filename' => basename(Auth::user()->file->path)]) }}" alt="Avatar"
                                                             class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
                                                     @else
-                                                        <div class="navbar-avatar-default rounded-circle" style="width: 40px; height: 40px;">
-                                                            <span class="navbar-avatar-initials" style="font-size: 16px;">{{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}</span>
+                                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #D1D5DB;">
+                                                            <svg viewBox="0 0 24 24" fill="currentColor" style="width: 24px; height: 24px; color: white;">
+                                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                                            </svg>
                                                         </div>
                                                     @endif
                                                 </div>

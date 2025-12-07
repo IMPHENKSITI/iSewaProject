@@ -265,15 +265,22 @@
                                                 <i class="bx bx-show fs-5"></i>
                                             </a>
                                             @if($request->status == 'pending')
-                                                <button type="button" class="btn btn-sm btn-icon btn-light text-success rounded-circle border shadow-sm hover-success" 
-                                                        onclick="approveRequest({{ $request->id }}, 'rental')" title="Setujui">
+                                                <button type="button" 
+                                                        id="approve-btn-rental-{{ $request->id }}"
+                                                        class="btn btn-sm btn-icon btn-light text-success rounded-circle border shadow-sm hover-success" 
+                                                        onclick="approveRequest({{ $request->id }}, 'rental')" 
+                                                        title="Setujui">
                                                     <i class="bx bx-check fs-5"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-icon btn-light text-danger rounded-circle border shadow-sm hover-danger" 
-                                                        onclick="rejectRequest({{ $request->id }}, 'rental')" title="Tolak">
+                                                <button type="button" 
+                                                        id="reject-btn-rental-{{ $request->id }}"
+                                                        class="btn btn-sm btn-icon btn-light text-danger rounded-circle border shadow-sm hover-danger" 
+                                                        onclick="rejectRequest({{ $request->id }}, 'rental')" 
+                                                        title="Tolak">
                                                     <i class="bx bx-x fs-5"></i>
                                                 </button>
                                             @endif
+
                                         </div>
                                     </td>
                                 </tr>
@@ -345,15 +352,22 @@
                                                 <i class="bx bx-show fs-5"></i>
                                             </a>
                                             @if($order->status == 'pending')
-                                                <button type="button" class="btn btn-sm btn-icon btn-light text-success rounded-circle border shadow-sm hover-success" 
-                                                        onclick="approveRequest({{ $order->id }}, 'gas')" title="Setujui">
+                                                <button type="button" 
+                                                        id="approve-btn-gas-{{ $order->id }}"
+                                                        class="btn btn-sm btn-icon btn-light text-success rounded-circle border shadow-sm hover-success" 
+                                                        onclick="approveRequest({{ $order->id }}, 'gas')" 
+                                                        title="Setujui">
                                                     <i class="bx bx-check fs-5"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-icon btn-light text-danger rounded-circle border shadow-sm hover-danger" 
-                                                        onclick="rejectRequest({{ $order->id }}, 'gas')" title="Tolak">
+                                                <button type="button" 
+                                                        id="reject-btn-gas-{{ $order->id }}"
+                                                        class="btn btn-sm btn-icon btn-light text-danger rounded-circle border shadow-sm hover-danger" 
+                                                        onclick="rejectRequest({{ $order->id }}, 'gas')" 
+                                                        title="Tolak">
                                                     <i class="bx bx-x fs-5"></i>
                                                 </button>
                                             @endif
+
                                         </div>
                                     </td>
                                 </tr>
@@ -411,9 +425,12 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 function approveRequest(id, type) {
+    const btnId = `approve-btn-${type}-${id}`;
+    const btn = document.getElementById(btnId);
+    
     Swal.fire({
         title: 'Setujui Permintaan?',
-        text: 'Permintaan akan disetujui dan pengguna akan diberitahu',
+        text: 'Stok akan otomatis berkurang setelah disetujui',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Ya, Setujui',
@@ -422,18 +439,54 @@ function approveRequest(id, type) {
         cancelButtonColor: '#6c757d'
     }).then((result) => {
         if (result.isConfirmed) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${id}/${type}/approve`;
+            // Disable button immediately
+            btn.disabled = true;
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.6';
             
-            const csrf = document.createElement('input');
-            csrf.type = 'hidden';
-            csrf.name = '_token';
-            csrf.value = '{{ csrf_token() }}';
-            form.appendChild(csrf);
+            // Change icon to loading spinner
+            const icon = btn.querySelector('i');
+            const originalIcon = icon.className;
+            icon.className = 'bx bx-loader-alt bx-spin fs-5';
             
-            document.body.appendChild(form);
-            form.submit();
+            // Send AJAX request
+            fetch(`{{ url('admin/aktivitas/permintaan-pengajuan') }}/${id}/${type}/approve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    throw new Error(data.message || 'Terjadi kesalahan');
+                }
+            })
+            .catch(error => {
+                // Re-enable button on error
+                btn.disabled = false;
+                btn.style.pointerEvents = '';
+                btn.style.opacity = '';
+                icon.className = originalIcon;
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: error.message || 'Terjadi kesalahan saat menyetujui permintaan',
+                });
+            });
         }
     });
 }
@@ -446,3 +499,4 @@ function rejectRequest(id, type) {
 }
 </script>
 @endsection
+

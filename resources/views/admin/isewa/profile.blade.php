@@ -111,9 +111,9 @@
             <div class="dev-card">
                 <div class="dev-card-bg"></div>
                 <div class="avatar">
-                    <img src="{{ asset('http://isewaproject.test/Admin/img/avatars/pria.png') }}" alt="Wahid Riono">
+                    <img src="{{ asset('http://isewaproject.test/Admin/img/avatars/pria.png') }}" alt="M.Wahid Riono">
                 </div>
-                <h5>Wahid Riono</h5>
+                <h5>M.Wahid Riono</h5>
 
             </div>
 

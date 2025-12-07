@@ -181,7 +181,7 @@
                                                 <div id="placeholder_foto" class="upload-placeholder" style="display:none;">
                                                     <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                     <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                    <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                    <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                                 </div>
                                             @else
                                                 <div id="preview_foto" class="preview-container" style="display:none;">
@@ -193,12 +193,13 @@
                                                 <div id="placeholder_foto" class="upload-placeholder">
                                                     <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                     <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                    <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                    <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                                 </div>
                                             @endif
                                         </div>
                                         <input type="file" class="d-none" id="foto" name="foto_utama" 
                                                accept="image/*" onchange="previewFile(this, 'preview_foto', 'placeholder_foto')" />
+                                        <input type="hidden" name="delete_foto" id="delete_foto" value="0">
                                     </div>
 
                                     <!-- Foto Tambahan 1 -->
@@ -215,7 +216,7 @@
                                                 <div id="placeholder_foto_2" class="upload-placeholder" style="display:none;">
                                                     <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                     <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                    <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                    <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                                 </div>
                                             @else
                                                 <div id="preview_foto_2" class="preview-container" style="display:none;">
@@ -227,12 +228,13 @@
                                                 <div id="placeholder_foto_2" class="upload-placeholder">
                                                     <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                     <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                    <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                    <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                                 </div>
                                             @endif
                                         </div>
                                         <input type="file" class="d-none" id="foto_2" name="foto_2" 
                                                accept="image/*" onchange="previewFile(this, 'preview_foto_2', 'placeholder_foto_2')" />
+                                        <input type="hidden" name="delete_foto_2" id="delete_foto_2" value="0">
                                     </div>
 
                                     <!-- Foto Tambahan 2 -->
@@ -249,7 +251,7 @@
                                                 <div id="placeholder_foto_3" class="upload-placeholder" style="display:none;">
                                                     <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                     <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                    <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                    <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                                 </div>
                                             @else
                                                 <div id="preview_foto_3" class="preview-container" style="display:none;">
@@ -261,12 +263,13 @@
                                                 <div id="placeholder_foto_3" class="upload-placeholder">
                                                     <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                     <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                    <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                    <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                                 </div>
                                             @endif
                                         </div>
                                         <input type="file" class="d-none" id="foto_3" name="foto_3" 
                                                accept="image/*" onchange="previewFile(this, 'preview_foto_3', 'placeholder_foto_3')" />
+                                        <input type="hidden" name="delete_foto_3" id="delete_foto_3" value="0">
                                     </div>
                                 </div>
                             </div>
@@ -572,6 +575,8 @@
         const preview = document.getElementById(previewId);
         const placeholder = document.getElementById(placeholderId);
         const img = preview.querySelector('img');
+        const inputId = input.getAttribute('id');
+        const deleteInput = document.getElementById('delete_' + inputId);
         
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -579,6 +584,11 @@
                 img.src = e.target.result;
                 preview.style.display = 'block';
                 placeholder.style.display = 'none';
+                
+                // Reset flag hapus
+                if (deleteInput) {
+                    deleteInput.value = '0';
+                }
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -590,11 +600,17 @@
         const preview = document.getElementById(previewId);
         const placeholder = document.getElementById('placeholder_' + inputId);
         const img = preview.querySelector('img');
+        const deleteInput = document.getElementById('delete_' + inputId);
 
         input.value = '';
         img.src = '#';
         preview.style.display = 'none';
         placeholder.style.display = 'block';
+        
+        // Set flag hapus
+        if (deleteInput) {
+            deleteInput.value = '1';
+        }
     }
 
     // Fungsi untuk menambah kategori

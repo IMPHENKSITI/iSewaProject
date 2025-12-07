@@ -59,18 +59,23 @@ class ProfileController extends Controller
             'gender' => $validated['gender'],
         ]);
 
-        // Handle avatar upload
-        if ($request->hasFile('profile')) {
-            // Delete old avatar
+        // Handle avatar upload or deletion
+        if ($request->hasFile('profile') || $request->input('delete_avatar') == '1') {
+            // Delete old avatar if exists
             if ($user->file) {
-                Storage::delete($user->file->path);
+                // Check if file exists in storage before deleting
+                if (Storage::disk('local')->exists($user->file->path)) {
+                    Storage::delete($user->file->path);
+                }
                 $user->file->delete();
             }
+        }
 
+        if ($request->hasFile('profile')) {
             $file = $request->file('profile');
             $extension = $file->getClientOriginalExtension();
             $filename = $user->id . '_' . time() . '.' . $extension;
-            $path = $file->storeAs('profiles/' . $user->id, $filename);
+            $path = $file->storeAs('profiles', $filename, ['disk' => 'local']);
 
             $user->file()->create([
                 'alias' => 'profile_picture',

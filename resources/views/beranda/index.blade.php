@@ -15,7 +15,7 @@
                     <div id="carousel-slides" class="flex transition-transform duration-500 ease-out">
                         <!-- Slide 1 -->
                         <div class="carousel-slide min-w-full flex-shrink-0">
-                            <img src="{{ asset('User/img/elemen/slide1.png') }}" alt="Slide 1"
+                            <img src="{{ asset('User/img/elemen/entrance.png') }}" alt="Slide 1"
                                 class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-cover">
                         </div>
                         <!-- Slide 2 -->
@@ -27,6 +27,11 @@
                         <div class="carousel-slide min-w-full flex-shrink-0">
                             <img src="{{ asset('User/img/elemen/ppq.png') }}" alt="Slide 3"
                                 class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-fill">
+                        </div>
+                        <!--Slide 4-->
+                        <div class="carousel-slide min-w-full flex-shrink-0">
+                            <img src="{{ asset('User/img/elemen/itam.png') }}" alt="Slide 4"
+                                class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-cover">
                         </div>
                     </div>
 
@@ -56,6 +61,9 @@
                         <button
                             class="carousel-indicator w-2.5 h-2.5 rounded-full bg-white/50 hover:bg-white/75 shadow-md transition-all duration-300"
                             data-slide="2"></button>
+                        <button
+                            class="carousel-indicator w-2.5 h-2.5 rounded-full bg-white/50 hover:bg-white/75 shadow-md transition-all duration-300"
+                            data-slide="3"></button>
                     </div>
                 </div>
             </div>
@@ -577,7 +585,7 @@
                 let indicators = document.querySelectorAll('.carousel-indicator');
 
                 let currentSlide = 0;
-                const totalSlides = 3;
+                const totalSlides = 4;
                 let autoSlideInterval;
                 const autoSlideDelay = 7000; // 7 Seconds
 

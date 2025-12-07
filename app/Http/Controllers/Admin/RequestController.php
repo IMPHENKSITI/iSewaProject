@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\RentalBooking;
 use App\Models\GasOrder;
+use App\Models\Gas;
+use App\Models\Barang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Services\NotificationService;
 
 class RequestController extends Controller
 {
@@ -88,59 +92,137 @@ class RequestController extends Controller
 
     public function approve(Request $request, $id, $type)
     {
-        if ($type === 'rental') {
-            $model = RentalBooking::findOrFail($id);
-            // RentalBooking uses strict ENUM: pending, confirmed, in_progress, completed, cancelled
-            $newStatus = 'confirmed';
-            $updateData = [
-                'status' => $newStatus,
-                'confirmed_at' => now()
-            ];
-            
-            // Generate order number if not exists
-            if (!$model->order_number) {
-                $updateData['order_number'] = \App\Models\RentalBooking::generateOrderNumber();
+        $notificationService = new NotificationService();
+
+        try {
+            DB::beginTransaction();
+
+            if ($type === 'rental') {
+                $model = RentalBooking::with('barang')->findOrFail($id);
+                
+                // Check if already approved
+                if ($model->status !== 'pending') {
+                    throw new \Exception("Permintaan sudah diproses sebelumnya.");
+                }
+
+                // Get barang and validate stock
+                $barang = $model->barang;
+                $quantity = $model->quantity;
+
+                if (!$barang->hasStock($quantity)) {
+                    // Send notifications about insufficient stock
+                    $notificationService->notifyStockInsufficient($model, 'rental', $barang->stok, $quantity);
+                    
+                    throw new \Exception("Stok tidak mencukupi. Tersedia: {$barang->stok}, diminta: {$quantity}");
+                }
+
+                // Decrease stock
+                $barang->decreaseStock($quantity);
+
+                // Check if stock is low after decrease
+                if ($barang->stok < 5) {
+                    $notificationService->notifyLowStock($barang, 'barang', $barang->stok);
+                }
+
+                // Check if stock is depleted
+                if ($barang->stok == 0) {
+                    $notificationService->notifyStockDepleted($barang, 'barang');
+                }
+
+                // Update booking status
+                $newStatus = 'confirmed';
+                $updateData = [
+                    'status' => $newStatus,
+                    'confirmed_at' => now()
+                ];
+                
+                // Generate order number if not exists
+                if (!$model->order_number) {
+                    $updateData['order_number'] = \App\Models\RentalBooking::generateOrderNumber();
+                }
+                
+                $model->update($updateData);
+
+            } else {
+                $model = GasOrder::findOrFail($id);
+                
+                // Check if already approved
+                if ($model->status !== 'pending') {
+                    throw new \Exception("Permintaan sudah diproses sebelumnya.");
+                }
+
+                // Get gas and validate stock
+                $gas = Gas::findOrFail($model->gas_id);
+                $quantity = $model->quantity;
+
+                if (!$gas->hasStock($quantity)) {
+                    // Send notifications about insufficient stock
+                    $notificationService->notifyStockInsufficient($model, 'gas', $gas->stok, $quantity);
+                    
+                    throw new \Exception("Stok tidak mencukupi. Tersedia: {$gas->stok}, diminta: {$quantity}");
+                }
+
+                // Decrease stock (PERMANENT for gas)
+                $gas->decreaseStock($quantity);
+
+                // Check if stock is low after decrease
+                if ($gas->stok < 5) {
+                    $notificationService->notifyLowStock($gas, 'gas', $gas->stok);
+                }
+
+                // Check if stock is depleted
+                if ($gas->stok == 0) {
+                    $notificationService->notifyStockDepleted($gas, 'gas');
+                }
+
+                // Update order status
+                $newStatus = 'confirmed';
+                $updateData = [
+                    'status' => $newStatus,
+                    'confirmed_at' => now()
+                ];
+                
+                // Generate order number if not exists
+                if (!$model->order_number) {
+                    $updateData['order_number'] = GasOrder::generateOrderNumber();
+                }
+
+                $model->update($updateData);
             }
-            
-            $model->update($updateData);
-        } else {
-            $model = GasOrder::findOrFail($id);
-            // GasOrder now uses matched status with Rental
-            $newStatus = 'confirmed';
-             $updateData = [
-                'status' => $newStatus,
-                'confirmed_at' => now()
-            ];
-            
-            // Generate order number if not exists
-            if (!$model->order_number) {
-                $updateData['order_number'] = GasOrder::generateOrderNumber();
+
+            // Send approval success notification to user
+            $notificationService->notifyOrderApproved($model, $type);
+
+            DB::commit();
+
+            $message = "Permintaan {$type} berhasil disetujui dan stok telah diperbarui.";
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'status' => $newStatus
+                ]);
             }
 
-            $model->update($updateData);
+            session()->flash('success', $message);
+            return redirect()->back();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $errorMessage = $e->getMessage();
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMessage
+                ], 400);
+            }
+
+            session()->flash('error', $errorMessage);
+            return redirect()->back();
         }
-
-        // Trigger notifikasi: Status Berubah (Disetujui)
-        $notification = new Notification();
-        $notification->title = "Permintaan Disetujui";
-        $notification->message = "Permintaan Anda (#{$model->id}) untuk {$type} telah disetujui oleh " . auth()->user()->name . ".";
-        $notification->type = 'status_berubah';
-        $notification->user_id = $model->user_id;
-        $notification->admin_id = auth()->id();
-        $notification->save();
-
-        $message = "Permintaan {$type} berhasil disetujui.";
-
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => $message,
-                'status' => $newStatus
-            ]);
-        }
-
-        session()->flash('success', $message);
-        return redirect()->back();
     }
 
     public function reject(Request $request, $id, $type)
@@ -148,6 +230,8 @@ class RequestController extends Controller
         $request->validate([
             'reason' => 'required|string|max:500',
         ]);
+
+        $notificationService = new NotificationService();
 
         if ($type === 'rental') {
             $model = RentalBooking::findOrFail($id);
@@ -171,14 +255,8 @@ class RequestController extends Controller
             ]);
         }
 
-        // Trigger notifikasi: Status Berubah (Ditolak)
-        $notification = new Notification();
-        $notification->title = "Permintaan Ditolak";
-        $notification->message = "Permintaan Anda (#{$model->id}) untuk {$type} telah ditolak oleh " . auth()->user()->name . ". Alasan: {$request->reason}";
-        $notification->type = 'status_berubah';
-        $notification->user_id = $model->user_id;
-        $notification->admin_id = auth()->id();
-        $notification->save();
+        // Send rejection notification to user
+        $notificationService->notifyOrderRejected($model, $request->reason, $type);
 
         $message = "Permintaan {$type} ditolak dengan alasan: {$request->reason}";
 
@@ -200,17 +278,16 @@ class RequestController extends Controller
             'status' => 'required|string|in:confirmed,being_prepared,in_delivery,arrived,completed',
         ]);
 
+        $notificationService = new NotificationService();
+
         if ($type === 'rental') {
-            $order = \App\Models\RentalBooking::findOrFail($id);
+            $order = \App\Models\RentalBooking::with('barang')->findOrFail($id);
         } else {
             $order = GasOrder::findOrFail($id);
         }
 
         $oldStatus = $order->status;
         $newStatus = $request->status;
-
-        // Update status
-        $order->status = $newStatus;
 
         // Auto-generate timestamps based on status
         switch ($newStatus) {
@@ -239,12 +316,31 @@ class RequestController extends Controller
                 if (!$order->completion_time) {
                     $order->completion_time = now();
                 }
+
+                // RETURN STOCK for rental (not for gas!)
+                if ($type === 'rental') {
+                    $barang = $order->barang;
+                    $quantity = $order->quantity;
+
+                    // Increase stock back
+                    $barang->increaseStock($quantity);
+
+                    // Send rental completed notification to user
+                    $notificationService->notifyRentalCompleted($order);
+
+                    // Check if stock is still low after return
+                    if ($barang->stok < 5 && $barang->stok > 0) {
+                        $notificationService->notifyLowStock($barang, 'barang', $barang->stok);
+                    }
+                }
                 break;
         }
 
+        // Update status
+        $order->status = $newStatus;
         $order->save();
 
-        // Send notification to user
+        // Send notification to user about status change
         $statusLabels = [
             'confirmed' => 'dikonfirmasi',
             'being_prepared' => 'sedang dipersiapkan',
@@ -253,13 +349,16 @@ class RequestController extends Controller
             'completed' => 'selesai',
         ];
 
-        Notification::create([
-            'title' => 'Status Pesanan Diperbarui',
-            'message' => "Pesanan Anda #{$order->order_number} telah {$statusLabels[$newStatus]}.",
-            'type' => 'status_update',
-            'user_id' => $order->user_id,
-            'admin_id' => auth()->id(),
-        ]);
+        // Only send general status update notification if not 'completed' (for completed we already sent specific notification above)
+        if ($newStatus !== 'completed') {
+            Notification::create([
+                'title' => 'Status Pesanan Diperbarui',
+                'message' => "Pesanan Anda #{$order->order_number} telah {$statusLabels[$newStatus]}.",
+                'type' => 'status_update',
+                'user_id' => $order->user_id,
+                'admin_id' => auth()->id(),
+            ]);
+        }
 
         return response()->json([
             'success' => true,

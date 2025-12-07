@@ -11,8 +11,12 @@ use App\Http\Controllers\Admin\GasController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\SystemSettingController;
-use App\Http\Controllers\Admin\ProfileController; 
 
+use App\Http\Controllers\MediaController;
+use App\Http\Controllers\Admin\ProfileController;
+
+Route::get('/media/avatar/{filename}', [MediaController::class, 'adminAvatar'])->name('media.avatar');
+Route::get('/media/profile/{filename}', [MediaController::class, 'userProfile'])->name('media.profile');
 
 Route::get('/', function () {
     return redirect('beranda');
@@ -42,7 +46,7 @@ Route::get('/bumdes/laporan', [App\Http\Controllers\User\BumdesLaporanController
     ->middleware('role:user,guest');
 
 
-Route::get('/pelayanan/profil', [App\Http\Controllers\User\IsewaProfileController::class, 'index'])
+Route::get('/profil-iSewa', [App\Http\Controllers\User\IsewaProfileController::class, 'index'])
     ->name('isewa.profile')
     ->middleware('role:user,guest');
 

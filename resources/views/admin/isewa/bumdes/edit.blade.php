@@ -57,6 +57,7 @@
                                            class="d-none" 
                                            accept="image/*" 
                                            onchange="previewImage(event)">
+                                    <input type="hidden" name="delete_photo" id="delete_photo" value="0">
 
                                     <!-- Info Text -->
                                     <div class="text-muted small mb-3">
@@ -236,6 +237,7 @@ function previewImage(event) {
     const input = event.target;
     const preview = document.getElementById('preview-image');
     const container = document.getElementById('preview-container');
+    const deleteInput = document.getElementById('delete_photo');
 
     if (input.files && input.files[0]) {
         // Validate file size (2MB)
@@ -263,6 +265,11 @@ function previewImage(event) {
             setTimeout(() => {
                 preview.classList.remove('photo-uploaded');
             }, 300);
+
+            // Reset delete flag
+            if (deleteInput) {
+                deleteInput.value = '0';
+            }
         };
         reader.readAsDataURL(input.files[0]);
     }
@@ -272,10 +279,21 @@ function clearPhoto() {
     const input = document.getElementById('photo-input');
     const preview = document.getElementById('preview-image');
     const container = document.getElementById('preview-container');
+    const deleteInput = document.getElementById('delete_photo');
 
     input.value = '';
-    preview.src = '{{ $member->photo_url }}'; // Kembali ke foto asli
-    container.style.background = 'transparent';
+    preview.src = '{{ $member->photo_url }}'; // Kembali ke foto asli atau default jika null
+    // Catatan: Jika ingin preview hilang completely saat clear, ganti src jadi '#' dan sembunyikan container.
+    // Tapi di sini behaviornya sepertinya reset ke awal. 
+    // TAPI user ingin MENGHAPUS. Jadi harusnya kita buat jadi blank/placeholder.
+    
+    // Perbaikan logika: Jika tombol "Hapus Foto" ditekan, berarti user tidak ingin ada foto.
+    preview.src = 'https://via.placeholder.com/200x200?text=No+Photo'; // Placeholder
+    container.style.background = '#f8f9fa';
+    
+    if (deleteInput) {
+        deleteInput.value = '1';
+    }
 }
 </script>
 @endsection

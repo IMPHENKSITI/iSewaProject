@@ -181,13 +181,13 @@
                                 <div class="relative mb-4">
                                     <div class="p-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6 0%, #60a5fa 50%, #FCD34D 100%);">
                                         <div class="w-32 h-32 rounded-full overflow-hidden bg-white p-1">
-                                            <img src="{{ asset('admin/img/avatars/pria.png') }}" 
-                                                 alt="Wahid Riono" 
+                                            <img src="{{ asset('User/img/avatars/pria.png') }}" 
+                                                 alt="M.Wahid Riono" 
                                                  class="w-full h-full object-cover rounded-full">
                                         </div>
                                     </div>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-900">Wahid Riono</h3>
+                                <h3 class="text-xl font-bold text-gray-900">M.Wahid Riono</h3>
                             </div>
                         </div>
                     </div>
@@ -200,7 +200,7 @@
                                 <div class="relative mb-4">
                                     <div class="p-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6 0%, #60a5fa 50%, #FCD34D 100%);">
                                         <div class="w-32 h-32 rounded-full overflow-hidden bg-white p-1">
-                                            <img src="{{ asset('admin/img/avatars/nael.jpg') }}" 
+                                            <img src="{{ asset('User/img/avatars/nael.jpg') }}" 
                                                  alt="Mushlihul Arif" 
                                                  class="w-full h-full object-cover rounded-full">
                                         </div>
@@ -219,7 +219,7 @@
                                 <div class="relative mb-4">
                                     <div class="p-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6 0%, #60a5fa 50%, #FCD34D 100%);">
                                         <div class="w-32 h-32 rounded-full overflow-hidden bg-white p-1">
-                                            <img src="{{ asset('admin/img/avatars/wanita.png') }}" 
+                                            <img src="{{ asset('User/img/avatars/wanita.png') }}" 
                                                  alt="Safika" 
                                                  class="w-full h-full object-cover rounded-full">
                                         </div>

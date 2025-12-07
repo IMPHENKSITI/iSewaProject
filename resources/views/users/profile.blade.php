@@ -81,20 +81,23 @@
                             </button>
 
                             {{-- Unduh Foto Link --}}
+                            {{-- Hapus Foto Button (Deferred) --}}
                             @if($user->file)
-                            <a href="{{ $user->file->file_stream }}" download 
-                               class="mt-2.5 text-blue-500 hover:text-blue-700 font-medium text-sm transition-colors">
-                                Unduh Foto
-                            </a>
-                            @else
-                            <p class="mt-2.5 text-gray-600 text-xs text-center">
+                            <button type="button" id="delete-photo-btn"
+                               class="mt-2.5 text-red-500 hover:text-red-700 font-medium text-sm transition-colors">
+                                Hapus Foto
+                            </button>
+                            @endif
+                            <p id="upload-hint" class="mt-2.5 text-gray-600 text-xs text-center {{ $user->file ? 'hidden' : '' }}">
                                 JPG, PNG (Max 2MB)
                             </p>
-                            @endif
 
                             @error('profile')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                            
+                            {{-- Hidden flag for deferred deletion --}}
+                            <input type="hidden" name="delete_avatar" id="delete_avatar" value="0">
                         </div>
                     </div>
                 </div>
@@ -210,7 +213,7 @@
     </div>
 </section>
 
-{{-- âœ… INCLUDE MODALS & SCRIPTS DARI AUTH --}}
+{{-- ✅ INCLUDE MODALS & SCRIPTS DARI AUTH --}}
 @include('auth.profile-modals')
 @endsection
 
@@ -232,11 +235,17 @@
         const profileInput = document.getElementById('profile-input');
         const avatarPreview = document.getElementById('avatar-preview');
         const avatarPlaceholder = document.getElementById('avatar-placeholder');
+        const deletePhotoBtn = document.getElementById('delete-photo-btn');
+        const deleteAvatarInput = document.getElementById('delete_avatar');
+        const uploadHint = document.getElementById('upload-hint');
 
         if (profileInput) {
             profileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
+                    // Reset delete flag (we are replacing, not just deleting)
+                    if(deleteAvatarInput) deleteAvatarInput.value = '0';
+
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         if (avatarPreview) {
@@ -246,11 +255,38 @@
                         if (avatarPlaceholder) {
                             avatarPlaceholder.classList.add('hidden');
                         }
+                        if(uploadHint) uploadHint.classList.add('hidden');
                     };
                     reader.readAsDataURL(file);
                 }
             });
         }
+
+        // Handle Delete Photo Button (Deferred)
+        if (deletePhotoBtn) {
+            deletePhotoBtn.addEventListener('click', function() {
+                // Set flag to delete on save
+                 if(deleteAvatarInput) deleteAvatarInput.value = '1';
+                
+                // Clear input value so if they upload same file again it triggers change
+                if(profileInput) profileInput.value = '';
+
+                // Visually show placeholder
+                if (avatarPreview) {
+                    avatarPreview.src = '';
+                    avatarPreview.classList.add('hidden');
+                }
+                if (avatarPlaceholder) {
+                    avatarPlaceholder.classList.remove('hidden');
+                }
+                
+                // Hide the delete button itself momentarily or just keep it? 
+                // Usually we can hide it or change it to "Undo". For now, let's just hide it.
+                deletePhotoBtn.style.display = 'none';
+                if(uploadHint) uploadHint.classList.remove('hidden');
+            });
+        }
+
 
         // Button Ripple Effect
         const interactiveButtons = document.querySelectorAll('.button-interactive');

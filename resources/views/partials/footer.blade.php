@@ -25,7 +25,7 @@
                         class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
                         BUMDes
                     </a>
-                    <a href="#profil" class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
+                    <a href="{{ route('isewa.profile') }}" class="text-lg font-medium hover:text-blue-300 transition-colors duration-200">
                         Profil iSewa
                     </a>
                 </div>

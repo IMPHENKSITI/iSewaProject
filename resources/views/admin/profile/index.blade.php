@@ -28,13 +28,15 @@
                         <div class="card-body">
                             <div class="d-flex align-items-start align-items-sm-center gap-4 mb-4">
                                 <div class="avatar-wrapper position-relative">
-                                    @if($user && $user->avatar)
-                                        <img src="{{ asset('storage/' . $user->avatar) }}"
+                                    @if($user && $user->file)
+                                        <img src="{{ route('media.avatar', ['filename' => basename($user->file->path)]) }}"
                                             alt="user-avatar" class="avatar-preview rounded-circle" 
                                             id="uploadedAvatar" />
                                     @else
-                                        <div class="avatar-preview avatar-default rounded-circle" id="uploadedAvatar">
-                                            <span class="avatar-initials">{{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}</span>
+                                        <div class="avatar-preview avatar-default rounded-circle d-flex align-items-center justify-content-center" id="uploadedAvatar" style="background-color: #D1D5DB; background-image: none;">
+                                            <svg viewBox="0 0 24 24" fill="currentColor" style="width: 60px; height: 60px; color: white;">
+                                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
                                         </div>
                                     @endif
                                     <div class="avatar-overlay rounded-circle">
@@ -159,7 +161,7 @@
                                 </h6>
                                 <p class="mb-0">Disarankan untuk mengganti kata sandi secara berkala demi keamanan akun Anda.</p>
                             </div>
-                            <button type="button" class="btn btn-danger btn-lg" id="changePasswordBtn">
+                            <button type="button" class="btn btn-danger btn-lg" id="changePasswordBtn" onclick="window.openChangePasswordModal()">
                                 <i class="bx bx-key me-1"></i>Ubah Kata Sandi
                             </button>
                         </div>
@@ -169,119 +171,7 @@
         </div>
     </div>
 
-    <!-- Modal Ubah Sandi -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="changePasswordModalLabel">
-                        <i class="bx bx-key me-2"></i>Kata Sandi Baru
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="changePasswordForm">
-                        @csrf
-                        <div class="mb-3 position-relative">
-                            <label for="current_password" class="form-label fw-semibold">Kata Sandi Lama</label>
-                            <input type="password" class="form-control form-control-lg" id="current_password" name="current_password"
-                                required>
-                            <span class="toggle-password"
-                                style="position: absolute; right: 10px; top: 42px; cursor: pointer;"><i
-                                    class="bx bx-show"></i></span>
-                        </div>
-                        <div class="mb-3 position-relative">
-                            <label for="new_password" class="form-label fw-semibold">Kata Sandi Baru</label>
-                            <input type="password" class="form-control form-control-lg" id="new_password" name="new_password" required>
-                            <span class="toggle-password"
-                                style="position: absolute; right: 10px; top: 42px; cursor: pointer;"><i
-                                    class="bx bx-show"></i></span>
-                        </div>
-                        <div class="mb-3 position-relative">
-                            <label for="new_password_confirmation" class="form-label fw-semibold">Konfirmasi Kata Sandi Baru</label>
-                            <input type="password" class="form-control form-control-lg" id="new_password_confirmation"
-                                name="new_password_confirmation" required>
-                            <span class="toggle-password"
-                                style="position: absolute; right: 10px; top: 42px; cursor: pointer;"><i
-                                    class="bx bx-show"></i></span>
-                        </div>
-                        <p class="text-muted text-center mt-3">Silahkan konfirmasi untuk melanjutkan</p>
-                        <button type="button" id="confirmChangePasswordBtn"
-                            class="btn btn-primary btn-lg w-100">Konfirmasi</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Verifikasi Kode -->
-    <div class="modal fade" id="otpVerificationModal" tabindex="-1" aria-labelledby="otpVerificationModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="otpVerificationModalLabel">
-                        <i class="bx bx-lock-alt me-2"></i>Verifikasi Kode
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="mb-3">
-                        <img src="{{ asset('admin/img/shield-lock.png') }}" alt="Lock"
-                            style="width: 80px; height: 80px;">
-                    </div>
-                    <p class="fw-bold">Masukkan Kode Untuk Melanjutkan</p>
-                    <p class="text-muted">Silahkan masukkan kode konfirmasi yang anda terima</p>
-                    <div class="d-flex justify-content-center gap-2 mb-3">
-                        <input type="text" class="form-control form-control-lg text-center otp-input" maxlength="1"
-                            style="width: 50px;" id="otp_1" oninput="moveToNext(this, 'otp_2')"
-                            onkeydown="moveToPrev(this, 'otp_1')">
-                        <input type="text" class="form-control form-control-lg text-center otp-input" maxlength="1"
-                            style="width: 50px;" id="otp_2" oninput="moveToNext(this, 'otp_3')"
-                            onkeydown="moveToPrev(this, 'otp_1')">
-                        <input type="text" class="form-control form-control-lg text-center otp-input" maxlength="1"
-                            style="width: 50px;" id="otp_3" oninput="moveToNext(this, 'otp_4')"
-                            onkeydown="moveToPrev(this, 'otp_2')">
-                        <input type="text" class="form-control form-control-lg text-center otp-input" maxlength="1"
-                            style="width: 50px;" id="otp_4" oninput="moveToNext(this, 'otp_5')"
-                            onkeydown="moveToPrev(this, 'otp_3')">
-                        <input type="text" class="form-control form-control-lg text-center otp-input" maxlength="1"
-                            style="width: 50px;" id="otp_5" oninput="moveToNext(this, 'otp_6')"
-                            onkeydown="moveToPrev(this, 'otp_4')">
-                        <input type="text" class="form-control form-control-lg text-center otp-input" maxlength="1"
-                            style="width: 50px;" id="otp_6" oninput="moveToNext(this, 'otp_6')"
-                            onkeydown="moveToPrev(this, 'otp_5')">
-                    </div>
-                    <button type="button" id="verifyOtpBtn" class="btn btn-primary btn-lg w-100">Konfirmasi</button>
-                    <p class="mt-3">
-                        Belum Terima Kode? <a href="#" id="resendOtpBtn" class="fw-bold">Kirim Ulang Kode</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Berhasil Diperbarui -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title" id="successModalLabel">
-                        <i class="bx bx-check-circle me-2"></i>Berhasil Diperbarui
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <img src="{{ asset('admin/img/logo-isewa.png') }}" alt="iSewa Logo"
-                        style="width: 120px; height: auto; margin-bottom: 20px;">
-                    <p><strong>Kata Sandi Telah Diperbarui</strong></p>
-                    <p>Silahkan konfirmasi untuk melanjutkan</p>
-                    <button type="button" id="closeSuccessModalBtn" class="btn btn-success btn-lg w-100">Konfirmasi</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('admin.profile.modals')
 
     <style>
         .profile-card, .security-card {
@@ -447,178 +337,8 @@
             animation-delay: 0.1s;
         }
     </style>
-
 @endsection
 
 @section('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Update/Reset User Image
-            let accountUserImage = document.getElementById('uploadedAvatar');
-            const fileInput = document.querySelector('.account-file-input'),
-                resetFileInput = document.querySelector('.account-image-reset');
-
-            if (accountUserImage) {
-                const resetImage = accountUserImage.src || accountUserImage.innerHTML;
-                const isDefaultAvatar = accountUserImage.classList.contains('avatar-default');
-
-                fileInput.onchange = () => {
-                    if (fileInput.files[0]) {
-                        // Create image preview
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            if (isDefaultAvatar) {
-                                // Replace default avatar with image
-                                accountUserImage.outerHTML = '<img src="' + e.target.result + '" alt="user-avatar" class="avatar-preview rounded-circle" id="uploadedAvatar" />';
-                                accountUserImage = document.getElementById('uploadedAvatar');
-                            } else {
-                                accountUserImage.src = e.target.result;
-                            }
-                        };
-                        reader.readAsDataURL(fileInput.files[0]);
-                    }
-                };
-
-                resetFileInput.onclick = () => {
-                    fileInput.value = '';
-                    if (isDefaultAvatar) {
-                        accountUserImage.innerHTML = resetImage;
-                    } else {
-                        accountUserImage.src = resetImage;
-                    }
-                };
-            }
-
-            // Modal & Password Logic
-            const changePasswordBtn = document.getElementById('changePasswordBtn');
-            const changePasswordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
-            const otpVerificationModal = new bootstrap.Modal(document.getElementById('otpVerificationModal'));
-            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-
-            // Toggle visibility of password fields
-            document.querySelectorAll('.toggle-password').forEach(function(toggle) {
-                toggle.addEventListener('click', function() {
-                    const input = this.previousElementSibling;
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        this.innerHTML = '<i class="bx bx-hide"></i>';
-                    } else {
-                        input.type = 'password';
-                        this.innerHTML = '<i class="bx bx-show"></i>';
-                    }
-                });
-            });
-
-            // Move focus between OTP inputs
-            window.moveToNext = function(currentInput, nextId) {
-                if (currentInput.value.length === 1) {
-                    document.getElementById(nextId).focus();
-                }
-            }
-
-            window.moveToPrev = function(currentInput, prevId) {
-                if (currentInput.value.length === 0 && currentInput.id !== 'otp_1') {
-                    document.getElementById(prevId).focus();
-                }
-            }
-
-            // Show change password modal
-            changePasswordBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                changePasswordModal.show();
-            });
-
-            // Handle change password form submission
-            document.getElementById('confirmChangePasswordBtn').addEventListener('click', function() {
-                const formData = new FormData(document.getElementById('changePasswordForm'));
-                fetch("{{ route('admin.profile.change-password') }}", {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute('content'),
-                            'Accept': 'application/json'
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            changePasswordModal.hide();
-                            otpVerificationModal.show();
-                        } else {
-                            alert(data.message || 'Terjadi kesalahan.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan jaringan.');
-                    });
-            });
-
-            // Handle OTP verification
-            document.getElementById('verifyOtpBtn').addEventListener('click', function() {
-                const otp = [
-                    document.getElementById('otp_1').value,
-                    document.getElementById('otp_2').value,
-                    document.getElementById('otp_3').value,
-                    document.getElementById('otp_4').value,
-                    document.getElementById('otp_5').value,
-                    document.getElementById('otp_6').value
-                ].join('');
-
-                fetch("{{ route('admin.profile.verify-otp') }}", {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute('content'),
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            otp: otp
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            otpVerificationModal.hide();
-                            successModal.show();
-                        } else {
-                            alert(data.message || 'Kode OTP tidak valid.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan jaringan.');
-                    });
-            });
-
-            // Handle resend OTP
-            document.getElementById('resendOtpBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                fetch("{{ route('admin.profile.resend-otp') }}", {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                .getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message || 'Kode OTP telah dikirim ulang.');
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan jaringan.');
-                    });
-            });
-
-            // Close success modal and redirect to login or refresh page
-            document.getElementById('closeSuccessModalBtn').addEventListener('click', function() {
-                successModal.hide();
-                window.location.reload();
-            });
-        });
-    </script>
+    @include('admin.profile.scripts')
 @endsection

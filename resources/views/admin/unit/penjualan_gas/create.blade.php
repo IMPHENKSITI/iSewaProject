@@ -177,7 +177,7 @@
                                             <div id="placeholder_foto" class="upload-placeholder">
                                                 <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                 <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                             </div>
                                         </div>
                                         <input type="file" class="d-none" id="foto" name="foto" 
@@ -197,7 +197,7 @@
                                             <div id="placeholder_foto_2" class="upload-placeholder">
                                                 <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                 <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                             </div>
                                         </div>
                                         <input type="file" class="d-none" id="foto_2" name="foto_2" 
@@ -217,7 +217,7 @@
                                             <div id="placeholder_foto_3" class="upload-placeholder">
                                                 <i class='bx bx-cloud-upload' style="font-size: 48px;"></i>
                                                 <p class="mb-0 mt-2">Klik untuk upload</p>
-                                                <small class="text-muted">JPG, PNG (Max 2MB)</small>
+                                                <small class="text-muted">JPG, PNG (Max 8MB)</small>
                                             </div>
                                         </div>
                                         <input type="file" class="d-none" id="foto_3" name="foto_3" 

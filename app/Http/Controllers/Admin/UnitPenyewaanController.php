@@ -50,9 +50,9 @@ class UnitPenyewaanController extends Controller
             'kategori' => 'required|string',
             'lokasi' => 'required|string',
             'satuan' => 'required|string',
-            'foto_utama' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'foto_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'foto_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'foto_utama' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
+            'foto_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
+            'foto_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
         ]);
 
         //  Bersihkan semua karakter non-angka (titik, koma, spasi, dll), lalu ubah ke integer
@@ -168,6 +168,11 @@ class UnitPenyewaanController extends Controller
                 Storage::disk('public')->delete($barang->foto);
             }
             $data['foto'] = $request->file('foto_utama')->store('barang', 'public');
+        } elseif ($request->input('delete_foto') == '1') {
+            if ($barang->foto) {
+                Storage::disk('public')->delete($barang->foto);
+            }
+            $data['foto'] = null;
         }
 
         // Upload & ganti foto tambahan 1
@@ -176,6 +181,11 @@ class UnitPenyewaanController extends Controller
                 Storage::disk('public')->delete($barang->foto_2);
             }
             $data['foto_2'] = $request->file('foto_2')->store('barang', 'public');
+        } elseif ($request->input('delete_foto_2') == '1') {
+            if ($barang->foto_2) {
+                Storage::disk('public')->delete($barang->foto_2);
+            }
+            $data['foto_2'] = null;
         }
 
         // Upload & ganti foto tambahan 2
@@ -184,6 +194,11 @@ class UnitPenyewaanController extends Controller
                 Storage::disk('public')->delete($barang->foto_3);
             }
             $data['foto_3'] = $request->file('foto_3')->store('barang', 'public');
+        } elseif ($request->input('delete_foto_3') == '1') {
+            if ($barang->foto_3) {
+                Storage::disk('public')->delete($barang->foto_3);
+            }
+            $data['foto_3'] = null;
         }
 
         // Simpan perubahan
