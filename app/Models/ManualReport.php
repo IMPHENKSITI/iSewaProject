@@ -17,7 +17,8 @@ class ManualReport extends Model
         'quantity',
         'payment_method',
         'transaction_date',
-        'created_by'
+        'created_by',
+        'proof_image'
     ];
 
     protected $casts = [

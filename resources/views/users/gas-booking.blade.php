@@ -438,6 +438,7 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     (function() {
         'use strict';
@@ -554,8 +555,14 @@
                 const buyerAddress = document.getElementById('buyer-address')?.value;
 
                 if (!buyerName || !buyerAddress) {
-                    alert('Mohon lengkapi Nama dan Alamat Pembeli');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Data Belum Lengkap',
+                        text: 'Mohon lengkapi Nama dan Alamat Pembeli',
+                        confirmButtonColor: '#3085d6',
+                    });
                     return;
+                }
                 }
 
                 gasConfirmationModal.style.display = 'flex';
@@ -594,12 +601,22 @@
                         gasSuccessModal.style.display = 'flex';
                         gasSuccessModal.classList.remove('hidden');
                     } else {
-                        alert(data.message || 'Terjadi kesalahan saat memproses pesanan');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: data.message || 'Terjadi kesalahan saat memproses pesanan',
+                            confirmButtonColor: '#d33',
+                        });
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Terjadi kesalahan saat memproses pesanan');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: 'Terjadi kesalahan sistem saat memproses pesanan',
+                        confirmButtonColor: '#d33',
+                    });
                 });
             });
         }

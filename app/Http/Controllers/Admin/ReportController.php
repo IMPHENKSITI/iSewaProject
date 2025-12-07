@@ -127,6 +127,7 @@ class ReportController extends Controller
             'quantity' => 'required|integer|min:1',
             'payment_method' => 'required|in:tunai,transfer',
             'transaction_date' => 'required|date',
+            'proof_image' => 'nullable|image|max:2048', // Max 2MB
         ], [
             'category.required' => 'Kategori harus dipilih',
             'category.in' => 'Kategori tidak valid',
@@ -151,6 +152,14 @@ class ReportController extends Controller
         }
 
         try {
+            $proofImagePath = null;
+            if ($request->hasFile('proof_image')) {
+                $file = $request->file('proof_image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('manual-reports'), $filename);
+                $proofImagePath = 'manual-reports/' . $filename;
+            }
+
             $manualReport = ManualReport::create([
                 'category' => $request->category,
                 'name' => $request->name,
@@ -160,6 +169,7 @@ class ReportController extends Controller
                 'payment_method' => $request->payment_method,
                 'transaction_date' => $request->transaction_date,
                 'created_by' => Auth::id(),
+                'proof_image' => $proofImagePath,
             ]);
 
             return response()->json([
@@ -188,6 +198,7 @@ class ReportController extends Controller
             'quantity' => 'required|integer|min:1',
             'payment_method' => 'required|in:tunai,transfer',
             'transaction_date' => 'required|date',
+            'proof_image' => 'nullable|image|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -200,7 +211,7 @@ class ReportController extends Controller
         try {
             $manualReport = ManualReport::findOrFail($id);
             
-            $manualReport->update([
+            $data = [
                 'category' => $request->category,
                 'name' => $request->name,
                 'description' => $request->description,
@@ -208,7 +219,21 @@ class ReportController extends Controller
                 'quantity' => $request->quantity,
                 'payment_method' => $request->payment_method,
                 'transaction_date' => $request->transaction_date,
-            ]);
+            ];
+
+            if ($request->hasFile('proof_image')) {
+                // Delete old image if exists
+                if ($manualReport->proof_image && file_exists(public_path($manualReport->proof_image))) {
+                    unlink(public_path($manualReport->proof_image));
+                }
+
+                $file = $request->file('proof_image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('manual-reports'), $filename);
+                $data['proof_image'] = 'manual-reports/' . $filename;
+            }
+
+            $manualReport->update($data);
 
             return response()->json([
                 'success' => true,
@@ -230,6 +255,11 @@ class ReportController extends Controller
     {
         try {
             $manualReport = ManualReport::findOrFail($id);
+            
+            if ($manualReport->proof_image && file_exists(public_path($manualReport->proof_image))) {
+                unlink(public_path($manualReport->proof_image));
+            }
+            
             $manualReport->delete();
 
             return response()->json([

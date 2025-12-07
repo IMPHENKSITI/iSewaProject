@@ -20,12 +20,12 @@
                         </div>
                         <!-- Slide 2 -->
                         <div class="carousel-slide min-w-full flex-shrink-0">
-                            <img src="{{ asset('User/img/elemen/slide2.png') }}" alt="Slide 2"
+                            <img src="{{ asset('User/img/elemen/biru.png') }}" alt="Slide 2"
                                 class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-cover">
                         </div>
                         <!--Slide 3-->
                         <div class="carousel-slide min-w-full flex-shrink-0">
-                            <img src="{{ asset('User/img/elemen/slide3.png') }}" alt="Slide 3"
+                            <img src="{{ asset('User/img/elemen/ppq.png') }}" alt="Slide 3"
                                 class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-fill">
                         </div>
                     </div>

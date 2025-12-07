@@ -789,6 +789,7 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         'use strict';
@@ -1054,14 +1055,29 @@
                         (position) => {
                             latitudeInput.value = position.coords.latitude;
                             longitudeInput.value = position.coords.longitude;
-                            alert('Lokasi berhasil dibagikan!');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Lokasi Terkirim',
+                                text: 'Lokasi berhasil dibagikan!',
+                                confirmButtonColor: '#3085d6',
+                            });
                         },
                         (error) => {
-                            alert('Gagal mendapatkan lokasi. Pastikan GPS aktif.');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Gagal mendapatkan lokasi. Pastikan GPS aktif.',
+                                confirmButtonColor: '#3085d6',
+                            });
                         }
                     );
                 } else {
-                    alert('Browser tidak mendukung geolocation.');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Tidak Didukung',
+                        text: 'Browser tidak mendukung geolocation.',
+                        confirmButtonColor: '#3085d6',
+                    });
                 }
             });
         }
@@ -1121,7 +1137,12 @@
                     }
 
                     if (!isValid) {
-                        alert(errorMessage);
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Data Belum Lengkap',
+                            text: errorMessage,
+                            confirmButtonColor: '#3085d6',
+                        });
                         return;
                     }
 
@@ -1207,54 +1228,28 @@
                     if (data.success) {
                         receiptId = data.receipt_id;
                         
-    <!-- Success Modal -->
-    <div id="success-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm transition-all duration-300" style="display: none;">
-        <div class="bg-white rounded-[2rem] p-10 max-w-lg w-full mx-4 shadow-2xl transform transition-all scale-100 relative">
-            <button type="button" id="close-success-modal" class="absolute top-6 right-6 text-gray-400 hover:text-gray-800 transition-colors">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-            
-            <div class="text-center">
-                <div class="mb-8 mt-4">
-                    <div class="checkmark-circle mx-auto">
-                        <svg class="checkmark" viewBox="0 0 52 52">
-                            <circle class="checkmark-circle-path" cx="26" cy="26" r="25" fill="none"/>
-                            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                        </svg>
-                    </div>
-                </div>
-                
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Pesanan Berhasil Dibuat</h2>
-                
-                <div class="mb-8">
-                    <p class="text-gray-800 font-bold text-lg mb-1">Pesanan Anda sedang Diproses</p>
-                    <p class="text-gray-500 text-sm">Silahkan klik untuk menuju halaman selanjutnya</p>
-                </div>
-                
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <button type="button" 
-                                id="view-receipt-btn"
-                                class="px-4 py-3 bg-gray-50 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:-translate-y-0.5 shadow-sm hover:shadow-md text-sm">
-                            Lihat Bukti Transaksi
-                        </button>
-                        <button type="button" 
-                                id="download-receipt-btn"
-                                class="px-4 py-3 bg-gray-50 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:-translate-y-0.5 shadow-sm hover:shadow-md text-sm">
-                            Unduh Bukti Transaksi
-                        </button>
-                    </div>
-                    <button type="button" 
-                            id="view-activity-btn"
-                            class="w-full px-6 py-4 bg-[#2395FF] hover:bg-blue-600 text-white font-extrabold rounded-2xl shadow-lg hover:shadow-blue-200/50 transition-all duration-300 transform hover:scale-[1.02] text-lg">
-                        Lihat Aktivitas
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+                        successModal.style.display = 'flex';
+                        successModal.classList.remove('hidden');
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: data.message || 'Terjadi kesalahan saat memproses pesanan',
+                            confirmButtonColor: '#d33',
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: 'Terjadi kesalahan sistem saat memproses pesanan',
+                        confirmButtonColor: '#d33',
+                    });
+                });
+            });
+        }
 
 
         // View receipt

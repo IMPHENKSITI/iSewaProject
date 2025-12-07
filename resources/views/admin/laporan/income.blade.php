@@ -318,6 +318,7 @@
                                     <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Jumlah</th>
                                     <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Harga</th>
                                     <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Total</th>
+                                    <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Bukti</th>
                                     <th class="py-3 text-uppercase fs-7 fw-bold text-muted">Pembayaran</th>
                                     <th class="py-3 pe-4 text-uppercase fs-7 fw-bold text-muted text-center">Aksi</th>
                                 </tr>
@@ -347,6 +348,17 @@
                                     </td>
                                     <td class="py-3">
                                         <span class="fw-bold text-primary">{{ $report->formatted_total }}</span>
+                                    </td>
+                                    <td class="py-3">
+                                        @if($report->proof_image)
+                                            <button class="btn btn-sm btn-icon btn-outline-secondary" 
+                                                    onclick="viewProof('{{ asset($report->proof_image) }}', '{{ $report->name }}')"
+                                                    title="Lihat Bukti">
+                                                <i class="bx bx-image-alt"></i>
+                                            </button>
+                                        @else
+                                            <span class="text-muted small">-</span>
+                                        @endif
                                     </td>
                                     <td class="py-3">
                                         <span class="badge bg-label-{{ $report->payment_method == 'tunai' ? 'success' : 'info' }}">
@@ -386,73 +398,101 @@
     </div>
 
     <!-- Manual Transaction Modal -->
-    <div class="modal fade" id="manualTransactionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="manualTransactionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Tambah Laporan Transaksi Manual</h5>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+                <div class="modal-header border-bottom bg-white py-4 px-4" style="border-radius: 1rem 1rem 0 0;">
+                    <h5 class="modal-title fw-bold text-dark" id="modalTitle">Tambah Laporan Transaksi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="manualTransactionForm">
+                <form id="manualTransactionForm" enctype="multipart/form-data">
                     <input type="hidden" id="transactionId" name="id">
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Kategori <span class="text-danger">*</span></label>
-                                <select class="form-select" id="category" name="category" required>
-                                    <option value="">Pilih Kategori</option>
-                                    <option value="penyewaan">Penyewaan Alat</option>
-                                    <option value="gas">Penjualan Gas</option>
-                                    <option value="lainnya">Lainnya</option>
-                                </select>
-                                <div class="invalid-feedback"></div>
+                    <div class="modal-body p-4 bg-light bg-opacity-50">
+                        <div class="card border-0 shadow-none mb-3">
+                            <div class="card-body p-3">
+                                <h6 class="fw-bold text-muted mb-3 text-uppercase small">Informasi Dasar</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Kategori <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="category" name="category" required>
+                                            <option value="">Pilih Kategori</option>
+                                            <option value="penyewaan">Penyewaan Alat</option>
+                                            <option value="gas">Penjualan Gas</option>
+                                            <option value="lainnya">Lainnya</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Tanggal Transaksi <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="transaction_date" name="transaction_date" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Nama Item <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Contoh: Tenda 3x3 meter" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Deskripsi</label>
+                                        <textarea class="form-control" id="description" name="description" rows="2" placeholder="Deskripsi tambahan (opsional)"></textarea>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Tanggal Transaksi <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" id="transaction_date" name="transaction_date" required>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-bold">Nama Item <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Contoh: Tenda 3x3 meter" required>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-bold">Deskripsi</label>
-                                <textarea class="form-control" id="description" name="description" rows="2" placeholder="Deskripsi tambahan (opsional)"></textarea>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Jumlah Item <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Harga per Item <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="amount" name="amount" min="0" step="0.01" placeholder="0" required>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Total</label>
-                                <input type="text" class="form-control bg-light" id="total" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Metode Pembayaran <span class="text-danger">*</span></label>
-                                <select class="form-select" id="payment_method" name="payment_method" required>
-                                    <option value="">Pilih Metode</option>
-                                    <option value="tunai">Tunai</option>
-                                    <option value="transfer">Transfer</option>
-                                </select>
-                                <div class="invalid-feedback"></div>
+                        </div>
+
+                        <div class="card border-0 shadow-none mb-3">
+                            <div class="card-body p-3">
+                                <h6 class="fw-bold text-muted mb-3 text-uppercase small">Detail Keuangan</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Jumlah Item <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Harga per Item (Rp) <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-white">Rp</span>
+                                            <input type="number" class="form-control" id="amount" name="amount" min="0" placeholder="0" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Total (Rp)</label>
+                                        <input type="text" class="form-control bg-white fw-bold text-primary" id="total" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Metode Pembayaran <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="payment_method" name="payment_method" required>
+                                            <option value="">Pilih Metode</option>
+                                            <option value="tunai">Tunai</option>
+                                            <option value="transfer">Transfer</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Bukti Transaksi <small class="text-muted">(Opsional)</small></label>
+                                        <input type="file" class="form-control" id="proof_image" name="proof_image" accept="image/*">
+                                        <div class="form-text small">Format: JPG, PNG, max 2MB</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer border-top bg-white py-3 px-4" style="border-radius: 0 0 1rem 1rem;">
                         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <i class="bx bx-save me-1"></i> Simpan
+                        <button type="submit" class="btn btn-primary px-4" id="submitBtn">
+                            <i class="bx bx-save me-1"></i> Simpan Laporan
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-transparent shadow-none border-0">
+                <div class="modal-body p-0 text-center position-relative">
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <img src="" id="previewImage" class="img-fluid rounded shadow-lg" style="max-height: 80vh;" alt="Bukti Transaksi">
+                    <h6 class="mt-3 text-white fw-bold" id="previewCaption"></h6>
+                </div>
             </div>
         </div>
     </div>
@@ -1065,24 +1105,21 @@
                 : '/admin/laporan/manual-transaction';
             const method = isEdit ? 'PUT' : 'POST';
             
-            const formData = {
-                category: document.getElementById('category').value,
-                name: document.getElementById('name').value,
-                description: document.getElementById('description').value,
-                amount: document.getElementById('amount').value,
-                quantity: document.getElementById('quantity').value,
-                payment_method: document.getElementById('payment_method').value,
-                transaction_date: document.getElementById('transaction_date').value,
-            };
+            const formData = new FormData(this);
             
+            // Handle PUT method spoofing for Laravel
+            if (isEdit) {
+                formData.append('_method', 'PUT');
+            }
+
             try {
                 const response = await fetch(url, {
-                    method: method,
+                    method: 'POST', // Always POST for FormData with files, let Laravel handle _method override
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify(formData)
+                    body: formData
                 });
                 
                 const data = await response.json();
@@ -1216,6 +1253,13 @@
                     });
                 }
             }
+        };
+        // View Proof Image
+        window.viewProof = function(imageUrl, caption) {
+            const modal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
+            document.getElementById('previewImage').src = imageUrl;
+            document.getElementById('previewCaption').textContent = caption;
+            modal.show();
         };
     </script>
 @endsection
