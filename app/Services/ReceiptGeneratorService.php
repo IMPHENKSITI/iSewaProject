@@ -33,8 +33,8 @@ class ReceiptGeneratorService
         $fontPath = public_path('fonts/arial.ttf');
         
         // Font sizes - REALLY BIG for readability
-        $normalSize = 48;  // Normal text - MUCH BIGGER
-        $headerSize = 56;  // Section headers - MUCH BIGGER
+        $normalSize = 78;  // Normal text - MUCH BIGGER
+        $headerSize = 66;  // Section headers - MUCH BIGGER
         
         // Adjusted layout for bigger fonts
         $startY = 280;
@@ -185,8 +185,8 @@ class ReceiptGeneratorService
         $fontPath = public_path('fonts/arial.ttf');
         
         // Font sizes - REALLY BIG for readability
-        $normalSize = 48;  // Normal text - MUCH BIGGER
-        $headerSize = 56;  // Section headers - MUCH BIGGER
+        $normalSize = 78;  // Normal text - MUCH BIGGER
+        $headerSize = 66;  // Section headers - MUCH BIGGER
         
         // Adjusted layout for bigger fonts
         $startY = 280;

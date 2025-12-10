@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\RentalRequest;
+use App\Models\RentalBooking;
 use App\Models\GasOrder;
 use App\Models\ManualReport;
 use Illuminate\Http\Request;
@@ -14,22 +14,38 @@ class ReportController extends Controller
 {
     public function transactions()
     {
-        $rentalRequests = RentalRequest::with('user')->orderByDesc('created_at')->get();
+        $rentalRequests = RentalBooking::with('user')->orderByDesc('created_at')->get();
         $gasOrders = GasOrder::with('user')->orderByDesc('created_at')->get();
 
         return view('admin.laporan.transactions', compact('rentalRequests', 'gasOrders'));
     }
 
-    public function income()
+    public function income(Request $request)
     {
-        // Hitung total pendapatan per unit dari sistem
-        $totalPenyewaan = RentalRequest::sum('price');
-        $totalGas = GasOrder::selectRaw('SUM(price * quantity) as total')->value('total') ?? 0;
+        $year = $request->input('year', 2025);
+
+        // Hitung total pendapatan per unit dari sistem (Yearly Filter)
+        $totalPenyewaan = RentalBooking::whereYear('created_at', $year)
+            ->where('status', '!=', 'cancelled')
+            ->sum('total_amount');
+            
+        $totalGas = GasOrder::whereYear('created_at', $year)
+            ->where('status', '!=', 'cancelled')
+            ->selectRaw('SUM(price * quantity) as total')
+            ->value('total') ?? 0;
         
-        // Hitung total dari manual reports
-        $manualPenyewaan = ManualReport::where('category', 'penyewaan')->sum(\DB::raw('amount * quantity'));
-        $manualGas = ManualReport::where('category', 'gas')->sum(\DB::raw('amount * quantity'));
-        $manualLainnya = ManualReport::where('category', 'lainnya')->sum(\DB::raw('amount * quantity'));
+        // Hitung total dari manual reports (Yearly Filter)
+        $manualPenyewaan = ManualReport::whereYear('transaction_date', $year)
+            ->where('category', 'penyewaan')
+            ->sum(\DB::raw('amount * quantity'));
+            
+        $manualGas = ManualReport::whereYear('transaction_date', $year)
+            ->where('category', 'gas')
+            ->sum(\DB::raw('amount * quantity'));
+            
+        $manualLainnya = ManualReport::whereYear('transaction_date', $year)
+            ->where('category', 'lainnya')
+            ->sum(\DB::raw('amount * quantity'));
         
         // Total keseluruhan
         $totalPenyewaan += $manualPenyewaan;
@@ -37,38 +53,38 @@ class ReportController extends Controller
         $totalPendapatan = $totalPenyewaan + $totalGas + $manualLainnya;
 
         // Hitung pendapatan per bulan
-        $monthlyIncome = [
-            'Januari' => 0,
-            'Februari' => 0,
-            'Maret' => 0,
-            'April' => 0,
-            'Mei' => 0,
-            'Juni' => 0,
-            'Juli' => 0,
-            'Agustus' => 0,
-            'September' => 0,
-            'Oktober' => 0,
-            'November' => 0,
-            'Desember' => 0,
-        ];
+        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        $monthlyIncome = array_fill_keys($months, 0);
 
-        // Pendapatan dari sistem
-        foreach (RentalRequest::selectRaw('SUM(price) as total, MONTH(created_at) as month')
+        // Pendapatan dari sistem (RentalBooking)
+        $rentalMonthly = RentalBooking::selectRaw('SUM(total_amount) as total, MONTH(created_at) as month')
+            ->whereYear('created_at', $year)
+            ->where('status', '!=', 'cancelled')
             ->groupBy('month')
-            ->pluck('total', 'month') as $month => $amount) {
+            ->pluck('total', 'month');
+
+        foreach ($rentalMonthly as $month => $amount) {
             $monthlyIncome[getMonthName($month)] += $amount;
         }
 
-        foreach (GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
+        // Pendapatan dari sistem (GasOrder)
+        $gasMonthly = GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
+            ->whereYear('created_at', $year)
+            ->where('status', '!=', 'cancelled')
             ->groupBy('month')
-            ->pluck('total', 'month') as $month => $amount) {
+            ->pluck('total', 'month');
+
+        foreach ($gasMonthly as $month => $amount) {
             $monthlyIncome[getMonthName($month)] += $amount;
         }
         
         // Pendapatan dari manual reports
-        foreach (ManualReport::selectRaw('SUM(amount * quantity) as total, MONTH(transaction_date) as month')
+        $manualMonthly = ManualReport::selectRaw('SUM(amount * quantity) as total, MONTH(transaction_date) as month')
+            ->whereYear('transaction_date', $year)
             ->groupBy('month')
-            ->pluck('total', 'month') as $month => $amount) {
+            ->pluck('total', 'month');
+
+        foreach ($manualMonthly as $month => $amount) {
             $monthlyIncome[getMonthName($month)] += $amount;
         }
 
@@ -78,18 +94,24 @@ class ReportController extends Controller
             $dataPoints[] = ['label' => $month, 'y' => $income];
         }
 
-        // Ambil data untuk detail per unit
-        $rentalRequests = RentalRequest::all();
-        $gasOrders = GasOrder::all();
+        // Ambil data untuk detail per unit (Filtered by Year)
+        $rentalRequests = RentalBooking::whereYear('created_at', $year)->get(); // For count & stats
+        $gasOrders = GasOrder::whereYear('created_at', $year)->get();
         
-        // Ambil manual reports
+        // Ambil manual reports (Filtered by Year)
         $manualReports = ManualReport::with('creator')
+            ->whereYear('transaction_date', $year)
             ->orderByDesc('transaction_date')
             ->get();
 
-        // Hitung total transaksi untuk Donut Chart
-        $rentalCount = \App\Models\RentalBooking::where('status', '!=', 'cancelled')->count();
-        $gasCount = GasOrder::count();
+        // Hitung total transaksi untuk Donut Chart (Yearly Filter)
+        $rentalCount = RentalBooking::whereYear('created_at', $year)
+            ->where('status', '!=', 'cancelled')
+            ->count();
+            
+        $gasCount = GasOrder::whereYear('created_at', $year)
+            ->where('status', '!=', 'cancelled')
+            ->count();
 
         return view('admin.laporan.income', compact(
             'totalPenyewaan',
@@ -102,7 +124,8 @@ class ReportController extends Controller
             'manualReports',
             'manualLainnya',
             'rentalCount',
-            'gasCount'
+            'gasCount',
+            'year'
         ));
     }
 

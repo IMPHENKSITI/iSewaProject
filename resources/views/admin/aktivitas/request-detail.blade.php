@@ -111,29 +111,37 @@
 
                             <hr class="my-4 border-light">
 
-                            @if($type === 'rental')
                             <h6 class="fw-bold mb-3">Jadwal Sewa</h6>
                             <div class="row g-3">
-                                <div class="col-md-6">
+                                <div class="col-md-{{ $request->return_time ? '4' : '6' }}">
                                     <div class="p-3 bg-light rounded-3 border">
                                         <small class="text-muted d-block mb-1">Mulai</small>
                                         <span class="fw-bold text-dark">{{ \Carbon\Carbon::parse($request->start_date)->isoFormat('D MMMM Y') }}</span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-{{ $request->return_time ? '4' : '6' }}">
                                     <div class="p-3 bg-light rounded-3 border">
                                         <small class="text-muted d-block mb-1">Selesai</small>
                                         <span class="fw-bold text-dark">{{ \Carbon\Carbon::parse($request->end_date)->isoFormat('D MMMM Y') }}</span>
                                     </div>
                                 </div>
+                                @if($request->return_time)
+                                <div class="col-md-4">
+                                    <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle">
+                                        <small class="text-success-emphasis d-block mb-1">Dikembalikan</small>
+                                        <span class="fw-bold text-dark">{{ \Carbon\Carbon::parse($request->return_time)->isoFormat('D MMMM Y HH:mm') }}</span>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
-                            @endif
+
                         </div>
                     </div>
 
                     <!-- PROOF OF PAYMENT -->
                     @if($request->proof_of_payment || $request->payment_proof)
                     <div class="card shadow-sm border-0 rounded-4">
+
                         <div class="card-header bg-white border-bottom py-3">
                             <h5 class="mb-0 fw-bold text-dark">
                                 <i class="bx bx-receipt me-2 text-primary"></i>Bukti Pembayaran
@@ -143,166 +151,64 @@
                             @php
                                 $proof = $request->proof_of_payment ?? $request->payment_proof;
                             @endphp
-                            <img src="{{ asset('storage/' . $proof) }}" alt="Bukti Pembayaran" class="img-fluid rounded mb-3 shadow-sm" style="max-height: 400px;">
-                            <div>
-                                <a href="{{ asset('storage/' . $proof) }}" download class="btn btn-outline-primary rounded-pill">
-                                    <i class="bx bx-download me-2"></i>Unduh Bukti
-                                </a>
+                            <div class="position-relative">
+                                <img src="{{ asset('storage/' . $proof) }}" 
+                                     alt="Bukti Pembayaran" 
+                                     class="img-fluid rounded shadow-sm mb-3" 
+                                     style="max-height: 500px; width: 100%; object-fit: contain;">
+                                <div class="mt-2">
+                                     <a href="{{ asset('storage/' . $proof) }}" target="_blank" class="btn btn-outline-primary rounded-pill px-4">
+                                        <i class="bx bx-fullscreen me-2"></i>Lihat Ukuran Penuh
+                                    </a>
+                                    <a href="{{ asset('storage/' . $proof) }}" download class="btn btn-primary rounded-pill px-4 ms-2">
+                                        <i class="bx bx-download me-2"></i>Unduh
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    @endif
-
-                    <!-- DELIVERY STATUS WORKFLOW (RENTAL ONLY) -->
-                    @if($type === 'rental' && in_array($request->status, ['confirmed', 'being_prepared', 'in_delivery', 'arrived', 'completed']))
-                    <div class="card shadow-sm border-0 rounded-4 mb-4">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <h5 class="mb-0 fw-bold text-dark"><i class="bx bx-map-alt me-2 text-primary"></i>Status Pengiriman</h5>
-                        </div>
-                        <div class="card-body p-4">
-                            <div class="d-flex flex-column gap-0">
-                                <!-- Step 1: Confirmed -->
-                                <div class="d-flex gap-3">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; z-index: 2;">
-                                            <i class="bx bx-check fs-4"></i>
-                                        </div>
-                                        <div class="h-100 border-start border-2 border-primary-subtle" style="min-height: 40px; margin-top: -5px; margin-bottom: -5px;"></div>
-                                    </div>
-                                    <div class="flex-grow-1 pb-4">
-                                        <div class="card border-0 bg-success-subtle bg-opacity-10 shadow-sm rounded-3">
-                                            <div class="card-body p-3 d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <h6 class="fw-bold text-success mb-1">Pesanan Dikonfirmasi</h6>
-                                                    <small class="text-muted">
-                                                        <i class="bx bx-time me-1"></i>{{ $request->confirmed_at ? \Carbon\Carbon::parse($request->confirmed_at)->format('d M Y H:i') : '-' }}
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Step 2: Being Prepared -->
-                                <div class="d-flex gap-3">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <div class="rounded-circle {{ in_array($request->status, ['being_prepared', 'in_delivery', 'arrived', 'completed']) ? 'bg-success text-white' : ($request->status == 'confirmed' ? 'bg-primary text-white animate-pulse' : 'bg-white border text-secondary') }} d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; z-index: 2;">
-                                            <i class="bx bx-package fs-4"></i>
-                                        </div>
-                                        <div class="h-100 border-start border-2 border-primary-subtle" style="min-height: 40px; margin-top: -5px; margin-bottom: -5px;"></div>
-                                    </div>
-                                    <div class="flex-grow-1 pb-4">
-                                        <div class="card border-0 {{ in_array($request->status, ['being_prepared', 'in_delivery', 'arrived', 'completed']) ? 'bg-success-subtle bg-opacity-10' : ($request->status == 'confirmed' ? 'bg-white border border-primary border-2 shadow-sm' : 'bg-light') }} rounded-3">
-                                            <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                                <div>
-                                                    <h6 class="fw-bold {{ in_array($request->status, ['being_prepared', 'in_delivery', 'arrived', 'completed']) ? 'text-success' : 'text-dark' }} mb-1">Sedang Dipersiapkan</h6>
-                                                    <small class="text-muted">Tim sedang menyiapkan barang pesanan</small>
-                                                </div>
-                                                @if($request->status == 'confirmed')
-                                                    <button class="btn btn-primary rounded-pill px-4" onclick="updateStatus('being_prepared')">
-                                                        <i class="bx bx-check me-2"></i>Update Status
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Step 3: In Delivery -->
-                                <div class="d-flex gap-3">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <div class="rounded-circle {{ in_array($request->status, ['in_delivery', 'arrived', 'completed']) ? 'bg-success text-white' : ($request->status == 'being_prepared' ? 'bg-primary text-white animate-pulse' : 'bg-white border text-secondary') }} d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; z-index: 2;">
-                                            <i class="bx bx-car fs-4"></i>
-                                        </div>
-                                        <div class="h-100 border-start border-2 border-primary-subtle" style="min-height: 40px; margin-top: -5px; margin-bottom: -5px;"></div>
-                                    </div>
-                                    <div class="flex-grow-1 pb-4">
-                                        <div class="card border-0 {{ in_array($request->status, ['in_delivery', 'arrived', 'completed']) ? 'bg-success-subtle bg-opacity-10' : ($request->status == 'being_prepared' ? 'bg-white border border-primary border-2 shadow-sm' : 'bg-light') }} rounded-3">
-                                            <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                                <div>
-                                                    <h6 class="fw-bold {{ in_array($request->status, ['in_delivery', 'arrived', 'completed']) ? 'text-success' : 'text-dark' }} mb-1">Dalam Pengiriman</h6>
-                                                    @if($request->delivery_time)
-                                                        <small class="text-muted"><i class="bx bx-time me-1"></i>{{ \Carbon\Carbon::parse($request->delivery_time)->format('d M Y H:i') }}</small>
-                                                    @endif
-                                                </div>
-                                                @if($request->status == 'being_prepared')
-                                                    <button class="btn btn-primary rounded-pill px-4" onclick="updateStatus('in_delivery')">
-                                                        <i class="bx bx-navigation me-2"></i>Mulai Pengiriman
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Step 4: Arrived -->
-                                <div class="d-flex gap-3">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <div class="rounded-circle {{ in_array($request->status, ['arrived', 'completed']) ? 'bg-success text-white' : ($request->status == 'in_delivery' ? 'bg-primary text-white animate-pulse' : 'bg-white border text-secondary') }} d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; z-index: 2;">
-                                            <i class="bx bx-map-pin fs-4"></i>
-                                        </div>
-                                        <div class="h-100 border-start border-2 border-primary-subtle" style="min-height: 40px; margin-top: -5px; margin-bottom: -5px;"></div>
-                                    </div>
-                                    <div class="flex-grow-1 pb-4">
-                                        <div class="card border-0 {{ in_array($request->status, ['arrived', 'completed']) ? 'bg-success-subtle bg-opacity-10' : ($request->status == 'in_delivery' ? 'bg-white border border-primary border-2 shadow-sm' : 'bg-light') }} rounded-3">
-                                            <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                                <div>
-                                                    <h6 class="fw-bold {{ in_array($request->status, ['arrived', 'completed']) ? 'text-success' : 'text-dark' }} mb-1">Tiba di Lokasi</h6>
-                                                    @if($request->arrival_time)
-                                                        <small class="text-muted"><i class="bx bx-time me-1"></i>{{ \Carbon\Carbon::parse($request->arrival_time)->format('d M Y H:i') }}</small>
-                                                    @endif
-                                                    @if($request->delivery_proof_image)
-                                                        <div class="mt-2">
-                                                            <a href="{{ asset('storage/' . $request->delivery_proof_image) }}" target="_blank" class="badge bg-primary-subtle text-primary border border-primary-subtle p-2 text-decoration-none">
-                                                                <i class="bx bx-image me-1"></i>Lihat Bukti
-                                                            </a>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                @if($request->status == 'in_delivery')
-                                                    <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#uploadProofModal">
-                                                        <i class="bx bx-camera me-2"></i>Pesanan Tiba
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Step 5: Completed -->
-                                <div class="d-flex gap-3">
-                                    <div class="d-flex flex-column align-items-center">
-                                        <div class="rounded-circle {{ $request->status == 'completed' ? 'bg-success text-white' : ($request->status == 'arrived' ? 'bg-primary text-white animate-pulse' : 'bg-white border text-secondary') }} d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; z-index: 2;">
-                                            <i class="bx bx-check-double fs-4"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <div class="card border-0 {{ $request->status == 'completed' ? 'bg-success-subtle bg-opacity-10' : ($request->status == 'arrived' ? 'bg-white border border-primary border-2 shadow-sm' : 'bg-light') }} rounded-3">
-                                            <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                                <div>
-                                                    <h6 class="fw-bold {{ $request->status == 'completed' ? 'text-success' : 'text-dark' }} mb-1">Pesanan Selesai</h6>
-                                                    @if($request->completion_time)
-                                                        <small class="text-muted"><i class="bx bx-time me-1"></i>{{ \Carbon\Carbon::parse($request->completion_time)->format('d M Y H:i') }}</small>
-                                                    @endif
-                                                </div>
-                                                @if($request->status == 'arrived')
-                                                    <button class="btn btn-success rounded-pill px-4" onclick="updateStatus('completed')">
-                                                        <i class="bx bx-trophy me-2"></i>Selesaikan
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
+                            @endif
                     </div>
-                    @endif
-                </div>
 
                 <!-- RIGHT COLUMN -->
                 <div class="col-lg-4">
+                    <!-- CUSTOMER INFO CARD -->
+                    <div class="card shadow-sm border-0 rounded-4 mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0 fw-bold text-dark">Data Pemesan</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-primary-subtle text-primary rounded-circle p-3 me-3">
+                                    <i class="bx bx-user fs-4"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold mb-0">{{ $request->full_name ?? $request->user->name }}</h6>
+                                    <small class="text-muted">Pelanggan</small>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted d-block uppercase ls-1 mb-1">Email</small>
+                                <span class="fw-medium text-dark">{{ $request->email ?? $request->user->email }}</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted d-block uppercase ls-1 mb-1">Alamat</small>
+                                <p class="fw-medium text-dark mb-0">{{ $request->address ?? $request->delivery_address }}</p>
+                            </div>
+
+                            @if($request->notes)
+                            <div class="mt-4 p-3 bg-light rounded-3 border border-warning-subtle">
+                                <small class="text-warning-emphasis fw-bold d-block mb-1">
+                                    <i class="bx bx-note me-1"></i>Catatan
+                                </small>
+                                <p class="mb-0 text-dark small">{{ $request->notes }}</p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
                     <!-- STATUS CARD -->
                     <div class="card shadow-sm border-0 rounded-4 mb-4">
                         <div class="card-header bg-white border-bottom py-3">
@@ -358,44 +264,156 @@
                         </div>
                     </div>
 
-
-
-                    <!-- CUSTOMER INFO CARD -->
-                    <div class="card shadow-sm border-0 rounded-4">
+                    <!-- DELIVERY STATUS WORKFLOW (RENTAL ONLY) - MOVED TO RIGHT COLUMN -->
+                    @if($type === 'rental' && in_array($request->status, ['confirmed', 'being_prepared', 'in_delivery', 'arrived', 'completed']))
+                    <div class="card shadow-sm border-0 rounded-4 mb-4 mt-4">
                         <div class="card-header bg-white border-bottom py-3">
-                            <h5 class="mb-0 fw-bold text-dark">Data Pemesan</h5>
+                            <h5 class="mb-0 fw-bold text-dark"><i class="bx bx-map-alt me-2 text-primary"></i>Status Pengiriman</h5>
                         </div>
                         <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-primary-subtle text-primary rounded-circle p-3 me-3">
-                                    <i class="bx bx-user fs-4"></i>
+                            <div class="d-flex flex-column gap-0">
+                                <!-- Step 1: Confirmed -->
+                                <div class="d-flex gap-3 position-relative pb-4">
+                                    <div class="d-flex flex-column align-items-center" style="width: 40px; min-width: 40px;">
+                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 2;">
+                                            <i class="bx bx-check fs-5"></i>
+                                        </div>
+                                        <div class="h-100 border-start border-2 border-primary-subtle position-absolute" style="left: 19px; top: 32px; bottom: 0;"></div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="card border-0 bg-white shadow-sm rounded-3 hover-shadow transition-all">
+                                            <div class="card-body p-3">
+                                                <h6 class="fw-bold text-dark mb-1">Pesanan Dikonfirmasi</h6>
+                                                <small class="text-muted d-block">
+                                                    <i class="bx bx-time-five me-1"></i>{{ $request->confirmed_at ? \Carbon\Carbon::parse($request->confirmed_at)->format('d M Y, H:i') : '-' }} WIB
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h6 class="fw-bold mb-0">{{ $request->full_name ?? $request->user->name }}</h6>
-                                    <small class="text-muted">Pelanggan</small>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <small class="text-muted d-block uppercase ls-1 mb-1">Email</small>
-                                <span class="fw-medium text-dark">{{ $request->email ?? $request->user->email }}</span>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <small class="text-muted d-block uppercase ls-1 mb-1">Alamat</small>
-                                <p class="fw-medium text-dark mb-0">{{ $request->address ?? $request->delivery_address }}</p>
-                            </div>
 
-                            @if($request->notes)
-                            <div class="mt-4 p-3 bg-light rounded-3 border border-warning-subtle">
-                                <small class="text-warning-emphasis fw-bold d-block mb-1">
-                                    <i class="bx bx-note me-1"></i>Catatan
-                                </small>
-                                <p class="mb-0 text-dark small">{{ $request->notes }}</p>
+                                <!-- Step 2: Being Prepared -->
+                                <div class="d-flex gap-3 position-relative pb-4">
+                                    <div class="d-flex flex-column align-items-center" style="width: 40px; min-width: 40px;">
+                                        <div class="rounded-circle {{ in_array($request->status, ['being_prepared', 'in_delivery', 'arrived', 'completed']) ? 'bg-success text-white' : ($request->status == 'confirmed' ? 'bg-primary text-white animate-pulse' : 'bg-light text-secondary border') }} d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 2;">
+                                            <i class="bx bx-package fs-5"></i>
+                                        </div>
+                                        <div class="h-100 border-start border-2 border-primary-subtle position-absolute" style="left: 19px; top: 32px; bottom: 0;"></div>
+                                    </div>
+                                    <div class="flex-grow-1 pb-4">
+                                        <div class="card border-0 {{ in_array($request->status, ['being_prepared', 'in_delivery', 'arrived', 'completed']) ? 'bg-success-subtle bg-opacity-10' : ($request->status == 'confirmed' ? 'bg-white border border-primary border-2 shadow-sm' : 'bg-light') }} rounded-3">
+                                            <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                                <div>
+                                                    <h6 class="fw-bold {{ in_array($request->status, ['being_prepared', 'in_delivery', 'arrived', 'completed']) ? 'text-success' : 'text-dark' }} mb-1">Sedang Dipersiapkan</h6>
+                                                    <small class="text-muted">Tim sedang menyiapkan barang pesanan</small>
+                                                </div>
+                                                @if($request->status == 'confirmed')
+                                                    <button class="btn btn-primary rounded-pill px-4" onclick="updateStatus('being_prepared')">
+                                                        <i class="bx bx-check me-2"></i>Update Status
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: In Delivery -->
+                                <div class="d-flex gap-3 position-relative pb-4">
+                                    <div class="d-flex flex-column align-items-center" style="width: 40px; min-width: 40px;">
+                                        <div class="rounded-circle {{ in_array($request->status, ['in_delivery', 'arrived', 'completed']) ? 'bg-success text-white' : ($request->status == 'being_prepared' ? 'bg-primary text-white animate-pulse' : 'bg-white border text-secondary') }} d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 2;">
+                                            <i class="bx bx-car fs-4"></i>
+                                        </div>
+                                        <div class="h-100 border-start border-2 border-primary-subtle position-absolute" style="left: 19px; top: 32px; bottom: 0;"></div>
+                                    </div>
+                                    <div class="flex-grow-1 pb-4">
+                                        <div class="card border-0 {{ in_array($request->status, ['in_delivery', 'arrived', 'completed']) ? 'bg-success-subtle bg-opacity-10' : ($request->status == 'being_prepared' ? 'bg-white border border-primary border-2 shadow-sm' : 'bg-light') }} rounded-3">
+                                            <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                                <div>
+                                                    <h6 class="fw-bold {{ in_array($request->status, ['in_delivery', 'arrived', 'completed']) ? 'text-success' : 'text-dark' }} mb-1">Dalam Pengiriman</h6>
+                                                    @if($request->delivery_time)
+                                                        <small class="text-muted"><i class="bx bx-time me-1"></i>{{ \Carbon\Carbon::parse($request->delivery_time)->format('d M Y H:i') }}</small>
+                                                    @endif
+                                                </div>
+                                                @if($request->status == 'being_prepared')
+                                                    <button class="btn btn-primary rounded-pill px-4" onclick="updateStatus('in_delivery')">
+                                                        <i class="bx bx-navigation me-2"></i>Mulai Pengiriman
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4: Arrived -->
+                                <div class="d-flex gap-3 position-relative pb-4">
+                                    <div class="d-flex flex-column align-items-center" style="width: 40px; min-width: 40px;">
+                                        <div class="rounded-circle {{ in_array($request->status, ['arrived', 'completed']) ? 'bg-success text-white' : ($request->status == 'in_delivery' ? 'bg-primary text-white animate-pulse' : 'bg-white border text-secondary') }} d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 2;">
+                                            <i class="bx bx-map-pin fs-4"></i>
+                                        </div>
+                                        <div class="h-100 border-start border-2 border-primary-subtle position-absolute" style="left: 19px; top: 32px; bottom: 0;"></div>
+                                    </div>
+                                    <div class="flex-grow-1 pb-4">
+                                        <div class="card border-0 {{ in_array($request->status, ['arrived', 'completed']) ? 'bg-success-subtle bg-opacity-10' : ($request->status == 'in_delivery' ? 'bg-white border border-primary border-2 shadow-sm' : 'bg-light') }} rounded-3">
+                                            <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                                <div>
+                                                    <h6 class="fw-bold {{ in_array($request->status, ['arrived', 'completed']) ? 'text-success' : 'text-dark' }} mb-1">Tiba di Lokasi</h6>
+                                                    @if($request->arrival_time)
+                                                        <small class="text-muted"><i class="bx bx-time me-1"></i>{{ \Carbon\Carbon::parse($request->arrival_time)->format('d M Y H:i') }}</small>
+                                                    @endif
+                                                    @if($request->delivery_proof_image)
+                                                        <div class="mt-2">
+                                                            <a href="{{ asset('storage/' . $request->delivery_proof_image) }}" target="_blank" class="badge bg-primary-subtle text-primary border border-primary-subtle p-2 text-decoration-none">
+                                                                <i class="bx bx-image me-1"></i>Lihat Bukti
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                @if($request->status == 'in_delivery')
+                                                    <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#uploadProofModal">
+                                                        <i class="bx bx-camera me-2"></i>Pesanan Tiba
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Step 5: Completed -->
+                                <div class="d-flex gap-3 position-relative">
+                                    <div class="d-flex flex-column align-items-center" style="width: 40px; min-width: 40px;">
+                                        <div class="rounded-circle {{ $request->status == 'completed' ? 'bg-success text-white' : ($request->status == 'arrived' ? 'bg-primary text-white animate-pulse' : 'bg-white border text-secondary') }} d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 2;">
+                                            <i class="bx bx-check-double fs-4"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="card border-0 {{ $request->status == 'completed' ? 'bg-success-subtle bg-opacity-10' : ($request->status == 'arrived' ? 'bg-white border border-primary border-2 shadow-sm' : 'bg-light') }} rounded-3">
+                                            <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                                <div>
+                                                    <h6 class="fw-bold {{ $request->status == 'completed' ? 'text-success' : 'text-dark' }} mb-1">Pesanan Selesai</h6>
+                                                    @if($request->completion_time)
+                                                        <small class="text-muted"><i class="bx bx-time me-1"></i>{{ \Carbon\Carbon::parse($request->completion_time)->format('d M Y H:i') }}</small>
+                                                    @endif
+                                                </div>
+                                                @if($request->status == 'arrived')
+                                                    @if($type === 'rental')
+                                                        <button class="btn btn-warning rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#returnModal">
+                                                            <i class="bx bx-time-five me-2"></i>Input Pengembalian
+                                                        </button>
+                                                    @else
+                                                        <button class="btn btn-success rounded-pill px-4" onclick="updateStatus('completed')">
+                                                            <i class="bx bx-trophy me-2"></i>Selesaikan
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                            @endif
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -472,6 +490,36 @@
                 <div class="modal-footer border-top-0 pt-0">
                     <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary rounded-pill px-4">Upload & Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Return Modal -->
+<div class="modal fade" id="returnModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Pengembalian Alat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="returnForm">
+                <div class="modal-body">
+                    <div class="alert alert-info border-0 d-flex align-items-center mb-3">
+                        <i class="bx bx-info-circle fs-4 me-2"></i>
+                        <div>
+                            Stok akan otomatis <strong>bertambah</strong> setelah dikonfirmasi.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Waktu Pengembalian</label>
+                        <input type="datetime-local" name="return_time" class="form-control" required value="{{ now()->format('Y-m-d\TH:i') }}">
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4">Konfirmasi Pengembalian</button>
                 </div>
             </form>
         </div>
@@ -679,5 +727,49 @@ document.getElementById('uploadProofForm').addEventListener('submit', function(e
         Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
     });
 });
+const returnForm = document.getElementById('returnForm');
+if (returnForm) {
+    returnForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const url = `{{ route('admin.aktivitas.permintaan-pengajuan.return', ['id' => $request->id]) }}`;
+        
+        // Show confirmation
+        Swal.fire({
+            title: 'Konfirmasi Pengembalian?',
+            text: "Pastikan alat sudah diterima dengan baik. Stok akan ditambahkan.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Konfirmasi'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        return_time: formData.get('return_time')
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        Swal.fire('Berhasil', data.message, 'success')
+                        .then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.message || 'Gagal memproses pengembalian', 'error');
+                    }
+                })
+                .catch(err => {
+                    Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+                });
+            }
+        });
+    });
+}
 </script>
 @endsection

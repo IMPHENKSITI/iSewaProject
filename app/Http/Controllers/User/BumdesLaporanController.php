@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\RentalBooking;
 use App\Models\GasOrder;
+use App\Models\ManualReport;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -41,27 +42,32 @@ class BumdesLaporanController extends Controller
         $monthlyData = [];
         
         for ($month = 1; $month <= 12; $month++) {
-            // Get rental revenue for this month
+            // Get rental revenue for this month (excluding cancelled)
             $rentalRevenue = RentalBooking::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+                ->where('status', '!=', 'cancelled')
                 ->sum('total_amount');
             
-            // Get gas revenue for this month
+            // Get gas revenue for this month (excluding cancelled)
             $gasRevenue = GasOrder::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+                ->where('status', '!=', 'cancelled')
                 ->sum(DB::raw('price * quantity'));
+
+            // Get Manual Report revenue for this month
+            $manualRevenue = ManualReport::whereYear('transaction_date', $year)
+                ->whereMonth('transaction_date', $month)
+                ->sum(DB::raw('amount * quantity'));
             
             // Total revenue in millions
-            $totalRevenue = ($rentalRevenue + $gasRevenue) / 1000000;
+            $totalRevenue = ($rentalRevenue + $gasRevenue + $manualRevenue) / 1000000;
             
             $monthlyData[] = round($totalRevenue, 1);
         }
         
         return [
-            'categories' => array_slice($months, 0, 5), // Show first 5 months for now
-            'data' => array_slice($monthlyData, 0, 5)
+            'categories' => $months,
+            'data' => $monthlyData
         ];
     }
     
@@ -70,21 +76,21 @@ class BumdesLaporanController extends Controller
      */
     private function getUnitPopulerData($year)
     {
-        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei'];
+        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $rentalData = [];
         $gasData = [];
         
-        for ($month = 1; $month <= 5; $month++) {
+        for ($month = 1; $month <= 12; $month++) {
             // Count rental orders
             $rentalCount = RentalBooking::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+                ->where('status', '!=', 'cancelled')
                 ->count();
             
             // Count gas orders
             $gasCount = GasOrder::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+                ->where('status', '!=', 'cancelled')
                 ->count();
             
             $rentalData[] = $rentalCount;
@@ -110,27 +116,36 @@ class BumdesLaporanController extends Controller
         // Rental Equipment Revenue
         $rentalRevenue = RentalBooking::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+            ->where('status', '!=', 'cancelled')
             ->sum('total_amount');
         
         $rentalTransactions = RentalBooking::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+            ->where('status', '!=', 'cancelled')
             ->count();
         
         // Gas Sales Revenue
         $gasRevenue = GasOrder::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+            ->where('status', '!=', 'cancelled')
             ->sum(DB::raw('price * quantity'));
         
         $gasTransactions = GasOrder::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+            ->where('status', '!=', 'cancelled')
+            ->count();
+
+        // Manual Reports Revenue
+        $manualRevenue = ManualReport::whereYear('transaction_date', $year)
+            ->whereMonth('transaction_date', $month)
+            ->sum(DB::raw('amount * quantity'));
+        
+        $manualTransactions = ManualReport::whereYear('transaction_date', $year)
+            ->whereMonth('transaction_date', $month)
             ->count();
         
-        $totalRevenue = $rentalRevenue + $gasRevenue;
-        $totalTransactions = $rentalTransactions + $gasTransactions;
+        $totalRevenue = $rentalRevenue + $gasRevenue + $manualRevenue;
+        $totalTransactions = $rentalTransactions + $gasTransactions + $manualTransactions;
         
         return [
             'rental' => [

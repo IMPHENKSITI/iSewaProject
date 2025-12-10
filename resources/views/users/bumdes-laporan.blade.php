@@ -39,9 +39,7 @@
                             <span class="bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">BUMDes</span>
                         </h3>
                         <select id="kinerja-year" class="px-4 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                            <option value="{{ $year }}">{{ $year }}</option>
-                            <option value="{{ $year - 1 }}">{{ $year - 1 }}</option>
-                            <option value="{{ $year - 2 }}">{{ $year - 2 }}</option>
+                            <option value="2025">2025</option>
                         </select>
                     </div>
                     <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-100">
@@ -62,9 +60,7 @@
                             <span class="bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">Populer</span>
                         </h3>
                         <select id="unit-year" class="px-4 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                            <option value="{{ $year }}">{{ $year }}</option>
-                            <option value="{{ $year - 1 }}">{{ $year - 1 }}</option>
-                            <option value="{{ $year - 2 }}">{{ $year - 2 }}</option>
+                            <option value="2025">2025</option>
                         </select>
                     </div>
                     <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-5 mb-5 border border-gray-100">
@@ -232,6 +228,18 @@
         initKinerjaChart();
         initUnitChart();
         initPendapatanPieChart();
+
+        // Handle Month Change for Total Pendapatan
+        const monthSelect = document.getElementById('pendapatan-month');
+        if (monthSelect) {
+            monthSelect.addEventListener('change', function() {
+                const selectedMonth = this.value;
+                const url = new URL(window.location.href);
+                url.searchParams.set('month', selectedMonth);
+                url.searchParams.set('year', '2025'); // Ensure year is 2025
+                window.location.href = url.toString();
+            });
+        }
     });
 
     // Kinerja BUMDes Chart

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\RentalBooking;
 use App\Models\GasOrder;
+use App\Models\ManualReport;
 use Illuminate\Support\Facades\DB;
 
 class BerandaController extends Controller
@@ -28,28 +29,33 @@ class BerandaController extends Controller
     }
     
     /**
-     * Get Kinerja BUMDes data - Monthly revenue from both rental and gas
+     * Get Kinerja BUMDes data - Monthly revenue from both rental and gas + Manual Reports
      */
     private function getKinerjaData($year)
     {
-        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei'];
+        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $monthlyData = [];
         
-        for ($month = 1; $month <= 5; $month++) {
-            // Get rental revenue for this month
+        for ($month = 1; $month <= 12; $month++) {
+            // Get rental revenue for this month (excluding cancelled)
             $rentalRevenue = RentalBooking::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+                ->where('status', '!=', 'cancelled')
                 ->sum('total_amount');
             
-            // Get gas revenue for this month
+            // Get gas revenue for this month (excluding cancelled)
             $gasRevenue = GasOrder::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+                ->where('status', '!=', 'cancelled')
                 ->sum(DB::raw('price * quantity'));
+
+            // Get Manual Report revenue for this month
+            $manualRevenue = ManualReport::whereYear('transaction_date', $year)
+                ->whereMonth('transaction_date', $month)
+                ->sum(DB::raw('amount * quantity'));
             
             // Total revenue in millions
-            $totalRevenue = ($rentalRevenue + $gasRevenue) / 1000000;
+            $totalRevenue = ($rentalRevenue + $gasRevenue + $manualRevenue) / 1000000;
             
             $monthlyData[] = round($totalRevenue, 1);
         }
@@ -65,21 +71,21 @@ class BerandaController extends Controller
      */
     private function getUnitPopulerData($year)
     {
-        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei'];
+        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         $rentalData = [];
         $gasData = [];
         
-        for ($month = 1; $month <= 5; $month++) {
+        for ($month = 1; $month <= 12; $month++) {
             // Count rental orders
             $rentalCount = RentalBooking::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+                ->where('status', '!=', 'cancelled')
                 ->count();
             
             // Count gas orders
             $gasCount = GasOrder::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'disetujui', 'sedang_berlangsung'])
+                ->where('status', '!=', 'cancelled')
                 ->count();
             
             $rentalData[] = $rentalCount;

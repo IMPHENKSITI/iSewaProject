@@ -317,22 +317,8 @@ class RequestController extends Controller
                     $order->completion_time = now();
                 }
 
-                // RETURN STOCK for rental (not for gas!)
-                if ($type === 'rental') {
-                    $barang = $order->barang;
-                    $quantity = $order->quantity;
-
-                    // Increase stock back
-                    $barang->increaseStock($quantity);
-
-                    // Send rental completed notification to user
-                    $notificationService->notifyRentalCompleted($order);
-
-                    // Check if stock is still low after return
-                    if ($barang->stok < 5 && $barang->stok > 0) {
-                        $notificationService->notifyLowStock($barang, 'barang', $barang->stok);
-                    }
-                }
+                // Stock return logic moved to returnRental method
+                // to support explicit return date input
                 break;
         }
 
@@ -481,5 +467,61 @@ class RequestController extends Controller
             'success' => true,
             'message' => $message
         ]);
+    }
+    public function returnRental(Request $request, $id)
+    {
+        $request->validate([
+            'return_time' => 'required|date',
+        ]);
+
+        $notificationService = new NotificationService();
+        $order = \App\Models\RentalBooking::with('barang')->findOrFail($id);
+
+        if ($order->status === 'completed') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pesanan sudah selesai sebelumnya.'
+            ], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Update times
+            $order->return_time = $request->return_time;
+            $order->completion_time = $request->return_time;
+            $order->status = 'completed';
+            $order->save();
+
+            // RETURN STOCK 
+            $barang = $order->barang;
+            $quantity = $order->quantity;
+
+            // Increase stock back
+            $barang->increaseStock($quantity);
+
+            // Notification
+            $notificationService->notifyRentalCompleted($order);
+
+            // Check low stock
+            if ($barang->stok < 5 && $barang->stok > 0) {
+                $notificationService->notifyLowStock($barang, 'barang', $barang->stok);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Alat berhasil dikembalikan dan stok diperbarui',
+                'return_time' => $request->return_time
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -100,7 +100,7 @@
                                             'approved' => ['text' => 'Disetujui', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'being_prepared' => ['text' => 'Dipersiapkan', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
                                             'in_delivery' => ['text' => 'Dalam Pengiriman', 'color' => 'text-blue-600', 'dot' => 'bg-blue-600'],
-                                            'arrived' => ['text' => 'Tiba', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
+                                            'arrived' => ['text' => 'Sedang Disewa', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                             'cancelled' => ['text' => 'Dibatalkan', 'color' => 'text-red-600', 'dot' => 'bg-red-600'],
                                             'rejected' => ['text' => 'Ditolak', 'color' => 'text-red-600', 'dot' => 'bg-red-600'],
                                             'returned' => ['text' => 'Dikembalikan', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
@@ -261,6 +261,11 @@
                                                 ];
                                                 
                                                 $currentStatusIndex = array_search($booking->status, array_column($timeline, 'status'));
+                                                if ($booking->status === 'completed') {
+                                                    $currentStatusIndex = 3; // Max index for arrived
+                                                }
+                                                // Handle false return if search fails (and not completed)
+                                                if ($currentStatusIndex === false) $currentStatusIndex = 0;
                                             @endphp
                                             
                                             @foreach($timeline as $index => $item)

@@ -21,8 +21,6 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="javascript:void(0);">2025</a></li>
-                            <li><a class="dropdown-item" href="javascript:void(0);">2024</a></li>
-                            <li><a class="dropdown-item" href="javascript:void(0);">2023</a></li>
                         </ul>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#manualTransactionModal">
                             <i class="bx bx-plus me-1"></i> Tambah Laporan Manual
@@ -629,11 +627,11 @@
                 const unitOptions = {
                     series: [{
                             name: 'Unit Penyewaan Alat',
-                            data: {!! json_encode(array_slice(array_values($monthlyIncome), 0, 5)) !!}
+                            data: {!! json_encode(array_values($monthlyIncome)) !!} // Full data
                         },
                         {
                             name: 'Unit Penjualan Gas',
-                            data: {!! json_encode(array_slice(array_values($monthlyIncome), 0, 5)) !!}
+                            data: {!! json_encode(array_values($monthlyIncome)) !!} // Full data
                         }
                     ],
                     chart: {
@@ -660,7 +658,7 @@
                         enabled: false
                     },
                     xaxis: {
-                        categories: {!! json_encode(array_slice(array_keys($monthlyIncome), 0, 5)) !!},
+                        categories: {!! json_encode(array_keys($monthlyIncome)) !!}, // Full months
                         labels: {
                             style: {
                                 colors: '#374151',
@@ -676,13 +674,13 @@
                         }
                     },
                     yaxis: {
-                        min: 0,
-                        max: 35,
-                        tickAmount: 7,
                         labels: {
                             style: {
                                 colors: '#6b7280',
                                 fontSize: '11px'
+                            },
+                             formatter: function(val) {
+                                return val.toFixed(0);
                             }
                         }
                     },
@@ -718,11 +716,11 @@
                 const totalRevenueOptions = {
                     series: [{
                             name: 'Pendapatan 2025',
-                            data: {!! json_encode(array_slice(array_values($monthlyIncome), 0, 7)) !!}
+                            data: {!! json_encode(array_values($monthlyIncome)) !!}
                         },
                         {
                             name: 'Pengeluaran 2025',
-                            data: [0, 0, 0, 0, 0, 0, 0]
+                            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] // Placeholder for 12 months
                         }
                     ],
                     chart: {
@@ -779,7 +777,7 @@
                         }
                     },
                     xaxis: {
-                        categories: {!! json_encode(array_slice(array_keys($monthlyIncome), 0, 7)) !!},
+                        categories: {!! json_encode(array_keys($monthlyIncome)) !!},
                         labels: {
                             style: {
                                 fontSize: '13px',

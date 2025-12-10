@@ -240,8 +240,6 @@
                                     <select
                                         class="px-4 py-2 text-sm border border-white/40 rounded-lg bg-white/60 backdrop-blur-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/80 transition-all">
                                         <option>2025</option>
-                                        <option>2024</option>
-                                        <option>2023</option>
                                     </select>
                                 </div>
                             </div>
@@ -259,8 +257,6 @@
                                 <select
                                     class="px-4 py-2 text-sm border border-white/40 rounded-lg bg-white/60 backdrop-blur-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/80 transition-all">
                                     <option>2025</option>
-                                    <option>2024</option>
-                                    <option>2023</option>
                                 </select>
                             </div>
                             <div class="bg-white/30 backdrop-blur-sm rounded-2xl p-5 mb-5 border border-white/20">
@@ -658,7 +654,7 @@
 
             // Charts initialization
             initCharts() {
-                if (typeof ApexCharts === 'undefined') return;
+                // if (typeof ApexCharts === 'undefined') return; // Removed to allow init even if lib loads late
 
                 this.initKinerjaChart();
                 this.initUnitChart();
@@ -727,8 +723,6 @@
                         }
                     },
                     yaxis: {
-                        min: 15,
-                        max: 25,
                         tickAmount: 5,
                         labels: {
                             formatter: (val) => val.toFixed(1),
@@ -826,9 +820,6 @@
                         }
                     },
                     yaxis: {
-                        min: 0,
-                        max: 35,
-                        tickAmount: 7,
                         labels: {
                             style: {
                                 colors: '#6b7280',
@@ -960,7 +951,9 @@
             },
         };
         // Initialize
-        BerandaPage.init();
+        document.addEventListener('DOMContentLoaded', () => {
+            BerandaPage.init();
+        });
 
         // Check if user just logged out and show login modal
         @if(session('logout_success'))

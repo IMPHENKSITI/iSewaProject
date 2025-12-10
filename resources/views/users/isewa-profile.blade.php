@@ -181,7 +181,7 @@
                                 <div class="relative mb-4">
                                     <div class="p-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6 0%, #60a5fa 50%, #FCD34D 100%);">
                                         <div class="w-32 h-32 rounded-full overflow-hidden bg-white p-1">
-                                            <img src="{{ asset('User/img/avatars/pria.png') }}" 
+                                            <img src="{{ asset('User/img/avatars/wahid1.jpg') }}" 
                                                  alt="M.Wahid Riono" 
                                                  class="w-full h-full object-cover rounded-full">
                                         </div>

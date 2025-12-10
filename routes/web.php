@@ -246,6 +246,8 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         
         // Order Status Management Routes
         Route::post('/permintaan-pengajuan/{type}/{id}/update-status', [\App\Http\Controllers\Admin\RequestController::class, 'updateStatus'])->name('admin.aktivitas.update-status');
+        Route::post('/permintaan-pengajuan/rental/{id}/return', [\App\Http\Controllers\Admin\RequestController::class, 'returnRental'])->name('admin.aktivitas.permintaan-pengajuan.return');
+        
         Route::post('/permintaan-pengajuan/{type}/{id}/delivery-proof', [\App\Http\Controllers\Admin\RequestController::class, 'uploadDeliveryProof'])->name('admin.aktivitas.delivery-proof');
         Route::post('/permintaan-pengajuan/{type}/{id}/cancellation/{action}', [\App\Http\Controllers\Admin\RequestController::class, 'handleCancellation'])->name('admin.aktivitas.cancellation');
 
