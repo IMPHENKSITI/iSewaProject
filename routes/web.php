@@ -103,19 +103,19 @@ Route::post('/notifikasi/read-all', [App\Http\Controllers\User\NotificationContr
     ->name('user.notifications.readAll')
     ->middleware('role:user');
 
-// Receipt Routes
+// Route Bukti Transaksi
 Route::get('/receipt/rental/{id}/view', [App\Http\Controllers\User\ReceiptController::class, 'viewRentalReceipt'])
     ->name('receipt.rental.view')
-    ->middleware('role:user');
+    ->middleware('role:user,admin');
 Route::get('/receipt/rental/{id}/download', [App\Http\Controllers\User\ReceiptController::class, 'downloadRentalReceipt'])
     ->name('receipt.rental.download')
-    ->middleware('role:user');
+    ->middleware('role:user,admin');
 Route::get('/receipt/gas/{id}/view', [App\Http\Controllers\User\ReceiptController::class, 'viewGasReceipt'])
     ->name('receipt.gas.view')
-    ->middleware('role:user');
+    ->middleware('role:user,admin');
 Route::get('/receipt/gas/{id}/download', [App\Http\Controllers\User\ReceiptController::class, 'downloadGasReceipt'])
     ->name('receipt.gas.download')
-    ->middleware('role:user');
+    ->middleware('role:user,admin');
 
 
 
@@ -149,15 +149,8 @@ Route::post('/profile/resend-otp', [App\Http\Controllers\User\ProfileController:
     ->middleware('role:user');
 
 
-Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.post');
-Route::get('/admin/register', [AuthController::class, 'showRegisterForm'])->name('admin.register');
-Route::post('/admin/register', [AuthController::class, 'register'])->name('admin.register.post');
-Route::get('/admin/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('admin.forgot-password');
-Route::post('/admin/forgot-password', [AuthController::class, 'forgotPassword'])->name('admin.forgot-password.post');
-Route::get('/admin/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('admin.reset-password');
-Route::post('/admin/reset-password', [AuthController::class, 'resetPassword'])->name('admin.reset-password.post');
-Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+// Autentikasi Admin menggunakan route API yang sama dengan autentikasi pengguna
+// Pengguna Admin login melalui /auth/login dan dialihkan berdasarkan peran (role)
 
 
 Route::get('/files/{id}/{action}', function ($id, $action) {
@@ -170,13 +163,13 @@ Route::get('/maintenance', [DashboardController::class, 'maintenance'])->name('m
 
 
 
-// Admin Routes
+// Route Admin
 Route::prefix('admin')->middleware('role:admin')->group(function () {
-    // Dashboard
+    // Dashboard (Papan Kontrol)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/search', [DashboardController::class, 'globalSearch'])->name('admin.search');
     
-    // Settings
+    // Pengaturan
     Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings');
     Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
     Route::get('/settings/connections', [DashboardController::class, 'connections'])->name('admin.settings.connections');
@@ -208,7 +201,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::put('/pengaturan-sistem', [SystemSettingController::class, 'update'])->name('admin.system-settings.update');
     Route::delete('/pengaturan-sistem/reset', [SystemSettingController::class, 'reset'])->name('admin.system-settings.reset');
     
-    // Unit Routes
+    // Route Unit
     Route::prefix('unit')->group(function () {
         // Penyewaan Alat
         Route::resource('penyewaan', UnitPenyewaanController::class)->names([
@@ -233,7 +226,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         ]);
     });
     
-    // Aktivitas Routes
+    // Route Aktivitas
     Route::prefix('aktivitas')->group(function () {
         Route::get('/kajian', [DashboardController::class, 'index'])->name('admin.aktivitas.kajian.index');
         Route::get('/transaksi', [DashboardController::class, 'index'])->name('admin.aktivitas.transaksi.index');
@@ -244,7 +237,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::post('/permintaan-pengajuan/{id}/{type}/approve', [\App\Http\Controllers\Admin\RequestController::class, 'approve'])->name('admin.aktivitas.permintaan-pengajuan.approve');
         Route::post('/permintaan-pengajuan/{id}/{type}/reject', [\App\Http\Controllers\Admin\RequestController::class, 'reject'])->name('admin.aktivitas.permintaan-pengajuan.reject');
         
-        // Order Status Management Routes
+        // Route Manajemen Status Pesanan
         Route::post('/permintaan-pengajuan/{type}/{id}/update-status', [\App\Http\Controllers\Admin\RequestController::class, 'updateStatus'])->name('admin.aktivitas.update-status');
         Route::post('/permintaan-pengajuan/rental/{id}/return', [\App\Http\Controllers\Admin\RequestController::class, 'returnRental'])->name('admin.aktivitas.permintaan-pengajuan.return');
         
@@ -258,19 +251,19 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/bukti-transaksi/{id}/{type}/download', [\App\Http\Controllers\Admin\TransactionController::class, 'downloadProof'])->name('admin.aktivitas.bukti-transaksi.download');
     });
     
-    // Laporan Routes
+    // Route Laporan
     Route::prefix('laporan')->group(function () {
         Route::get('/transaksi', [\App\Http\Controllers\Admin\ReportController::class, 'transactions'])->name('admin.laporan.transaksi');
         Route::get('/pendapatan', [\App\Http\Controllers\Admin\ReportController::class, 'income'])->name('admin.laporan.pendapatan');
         Route::get('/log', [\App\Http\Controllers\Admin\ReportController::class, 'logs'])->name('admin.laporan.log');
         
-        // Manual Transaction Routes
+        // Route Transaksi Manual
         Route::post('/manual-transaction', [\App\Http\Controllers\Admin\ReportController::class, 'storeManualTransaction'])->name('admin.laporan.manual.store');
         Route::put('/manual-transaction/{id}', [\App\Http\Controllers\Admin\ReportController::class, 'updateManualTransaction'])->name('admin.laporan.manual.update');
         Route::delete('/manual-transaction/{id}', [\App\Http\Controllers\Admin\ReportController::class, 'destroyManualTransaction'])->name('admin.laporan.manual.destroy');
     });
     
-    // iSewa Routes
+    // Route iSewa
     Route::prefix('isewa')->group(function () {
         Route::get('/profile', [\App\Http\Controllers\Admin\SettingController::class, 'showIsewaProfile'])->name('admin.isewa.profile');
         Route::get('/developer/{name}', [\App\Http\Controllers\Admin\SettingController::class, 'showDeveloperProfile'])->name('admin.isewa.developer.profile');

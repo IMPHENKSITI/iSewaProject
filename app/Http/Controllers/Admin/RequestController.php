@@ -30,6 +30,8 @@ class RequestController extends Controller
                 $rentalQuery->whereIn('status', ['confirmed', 'approved', 'being_prepared', 'in_delivery', 'arrived']);
             } elseif ($status === 'completed') {
                 $rentalQuery->whereIn('status', ['completed', 'resolved', 'returned']);
+            } elseif ($status === 'rejected') {
+                $rentalQuery->whereIn('status', ['cancelled', 'rejected']);
             } else {
                 $rentalQuery->where('status', $status);
             }
@@ -44,6 +46,8 @@ class RequestController extends Controller
                 $gasQuery->whereIn('status', ['confirmed', 'approved', 'being_prepared', 'in_delivery', 'arrived']);
             } elseif ($status === 'completed') {
                 $gasQuery->whereIn('status', ['completed', 'resolved']);
+            } elseif ($status === 'rejected') {
+                $gasQuery->whereIn('status', ['cancelled', 'rejected']);
             } else {
                 $gasQuery->where('status', $status);
             }
@@ -70,10 +74,11 @@ class RequestController extends Controller
             'total' => RentalBooking::count() + GasOrder::count(),
             'pending' => RentalBooking::where('status', 'pending')->count() + GasOrder::where('status', 'pending')->count(),
             'approved' => RentalBooking::where('status', 'approved')->count() + GasOrder::where('status', 'approved')->count(),
-            'rejected' => RentalBooking::where('status', 'rejected')->count() + GasOrder::where('status', 'rejected')->count(),
+            'rejected' => RentalBooking::whereIn('status', ['cancelled', 'rejected'])->count() + GasOrder::whereIn('status', ['cancelled', 'rejected'])->count(),
             'cancellation_pending' => RentalBooking::where('cancellation_status', 'pending')->count() + GasOrder::where('cancellation_status', 'pending')->count(),
             'rental_total' => RentalBooking::count(),
             'gas_total' => GasOrder::count(),
+            'active_rental_count' => RentalBooking::whereIn('status', ['confirmed', 'being_prepared', 'in_delivery', 'arrived'])->sum('quantity'),
         ];
 
         return view('admin.aktivitas.requests', compact('rentalRequests', 'gasOrders', 'stats', 'status', 'category'));
@@ -326,25 +331,11 @@ class RequestController extends Controller
         $order->status = $newStatus;
         $order->save();
 
-        // Send notification to user about status change
-        $statusLabels = [
-            'confirmed' => 'dikonfirmasi',
-            'being_prepared' => 'sedang dipersiapkan',
-            'in_delivery' => 'dalam proses pengiriman',
-            'arrived' => 'telah tiba',
-            'completed' => 'selesai',
-        ];
-
-        // Only send general status update notification if not 'completed' (for completed we already sent specific notification above)
-        if ($newStatus !== 'completed') {
-            Notification::create([
-                'title' => 'Status Pesanan Diperbarui',
-                'message' => "Pesanan Anda #{$order->order_number} telah {$statusLabels[$newStatus]}.",
-                'type' => 'status_update',
-                'user_id' => $order->user_id,
-                'admin_id' => auth()->id(),
-            ]);
-        }
+        // Only send specific status update notification if not 'completed' 
+        // (for completed we might want to handle it differently or allow the switch case in service to handle it)
+        // Based on user request complted also has specific message
+        
+        $notificationService->notifyOrderStatusUpdate($order, $newStatus);
 
         return response()->json([
             'success' => true,

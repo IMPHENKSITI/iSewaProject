@@ -17,8 +17,8 @@ class ReceiptController extends Controller
     {
         $booking = RentalBooking::findOrFail($id);
         
-        // Check if user owns this booking
-        if ($booking->user_id !== auth()->id()) {
+        // Check if user owns this booking or is admin
+        if ($booking->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
@@ -41,8 +41,8 @@ class ReceiptController extends Controller
     {
         $booking = RentalBooking::findOrFail($id);
         
-        // Check if user owns this booking
-        if ($booking->user_id !== auth()->id()) {
+        // Check if user owns this booking or is admin
+        if ($booking->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
@@ -63,8 +63,8 @@ class ReceiptController extends Controller
     {
         $order = GasOrder::findOrFail($id);
         
-        // Check if user owns this order
-        if ($order->user_id !== auth()->id()) {
+        // Check if user owns this order or is admin
+        if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
@@ -87,8 +87,8 @@ class ReceiptController extends Controller
     {
         $order = GasOrder::findOrFail($id);
         
-        // Check if user owns this order
-        if ($order->user_id !== auth()->id()) {
+        // Check if user owns this order or is admin
+        if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         

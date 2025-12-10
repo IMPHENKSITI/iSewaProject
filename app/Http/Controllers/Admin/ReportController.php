@@ -9,28 +9,55 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Models\ActivityLog;
 
 class ReportController extends Controller
 {
-    public function transactions()
+    public function transactions(Request $request)
     {
-        $rentalRequests = RentalBooking::with('user')->orderByDesc('created_at')->get();
-        $gasOrders = GasOrder::with('user')->orderByDesc('created_at')->get();
+        $status = $request->get('status');
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
 
-        return view('admin.laporan.transactions', compact('rentalRequests', 'gasOrders'));
+        // Rental Query
+        $rentalQuery = RentalBooking::with('user')->orderByDesc('created_at');
+        
+        // Gas Query
+        $gasQuery = GasOrder::with('user')->orderByDesc('created_at');
+
+        // Apply Filters
+        if ($status && $status !== 'all') {
+            $rentalQuery->where('status', $status);
+            $gasQuery->where('status', $status);
+        }
+
+        if ($startDate) {
+            $rentalQuery->whereDate('created_at', '>=', $startDate);
+            $gasQuery->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $rentalQuery->whereDate('created_at', '<=', $endDate);
+            $gasQuery->whereDate('created_at', '<=', $endDate);
+        }
+
+        $rentalRequests = $rentalQuery->get();
+        $gasOrders = $gasQuery->get();
+
+        return view('admin.laporan.transactions', compact('rentalRequests', 'gasOrders', 'status', 'startDate', 'endDate'));
     }
 
     public function income(Request $request)
     {
-        $year = $request->input('year', 2025);
+        $year = $request->input('year', date('Y'));
 
         // Hitung total pendapatan per unit dari sistem (Yearly Filter)
         $totalPenyewaan = RentalBooking::whereYear('created_at', $year)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->sum('total_amount');
             
         $totalGas = GasOrder::whereYear('created_at', $year)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->selectRaw('SUM(price * quantity) as total')
             ->value('total') ?? 0;
         
@@ -59,7 +86,7 @@ class ReportController extends Controller
         // Pendapatan dari sistem (RentalBooking)
         $rentalMonthly = RentalBooking::selectRaw('SUM(total_amount) as total, MONTH(created_at) as month')
             ->whereYear('created_at', $year)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->groupBy('month')
             ->pluck('total', 'month');
 
@@ -70,7 +97,7 @@ class ReportController extends Controller
         // Pendapatan dari sistem (GasOrder)
         $gasMonthly = GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
             ->whereYear('created_at', $year)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->groupBy('month')
             ->pluck('total', 'month');
 
@@ -106,12 +133,18 @@ class ReportController extends Controller
 
         // Hitung total transaksi untuk Donut Chart (Yearly Filter)
         $rentalCount = RentalBooking::whereYear('created_at', $year)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
             
         $gasCount = GasOrder::whereYear('created_at', $year)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
+            
+        // Get Total Pendapatan data for the detailed chart
+        $totalPendapatanData = $this->getTotalPendapatanData();
+        
+        // Get Unit Populer data (rental vs gas comparison)
+        $unitPopulerData = $this->getUnitPopulerData($year);
 
         return view('admin.laporan.income', compact(
             'totalPenyewaan',
@@ -125,14 +158,137 @@ class ReportController extends Controller
             'manualLainnya',
             'rentalCount',
             'gasCount',
-            'year'
+            'year',
+            'totalPendapatanData',
+            'unitPopulerData'
         ));
     }
-
-    public function logs()
+    
+    /**
+     * Get Unit Populer data - Comparison between rental and gas sales
+     */
+    private function getUnitPopulerData($year)
     {
-        // Ambil log aktivitas dari database (misalnya dari tabel `activity_log`)
-        $logs = \DB::table('activity_log')->orderByDesc('created_at')->get();
+        $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        $rentalData = [];
+        $gasData = [];
+        
+        for ($month = 1; $month <= 12; $month++) {
+            // Count rental orders
+            $rentalCount = RentalBooking::whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+                ->count();
+            
+            // Count gas orders
+            $gasCount = GasOrder::whereYear('created_at', $year)
+                ->whereMonth('created_at', $month)
+                ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+                ->count();
+            
+            $rentalData[] = $rentalCount;
+            $gasData[] = $gasCount;
+        }
+        
+        return [
+            'categories' => $months,
+            'rental' => $rentalData,
+            'gas' => $gasData
+        ];
+    }
+
+    /**
+     * Get Total Pendapatan data - Revenue breakdown by unit
+     */
+    private function getTotalPendapatanData()
+    {
+        // Get current month/year or from request
+        $month = request('month', date('m'));
+        $year = request('year', date('Y'));
+        
+        // Rental Equipment Revenue
+        $rentalRevenue = RentalBooking::whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->sum('total_amount');
+        
+        $rentalTransactions = RentalBooking::whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->count();
+        
+        // Gas Sales Revenue
+        $gasRevenue = GasOrder::whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->sum(\DB::raw('price * quantity'));
+        
+        $gasTransactions = GasOrder::whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->count();
+
+        // Manual Reports Revenue
+        $manualRevenue = ManualReport::whereYear('transaction_date', $year)
+            ->whereMonth('transaction_date', $month)
+            ->sum(\DB::raw('amount * quantity'));
+        
+        $manualTransactions = ManualReport::whereYear('transaction_date', $year)
+            ->whereMonth('transaction_date', $month)
+            ->count();
+        
+        $totalRevenue = $rentalRevenue + $gasRevenue + $manualRevenue;
+        $totalTransactions = $rentalTransactions + $gasTransactions + $manualTransactions;
+        
+        return [
+            'rental' => [
+                'revenue' => $rentalRevenue,
+                'transactions' => $rentalTransactions,
+                'percentage' => $totalRevenue > 0 ? round(($rentalRevenue / $totalRevenue) * 100, 1) : 0
+            ],
+            'gas' => [
+                'revenue' => $gasRevenue,
+                'transactions' => $gasTransactions,
+                'percentage' => $totalRevenue > 0 ? round(($gasRevenue / $totalRevenue) * 100, 1) : 0
+            ],
+            'total' => [
+                'revenue' => $totalRevenue,
+                'transactions' => $totalTransactions
+            ],
+            'month' => $month,
+            'year' => $year
+        ];
+    }
+
+
+
+    public function logs(Request $request)
+    {
+        $query = ActivityLog::with('user')->orderByDesc('created_at');
+
+        // Search (Description or User Name)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                  ->orWhere('action', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by Action
+        if ($request->filled('action')) {
+            $query->where('action', 'like', "%{$request->action}%");
+        }
+
+        // Filter by Date
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $logs = $query->paginate(10)->withQueryString();
 
         return view('admin.laporan.logs', compact('logs'));
     }
@@ -148,7 +304,7 @@ class ReportController extends Controller
             'description' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'payment_method' => 'required|in:tunai,transfer',
+            'payment_method' => 'required|in:tunai',
             'transaction_date' => 'required|date',
             'proof_image' => 'nullable|image|max:2048', // Max 2MB
         ], [
@@ -219,7 +375,7 @@ class ReportController extends Controller
             'description' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'payment_method' => 'required|in:tunai,transfer',
+            'payment_method' => 'required|in:tunai',
             'transaction_date' => 'required|date',
             'proof_image' => 'nullable|image|max:2048',
         ]);

@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="{{ asset('Admin/css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('Admin/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('Admin/vendor/libs/apex-charts/apex-charts.css') }}" />
-    <!-- Custom CSS for Styling -->
+    <!-- CSS Kustom untuk Gaya -->
     <style>
         .card {
             transition: box-shadow 0.3s ease;
@@ -108,7 +108,7 @@
             transform: scale(1.1);
         }
 
-        /* Smooth scroll animation */
+        /* Animasi scroll halus */
         .animate-fade-in {
             opacity: 0;
             transform: translateY(20px);
@@ -120,7 +120,7 @@
             transform: translateY(0);
         }
 
-        /* Chart container styling */
+        /* Gaya wadah grafik */
         .chart-container {
             height: 300px;
             display: flex;
@@ -134,7 +134,7 @@
             margin: 0 auto;
         }
 
-        /* Notification badges */
+        /* Lencana notifikasi */
         .notification-badge {
             position: relative;
         }
@@ -155,7 +155,7 @@
             font-weight: bold;
         }
 
-        /* Sidebar styling */
+        /* Gaya sidebar */
         .layout-menu {
             transition: all 0.3s ease;
         }
@@ -168,7 +168,7 @@
             transform: rotate(180deg);
         }
 
-        /* Financial stats cards */
+        /* Kartu statistik keuangan */
         .financial-stat-card {
             transition: all 0.3s ease;
         }
@@ -177,7 +177,7 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
-        /* Product card styling */
+        /* Gaya kartu produk */
         .product-card {
             transition: all 0.3s ease;
             border: 1px solid #e9ecef;
@@ -188,7 +188,7 @@
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
         }
 
-        /* Partnership card styling */
+        /* Gaya kartu kemitraan */
         .partnership-card {
             transition: all 0.3s ease;
             border: 1px solid #e9ecef;
@@ -199,12 +199,12 @@
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
         }
 
-        /* Card header styling */
+        /* Gaya header kartu */
         .card-header {
             border-bottom: 1px solid #e9ecef;
         }
 
-        /* Button styling */
+        /* Gaya tombol */
         .btn {
             transition: all 0.3s ease;
         }
@@ -214,7 +214,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* New styling for the three-column layout */
+        /* Gaya baru untuk tata letak tiga kolom */
         .dashboard-stats-row {
             display: flex;
             gap: 20px;
@@ -276,17 +276,17 @@
             color: #6c757d;
         }
 
-        /* Fix for dropdown z-index */
+        /* Perbaikan z-index dropdown */
         .dropdown-menu {
             z-index: 10000 !important;
         }
 
-        /* Remove product ranking badge */
+        /* Hapus lencana peringkat produk */
         .product-rank {
             display: none;
         }
 
-        /* Product image styling */
+        /* Gaya gambar produk */
         .product-image {
             width: 80px;
             height: 80px;
@@ -305,17 +305,17 @@
             font-weight: bold;
         }
 
-        /* Laporan BUMDes button styling */
+        /* Gaya tombol Laporan BUMDes */
         .laporan-bumdes-btn {
             margin-top: 1rem;
         }
 
-        /* Gap between sections */
+        /* Jarak antar bagian */
         .section-gap {
             margin-bottom: 2rem;
         }
 
-        /* Navbar avatar default styling */
+        /* Gaya default avatar navbar */
         .navbar-avatar-default {
             width: 40px;
             height: 40px;
@@ -331,7 +331,7 @@
             color: white;
         }
 
-        /* Colored Toast SweetAlert2 */
+        /* Toast Berwarna SweetAlert2 */
         .colored-toast.swal2-icon-success {
             background-color: #28c76f !important;
         }
@@ -360,7 +360,7 @@
             color: white !important;
         }
 
-        /* Ensure SweetAlert z-index is higher than anything else (Navbar, Sidebar) */
+        /* Pastikan z-index SweetAlert lebih tinggi dari yang lain (Navbar, Sidebar) */
         .swal2-container {
             z-index: 100000 !important;
         }
@@ -605,12 +605,12 @@
                                         <div class="dropdown-divider"></div>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('admin.logout') }}"
+                                        <a class="dropdown-item" href="{{ route('auth.logout') }}"
                                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             <i class="bx bx-power-off me-2"></i>
                                             <span class="align-middle">Log Out</span>
                                         </a>
-                                        <form id="logout-form" action="{{ route('admin.logout') }}" method="POST"
+                                        <form id="logout-form" action="{{ route('auth.logout') }}" method="POST"
                                             class="d-none">
                                             @csrf
                                         </form>
@@ -648,12 +648,12 @@
             <script src="{{ asset('Admin/js/main.js') }}"></script>
             <script src="{{ asset('Admin/js/dashboards-analytics.js') }}"></script>
             <script async defer src="https://buttons.github.io/buttons.js"></script>
-            <!-- Script for animations and functionality -->
+            <!-- Skrip untuk animasi dan fungsionalitas -->
             <script>
-                // Notification functions are now defined in dashboard/index.blade.php
-                // using SweetAlert2 for better UX
+                // Fungsi notifikasi sekarang didefinisikan di dashboard/index.blade.php
+                // menggunakan SweetAlert2 untuk UX yang lebih baik
 
-                // Function to generate report
+                // Fungsi untuk menghasilkan laporan
                 function generateReport() {
                     showToast('info',
                         'Laporan PDF sedang diproses. Fitur ini akan terhubung ke backend Laravel untuk menghasilkan file.');
@@ -663,10 +663,10 @@
                     }, 2000);
                 }
 
-                // Function to show toast notifications
+                // Fungsi untuk menampilkan notifikasi toast
                 function showToast(type, message) {
                     if (typeof Swal !== 'undefined') {
-                        // Map bootstrap types to sweetalert types
+                        // Petakan tipe bootstrap ke tipe sweetalert
                         const iconType = type === 'danger' ? 'error' : type;
                         
                         Swal.fire({
@@ -691,7 +691,7 @@
                     }
                 }
 
-                // Animation on scroll
+                // Animasi saat digulir
                 document.addEventListener('DOMContentLoaded', function() {
                     const animateElements = document.querySelectorAll('.animate-fade-in');
 
@@ -710,7 +710,7 @@
                     });
                 });
 
-                // Add smooth scrolling to anchor links
+                // Tambahkan scroll halus ke link jangkar
                 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                     anchor.addEventListener('click', function(e) {
                         e.preventDefault();
@@ -720,7 +720,7 @@
                         });
                     });
                 });
-            // ⭐ Handle Session Flash Messages on Page Load
+            // ⭐ Tangani Pesan Flash Sesi saat Halaman Dimuat
             document.addEventListener('DOMContentLoaded', function() {
                 @if(session('success'))
                     showToast('success', "{{ session('success') }}");

@@ -18,10 +18,10 @@ class GasSalesUserController extends Controller
 
     public function show($id)
     {
-        // Fetch specific gas product
+        // Ambil data produk gas spesifik
         $item = Gas::findOrFail($id);
         
-        // Fetch system settings for location
+        // Ambil pengaturan sistem untuk lokasi
         $setting = \App\Models\SystemSetting::first();
         
         return view('users.gas-detail', compact('item', 'setting'));
@@ -29,13 +29,13 @@ class GasSalesUserController extends Controller
 
     public function booking($id)
     {
-        // Fetch specific gas product
+        // Ambil data produk gas spesifik
         $item = Gas::findOrFail($id);
         
-        // Get quantity from query parameter, default to 1
+        // Ambil jumlah dari parameter query, default ke 1
         $quantity = request()->query('quantity', 1);
         
-        // Validate quantity
+        // Validasi jumlah
         if ($quantity < 1) {
             $quantity = 1;
         }
@@ -43,7 +43,7 @@ class GasSalesUserController extends Controller
             $quantity = $item->stok;
         }
         
-        // Fetch system settings for payment methods and bank details
+        // Ambil pengaturan sistem untuk metode pembayaran dan detail bank
         $setting = \App\Models\SystemSetting::first();
         
         return view('users.gas-booking', compact('item', 'quantity', 'setting'));

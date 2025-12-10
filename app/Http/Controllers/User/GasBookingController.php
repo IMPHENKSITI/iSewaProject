@@ -24,7 +24,7 @@ class GasBookingController extends Controller
             'buyer_name' => 'required|string|max:255',
             'buyer_address' => 'required|string',
             'quantity' => 'required|integer|min:1',
-            'payment_method' => 'required|in:transfer,tunai',
+            'payment_method' => 'required|in:tunai',
             'payment_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 

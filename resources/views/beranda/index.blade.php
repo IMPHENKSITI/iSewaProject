@@ -1,17 +1,17 @@
 @extends('layouts.user')
 
 @section('page')
-    {{-- NAV --}}
+    {{-- NAVIGASI --}}
 
-    <!-- Carousel Section -->
+    <!-- Bagian Carousel -->
 
 
-    {{-- MAIN --}}<main class="flex-grow relative w-full">
+    {{-- UTAMA --}}<main class="flex-grow relative w-full">
 
-        {{-- SECTION BERANDA --}}<section id="beranda" class="relative z-10">
+        {{-- BAGIAN BERANDA --}}<section id="beranda" class="relative z-10">
             <div class="w-full mx-auto">
                 <div class="relative overflow-hidden group">
-                    <!-- Slides Container -->
+                    <!-- Wadah Slide -->
                     <div id="carousel-slides" class="flex transition-transform duration-500 ease-out">
                         <!-- Slide 1 -->
                         <div class="carousel-slide min-w-full flex-shrink-0">
@@ -60,10 +60,10 @@
                 </div>
             </div>
 
-            <!-- Search Bar with Gradient Border -->
+            <!-- Bilah Pencarian dengan Batas Gradien -->
             <div class="max-w-screen-2xl mx-auto px-5 py-8">
                 <div class="max-w-2xl mx-auto">
-                    <div class="relative group">
+                    <form action="{{ route('beranda') }}" method="GET" class="relative group">
                         <!-- Gradient Border -->
                         <div
                             class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-blue-400 to-amber-400 rounded-full opacity-80 group-hover:opacity-100 transition-opacity duration-300">
@@ -71,11 +71,11 @@
 
                         <!-- Search Input -->
                         <div class="relative flex items-center bg-white rounded-full overflow-hidden">
-                            <input type="text" placeholder="Cari"
+                            <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari produk atau kategori..."
                                 class="flex-1 px-8 py-3.5 text-gray-700 text-[15px] focus:outline-none bg-transparent">
 
                             <!-- Search Button -->
-                            <button
+                            <button type="submit"
                                 class="flex-shrink-0 px-6 py-3.5 text-blue-600 hover:text-blue-700 transition-colors duration-200">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -83,9 +83,61 @@
                                 </svg>
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results Section (Only visible if searching) -->
+            @if(isset($search) && $search)
+            <div class="max-w-7xl mx-auto px-6 py-4">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-8 relative">
+                        <h2 class="text-2xl font-bold text-gray-800">
+                            Hasil Pencarian: "{{ $search }}"
+                        </h2>
+                        <a href="{{ route('beranda') }}" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Reset Pencarian</a>
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-8 mb-16 max-w-7xl mx-auto">
+                        @forelse($searchResults as $item)
+                        <!-- Product Card -->
+                        <a href="{{ $item->link }}" class="block p-4">
+                            <div class="product-card bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 mx-auto w-full max-w-[380px]">
+                                <!-- Product Image -->
+                                <div class="product-image-wrapper mb-6 relative aspect-[4/3] overflow-hidden rounded-2xl">
+                                    <img src="{{ Str::startsWith($item->image, ['http', 'https', 'User', 'Admin']) ? asset($item->image) : asset('storage/' . $item->image) }}" 
+                                         alt="{{ $item->name }}"
+                                         class="product-image w-full h-full object-cover">
+                                </div>
+    
+                                <!-- Product Name Only -->
+                                <div class="product-info text-center">
+                                    <h3 class="product-name text-sm font-bold text-gray-800 mb-2">
+                                        {{ $item->name }}
+                                    </h3>
+                                    <!-- Optional Badge for Type -->
+                                    <span class="inline-block px-3 py-1 text-[10px] font-bold rounded-full {{ $item->type == 'rental' ? 'bg-blue-100 text-blue-600' : ($item->type == 'gas' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600') }} mt-1">
+                                            {{ $item->type == 'rental' ? 'Sewa' : ($item->type == 'gas' ? 'Beli' : 'Profil') }}
+                                    </span>
+                                    
+                                    @if($item->type == 'profile')
+                                    <p class="text-xs text-gray-500 font-medium mt-2">{{ $item->price_formatted }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </a>
+                        @empty
+                        <div class="w-full text-center py-8">
+                            <div class="bg-gray-50 rounded-lg p-8 inline-block">
+                                <i class="bx bx-search-alt text-4xl text-gray-300 mb-3 block"></i>
+                                <p class="text-gray-500">Tidak ada produk yang cocok dengan pencarian Anda.</p>
+                            </div>
+                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- Section Populer -->
             <div class="max-w-7xl mx-auto px-6 py-12">
@@ -97,52 +149,35 @@
                             Populer
                         </h2>
                     </div>
-                    <!-- Grid Cards 1x3 (Centered) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                        <!-- Card 1 - Gas LPG 3Kg -->
+                    <!-- Flex Container (Centered) -->
+                    <div class="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
+                        @forelse($popularProducts as $item)
+                        <!-- Product Card -->
                         <div class="flex flex-col items-center">
-                            <div
+                            <div onclick="window.location.href='{{ $item->link }}'"
                                 class="bg-white/80 backdrop-blur-sm rounded-lg border border-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer w-full max-w-[280px]">
                                 <div
-                                    class="aspect-square p-4 flex items-center justify-center bg-gradient-to-br from-white/50 to-blue-50/30">
-                                    <img src="{{ asset('User/img/elemen/gas.png') }}" alt="Gas LPG 3Kg"
+                                    class="aspect-square p-4 flex items-center justify-center bg-gradient-to-br from-white/50 to-blue-50/30 relative">
+                                    <img src="{{ Str::startsWith($item->image, ['http', 'https', 'User', 'Admin']) ? asset($item->image) : asset('storage/' . $item->image) }}" alt="{{ $item->name }}"
                                         class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
+                                    @if($loop->iteration <= 2)
+                                    <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                                        HOT
+                                    </span>
+                                    @endif
                                 </div>
                                 <div class="p-3 text-center bg-white/90 backdrop-blur-sm">
-                                    <h3 class="text-sm font-semibold text-gray-800">Gas LPG 3Kg</h3>
+                                    <h3 class="text-sm font-semibold text-gray-800 line-clamp-1">{{ $item->name }}</h3>
+                                    <p class="text-xs text-blue-600 font-medium mt-1">{{ $item->price_formatted }} <span class="text-gray-400">/ {{ $item->unit }}</span></p>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Card 2 - Tenda Kerucut -->
-                        <div class="flex flex-col items-center">
-                            <div
-                                class="bg-white/80 backdrop-blur-sm rounded-lg border border-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer w-full max-w-[280px]">
-                                <div
-                                    class="aspect-square p-4 flex items-center justify-center bg-gradient-to-br from-white/50 to-blue-50/30">
-                                    <img src="{{ asset('User/img/elemen/tendakerucut.jpeg') }}" alt="Tenda Kerucut"
-                                        class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
-                                </div>
-                                <div class="p-3 text-center bg-white/90 backdrop-blur-sm">
-                                    <h3 class="text-sm font-semibold text-gray-800">Tenda Kerucut</h3>
-                                </div>
-                            </div>
+                        @empty
+                        <div class="col-span-full text-center py-8">
+                            <p class="text-gray-500">Belum ada data produk populer untuk tahun ini.</p>
                         </div>
-
-                        <!-- Card 3 - Sound System -->
-                        <div class="flex flex-col items-center">
-                            <div
-                                class="bg-white/80 backdrop-blur-sm rounded-lg border border-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer w-full max-w-[280px]">
-                                <div
-                                    class="aspect-square p-4 flex items-center justify-center bg-gradient-to-br from-white/50 to-blue-50/30">
-                                    <img src="{{ asset('User/img/elemen/soundsystem.png') }}" alt="Sound System"
-                                        class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
-                                </div>
-                                <div class="p-3 text-center bg-white/90 backdrop-blur-sm">
-                                    <h3 class="text-sm font-semibold text-gray-800">Sound System</h3>
-                                </div>
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -397,6 +432,34 @@
             user-select: none;
             object-fit: contain;
         }
+
+        /* --- Product Card Styles (Matches Rental/Gas Page) --- */
+        .product-card {
+            position: relative;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .product-image {
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1.4;
+            margin-top: 1rem;
+        }
+
 
         /* Area Carousel/Hero - TIDAK PAKAI BACKGROUND */
 

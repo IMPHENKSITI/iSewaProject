@@ -45,13 +45,13 @@ class BumdesLaporanController extends Controller
             // Get rental revenue for this month (excluding cancelled)
             $rentalRevenue = RentalBooking::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->where('status', '!=', 'cancelled')
+                ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->sum('total_amount');
             
             // Get gas revenue for this month (excluding cancelled)
             $gasRevenue = GasOrder::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->where('status', '!=', 'cancelled')
+                ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->sum(DB::raw('price * quantity'));
 
             // Get Manual Report revenue for this month
@@ -84,13 +84,13 @@ class BumdesLaporanController extends Controller
             // Count rental orders
             $rentalCount = RentalBooking::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->where('status', '!=', 'cancelled')
+                ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->count();
             
             // Count gas orders
             $gasCount = GasOrder::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
-                ->where('status', '!=', 'cancelled')
+                ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->count();
             
             $rentalData[] = $rentalCount;
@@ -116,23 +116,23 @@ class BumdesLaporanController extends Controller
         // Rental Equipment Revenue
         $rentalRevenue = RentalBooking::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->sum('total_amount');
         
         $rentalTransactions = RentalBooking::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
         
         // Gas Sales Revenue
         $gasRevenue = GasOrder::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->sum(DB::raw('price * quantity'));
         
         $gasTransactions = GasOrder::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
 
         // Manual Reports Revenue

@@ -13,15 +13,19 @@ class NotificationService
      */
     public function notifyOrderApproved($order, $type)
     {
-        $itemName = $type === 'gas' ? $order->item_name : $order->barang->nama_barang;
+        $itemName = $type === 'gas' ? ($order->item_name ?? 'Gas') : ($order->barang->nama_barang ?? 'Alat');
         
         if ($type === 'gas') {
-            $message = "Pembelian gas Anda telah disetujui! Order #{$order->order_number} akan segera diproses.";
+            $message = "Silahkan Ambil Gas, Pesanan Telah dikonfirmasi, NB : Jangan Lupa Tunjukkan Bukti Transaksi";
             $title = "Pesanan Gas Disetujui";
         } else {
-            $duration = $order->days_count ?? 1;
-            $amount = number_format($order->total_amount, 0, ',', '.');
-            $message = "Penyewaan {$itemName} telah disetujui! Duration: {$duration} hari | Total: Rp {$amount}";
+            // Rental Logic
+            if ($order->delivery_method === 'jemput') {
+                $message = "Silahkan Ambil Alat Sewa, Pesanan Telah dikonfirmasi, NB : Jangan Lupa Tunjukkan Bukti Transaksi";
+            } else {
+                // Delivery method is 'antar' (or others)
+                $message = "Pesanan dikonfirmasi. Alat sewa akan segera diproses untuk pengiriman.";
+            }
             $title = "Penyewaan Disetujui";
         }
 
@@ -29,6 +33,41 @@ class NotificationService
             'title' => $title,
             'message' => $message,
             'type' => 'approval_success',
+            'user_id' => $order->user_id,
+            'admin_id' => auth()->id(),
+        ]);
+    }
+
+    /**
+     * Notify user about specific status updates (Rental Delivery Flow)
+     */
+    public function notifyOrderStatusUpdate($order, $status)
+    {
+        $message = "";
+        $title = "Update Status Pesanan";
+        
+        switch ($status) {
+            case 'being_prepared':
+                $message = "Pesanan alat sewa dipersiapkan.";
+                break;
+            case 'in_delivery':
+                $message = "Pesanan alat sewa dalam perjalanan menuju lokasi mu.";
+                break;
+            case 'arrived':
+                $message = "Pesanan alat sewa sudah tiba dilokasimu.";
+                break;
+            case 'completed':
+                $message = "Waktu penyewaan alat telah selesai.";
+                $title = "Penyewaan Selesai";
+                break;
+            default:
+                $message = "Status pesanan diperbarui menjadi: " . $status;
+        }
+
+        Notification::create([
+            'title' => $title,
+            'message' => $message,
+            'type' => 'status_update',
             'user_id' => $order->user_id,
             'admin_id' => auth()->id(),
         ]);

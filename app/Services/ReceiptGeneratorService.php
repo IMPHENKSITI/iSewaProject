@@ -52,13 +52,43 @@ class ReceiptGeneratorService
         
         // Nama Pemesan
         $y += $lineHeight;
-        $this->addText($image, 'Nama Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Nama Akun Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
         $this->addText($image, ': ' . $booking->user->name, 400, $y, $normalSize, $black, $fontPath);
         
         // Email
         $y += $lineHeight;
-        $this->addText($image, 'Email', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Email Akun Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
         $this->addText($image, ': ' . $booking->user->email, 400, $y, $normalSize, $black, $fontPath);
+
+        // Horizontal line for section separation
+        $y += 30;
+        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        
+        // Header: Nama dan Alamat Penyewa
+        $y += 40;
+        $this->addText($image, 'Nama dan Alamat Penyewa', 50, $y, $headerSize, $black, $fontPath, true);
+
+        // Nama Lengkap (Input)
+        $y += $lineHeight;
+        $this->addText($image, 'Nama Lengkap', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($booking->recipient_name ?? '-'), 400, $y, $normalSize, $black, $fontPath);
+
+        // Alamat Lengkap (Input)
+        $y += $lineHeight;
+        $this->addText($image, 'Alamat', 50, $y, $normalSize, $black, $fontPath, true);
+        // Wrap address text if too long? For now just truncate or let it be. GD doesn't wrap automatically. 
+        // We'll rely on the image being wide enough or text being short enough for this iteration.
+        $this->addText($image, ': ' . ($booking->delivery_address ?? '-'), 400, $y, $normalSize, $black, $fontPath);
+
+        // Metode
+        $y += $lineHeight;
+        $this->addText($image, 'Metode', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ucfirst($booking->delivery_method), 400, $y, $normalSize, $black, $fontPath);
+
+        // Tujuan Penyewaan
+        $y += $lineHeight;
+        $this->addText($image, 'Tujuan Sewa', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($booking->rental_purpose ?? '-'), 400, $y, $normalSize, $black, $fontPath);
         
         // Horizontal line
         $y += 30;
@@ -204,13 +234,31 @@ class ReceiptGeneratorService
         
         // Nama Pemesan
         $y += $lineHeight;
-        $this->addText($image, 'Nama Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Nama Akun Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
         $this->addText($image, ': ' . $order->user->name, 400, $y, $normalSize, $black, $fontPath);
         
         // Email
         $y += $lineHeight;
-        $this->addText($image, 'Email', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Email Akun Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
         $this->addText($image, ': ' . $order->user->email, 400, $y, $normalSize, $black, $fontPath);
+
+        // Horizontal line for section separation
+        $y += 30;
+        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        
+        // Header: Nama dan Alamat Pembeli Gas
+        $y += 40;
+        $this->addText($image, 'Nama dan Alamat Pembeli Gas', 50, $y, $headerSize, $black, $fontPath, true);
+
+        // Nama Lengkap (Input)
+        $y += $lineHeight;
+        $this->addText($image, 'Nama Lengkap', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($order->full_name ?? '-'), 400, $y, $normalSize, $black, $fontPath);
+
+        // Alamat Lengkap (Input)
+        $y += $lineHeight;
+        $this->addText($image, 'Alamat', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($order->address ?? '-'), 400, $y, $normalSize, $black, $fontPath);
         
         // Horizontal line
         $y += 30;

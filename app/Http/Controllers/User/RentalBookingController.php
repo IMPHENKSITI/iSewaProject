@@ -41,16 +41,17 @@ class RentalBookingController extends Controller
             'quantity' => 'required|integer|min:1',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
-            'payment_method' => 'required|in:transfer,tunai',
+            'payment_method' => 'required|in:tunai',
             
-            // For 'antar' delivery method
-            'recipient_name' => 'required_if:delivery_method,antar',
-            'delivery_address' => 'required_if:delivery_method,antar',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
+            // Recipient & Address (Required for both Antar & Jemput)
+            'recipient_name' => 'required|string|max:255',
+            'delivery_address' => 'required|string',
             
             // For 'transfer' payment method
             'payment_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            
+            // New Purpose Field
+            'rental_purpose' => 'required|string|max:1000',
         ]);
 
         // Calculate days count
@@ -73,14 +74,13 @@ class RentalBookingController extends Controller
             'user_id' => Auth::id(),
             'barang_id' => $validated['barang_id'],
             'delivery_method' => $validated['delivery_method'],
+            'rental_purpose' => $validated['rental_purpose'],
             'quantity' => $validated['quantity'],
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'days_count' => $daysCount,
             'recipient_name' => $validated['recipient_name'] ?? null,
             'delivery_address' => $validated['delivery_address'] ?? null,
-            'latitude' => $validated['latitude'] ?? null,
-            'longitude' => $validated['longitude'] ?? null,
             'payment_method' => $validated['payment_method'],
             'payment_proof' => $paymentProofPath,
             'total_amount' => $totalAmount,

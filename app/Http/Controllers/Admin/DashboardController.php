@@ -13,6 +13,7 @@ use App\Models\RentalBooking;
 use App\Models\RentalRequest;
 use App\Models\GasOrder;
 use App\Models\ManualReport;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -22,6 +23,7 @@ class DashboardController extends Controller
 public function index()
 {
     // Fetch pending rental bookings
+    $currentYear = date('Y');
     $rentalRequests = RentalBooking::with(['user', 'barang'])
         ->where('status', 'pending')
         ->get()
@@ -52,9 +54,15 @@ public function index()
     $completedGas = GasOrder::where('status', 'completed')->count();
     $completedOrders = $completedRentals + $completedGas;
 
+    // Hitung statistik untuk Donut Chart (Total Transaksi per Kategori) - Filter Tahun Ini & Tidak Cancel
     // Hitung statistik untuk Donut Chart (Total Transaksi per Kategori)
-    $rentalCount = RentalBooking::where('status', '!=', 'cancelled')->count();
-    $gasCount = GasOrder::count();
+    $rentalCount = RentalBooking::whereYear('created_at', $currentYear)
+        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+        ->count();
+
+    $gasCount = GasOrder::whereYear('created_at', $currentYear)
+        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+        ->count();
 
     $totalPending = $rentalRequests->count() + $gasRequests->count();
 
@@ -64,16 +72,16 @@ public function index()
     
     // Calculate monthly performance (total transactions per month)
     $monthlyPerformance = [];
-    $currentYear = date('Y');
     
     for ($month = 1; $month <= 12; $month++) {
         $rentalMonthCount = RentalBooking::whereMonth('created_at', $month)
             ->whereYear('created_at', $currentYear)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
         
         $gasMonthCount = GasOrder::whereMonth('created_at', $month)
             ->whereYear('created_at', $currentYear)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
         
         $monthlyPerformance[] = $rentalMonthCount + $gasMonthCount;
@@ -95,8 +103,10 @@ public function index()
         'Desember' => 0,
     ];
     
-    // Pendapatan dari sistem (RentalRequest)
-    foreach (RentalRequest::selectRaw('SUM(price) as total, MONTH(created_at) as month')
+    // Pendapatan dari sistem (RentalBooking)
+    foreach (RentalBooking::selectRaw('SUM(total_amount) as total, MONTH(created_at) as month')
+        ->whereYear('created_at', $currentYear)
+        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->groupBy('month')
         ->pluck('total', 'month') as $month => $amount) {
         $monthlyIncome[getMonthName($month)] += $amount;
@@ -104,6 +114,8 @@ public function index()
 
     // Pendapatan dari gas orders
     foreach (GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
+        ->whereYear('created_at', $currentYear)
+        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->groupBy('month')
         ->pluck('total', 'month') as $month => $amount) {
         $monthlyIncome[getMonthName($month)] += $amount;
@@ -111,6 +123,7 @@ public function index()
     
     // Pendapatan dari manual reports
     foreach (ManualReport::selectRaw('SUM(amount * quantity) as total, MONTH(transaction_date) as month')
+        ->whereYear('transaction_date', $currentYear)
         ->groupBy('month')
         ->pluck('total', 'month') as $month => $amount) {
         $monthlyIncome[getMonthName($month)] += $amount;
@@ -154,7 +167,76 @@ public function index()
     $data['unitPenyewaan'] = Barang::count(); 
     $data['unitGas'] = Gas::count();
 
+    // Get Total Pendapatan data for the new chart
+    $data['totalPendapatanData'] = $this->getTotalPendapatanData();
+    
+    // Get Popular Products
+    $data['popularProducts'] = $this->getPopularProducts();
+
     return view('admin.dashboard.index', $data);
+}
+
+/**
+ * Get Total Pendapatan data - Revenue breakdown by unit
+ */
+private function getTotalPendapatanData()
+{
+    // Get current month/year or from request
+    $month = request('month', date('m'));
+    $year = request('year', date('Y'));
+    
+    // Rental Equipment Revenue
+    $rentalRevenue = RentalBooking::whereYear('created_at', $year)
+        ->whereMonth('created_at', $month)
+        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+        ->sum('total_amount');
+    
+    $rentalTransactions = RentalBooking::whereYear('created_at', $year)
+        ->whereMonth('created_at', $month)
+        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+        ->count();
+    
+    // Gas Sales Revenue
+    $gasRevenue = GasOrder::whereYear('created_at', $year)
+        ->whereMonth('created_at', $month)
+        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+        ->sum(\DB::raw('price * quantity'));
+    
+    $gasTransactions = GasOrder::whereYear('created_at', $year)
+        ->whereMonth('created_at', $month)
+        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+        ->count();
+
+    // Manual Reports Revenue
+    $manualRevenue = ManualReport::whereYear('transaction_date', $year)
+        ->whereMonth('transaction_date', $month)
+        ->sum(\DB::raw('amount * quantity'));
+    
+    $manualTransactions = ManualReport::whereYear('transaction_date', $year)
+        ->whereMonth('transaction_date', $month)
+        ->count();
+    
+    $totalRevenue = $rentalRevenue + $gasRevenue + $manualRevenue;
+    $totalTransactions = $rentalTransactions + $gasTransactions + $manualTransactions;
+    
+    return [
+        'rental' => [
+            'revenue' => $rentalRevenue,
+            'transactions' => $rentalTransactions,
+            'percentage' => $totalRevenue > 0 ? round(($rentalRevenue / $totalRevenue) * 100, 1) : 0
+        ],
+        'gas' => [
+            'revenue' => $gasRevenue,
+            'transactions' => $gasTransactions,
+            'percentage' => $totalRevenue > 0 ? round(($gasRevenue / $totalRevenue) * 100, 1) : 0
+        ],
+        'total' => [
+            'revenue' => $totalRevenue,
+            'transactions' => $totalTransactions
+        ],
+        'month' => $month,
+        'year' => $year
+    ];
 }
 
     /**
@@ -507,6 +589,67 @@ public function index()
     public function maintenance()
     {
         return view('maintenance');
+    }
+
+    /**
+     * Get Popular Products (Top 4 most rented/sold items)
+     */
+    private function getPopularProducts()
+    {
+        // 1. Get Rental Scores
+        $rentalPopularity = RentalBooking::select('barang_id', DB::raw('SUM(quantity) as total_sold'))
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->whereNotNull('barang_id')
+            ->groupBy('barang_id')
+            ->with('barang')
+            ->get();
+
+        // 2. Map Rental to common format
+        $products = $rentalPopularity->map(function ($item) {
+            if (!$item->barang) return null;
+            return (object) [
+                'id' => $item->barang->id,
+                'name' => $item->barang->nama_barang,
+                'image' => $item->barang->foto,
+                'price' => $item->barang->harga_sewa,
+                'price_formatted' => 'Rp ' . number_format($item->barang->harga_sewa, 0, ',', '.'),
+                'stock' => $item->barang->stok,
+                'sold' => $item->total_sold,
+                'type' => 'rental',
+                'category' => 'Unit Penyewaan Alat',
+                'unit' => $item->barang->satuan ?? 'unit',
+                'link' => route('admin.unit.penyewaan.show', $item->barang->id)
+            ];
+        })->filter();
+
+        // 3. Get Gas Scores
+        $gasPopularity = GasOrder::select('gas_id', DB::raw('SUM(quantity) as total_sold'))
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->whereNotNull('gas_id')
+            ->groupBy('gas_id')
+            ->with('gas')
+            ->get();
+
+        // 4. Map Gas to common format
+        $gasProducts = $gasPopularity->map(function ($item) {
+            if (!$item->gas) return null;
+            return (object) [
+                'id' => $item->gas->id,
+                'name' => $item->gas->jenis_gas,
+                'image' => $item->gas->foto,
+                'price' => $item->gas->harga_satuan,
+                'price_formatted' => 'Rp ' . number_format($item->gas->harga_satuan, 0, ',', '.'),
+                'stock' => $item->gas->stok,
+                'sold' => $item->total_sold,
+                'type' => 'gas',
+                'category' => 'Unit Penjualan Gas',
+                'unit' => 'tabung',
+                'link' => route('admin.unit.penjualan_gas.show', $item->gas->id)
+            ];
+        })->filter();
+
+        // 5. Merge, Sort, Take 4
+        return $products->concat($gasProducts)->sortByDesc('sold')->take(4);
     }
 }
 

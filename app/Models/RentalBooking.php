@@ -38,7 +38,9 @@ class RentalBooking extends Model
         'cancellation_requested_at',
         'cancellation_status',
         'admin_cancellation_response',
+        'admin_cancellation_response',
         'receipt_path',
+        'rental_purpose',
     ];
 
     protected $casts = [

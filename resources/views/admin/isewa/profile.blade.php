@@ -120,7 +120,7 @@
             <div class="dev-card">
                 <div class="dev-card-bg"></div>
                 <div class="avatar">
-                    <img src="{{ asset('http://isewaproject.test/Admin/img/avatars/nael.jpg') }}" alt="Mushlihul Arif">
+                    <img src="{{ asset('http://isewaproject.test/Admin/img/avatars/ayep12.jpg') }}" alt="Mushlihul Arif">
                 </div>
                 <h5>Mushlihul Arif</h5>
                 

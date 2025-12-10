@@ -4,7 +4,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <style>
-        /* Global Page Load Animations */
+        /* Animasi Pemuatan Halaman Global */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -37,28 +37,28 @@
 @endpush
 
 @section('content')
-    {{-- USER NAVBAR --}}
+    {{-- NAVBAR PENGGUNA --}}
     @include('partials.navbar')
 
     <main class="flex-grow relative w-full">
         @yield('page')
     </main>
 
-    {{-- USER FOOTER --}}
+    {{-- FOOTER PENGGUNA --}}
     @include('partials.footer')
 
-    {{-- AUTH MODALS --}}
+    {{-- MODAL AUTENTIKASI --}}
     @include('auth.modals')
 
 @endsection
 
 @push('scripts')
-    {{-- Global Scripts (Inline to avoid cache issues) --}}
+    {{-- Skrip Global (Inline untuk menghindari masalah cache) --}}
     <script>
         /**
-         * Navbar & Mobile Menu Functionality
+         * Fungsionalitas Navbar & Menu Seluler
          */
-        // Navbar & Sidebar Logic
+        // Logika Navbar & Sidebar
         const Navbar = {
             init() {
                 this.initSidebar();
@@ -66,7 +66,7 @@
                 this.initScrollEffect();
             },
 
-            // Mobile Sidebar
+            // Sidebar Seluler
             initSidebar() {
                 const menuBtn = document.getElementById('mobile-menu-btn');
                 const sidebar = document.getElementById('mobile-sidebar');
@@ -93,13 +93,13 @@
                 closeBtn?.addEventListener('click', closeSidebar);
                 overlay.addEventListener('click', closeSidebar);
 
-                // Close on link click
+                // Tutup saat link diklik
                 sidebar.querySelectorAll('a:not(#bumdes-toggle)').forEach(link => {
                     link.addEventListener('click', closeSidebar);
                 });
             },
 
-            // Mobile Dropdowns (BUMDes)
+            // Dropdown Seluler (BUMDes)
             initMobileDropdowns() {
                 const toggle = document.getElementById('bumdes-toggle');
                 const subMenu = document.getElementById('bumdes-sub');
@@ -115,7 +115,7 @@
                 });
             },
 
-            // Navbar Scroll Effect
+            // Efek Scroll Navbar
             initScrollEffect() {
                 const navbar = document.querySelector('nav');
                 if (!navbar) return;
@@ -133,7 +133,7 @@
         };
     </script>
 
-    {{-- Trigger Login Modal if Session Exists --}}
+    {{-- Picu Modal Login jika Sesi Ada --}}
     @if(session('open_login_modal'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -163,7 +163,7 @@
         </script>
     @endif
 
-    {{-- Global Animation Trigger --}}
+    {{-- Pemicu Animasi Global --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sections = document.querySelectorAll('.animate-section');

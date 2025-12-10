@@ -148,8 +148,6 @@
                 <input type="hidden" name="barang_id" value="{{ $item->id }}">
                 <input type="hidden" name="quantity" id="hidden-quantity" value="{{ $quantity }}">
                 <input type="hidden" name="delivery_method" id="delivery-method-input" value="antar">
-                <input type="hidden" name="latitude" id="latitude-input">
-                <input type="hidden" name="longitude" id="longitude-input">
 
                 <!-- Delivery Method Selection -->
                 <div class="flex justify-center gap-6 mb-10">
@@ -174,6 +172,21 @@
 
                 <!-- Antar Method Form -->
                 <div id="antar-form" class="delivery-form-content">
+                    <!-- Important Note -->
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    <span class="font-bold">NB:</span> Pengembalian Alat Sewa akan dijemput oleh Pihak BUMDes setelah waktu penyewaan selesai.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Alamat Pengiriman Card -->
                     <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
                         <div class="flex items-center gap-3 mb-4">
@@ -195,19 +208,23 @@
                                       rows="3" 
                                       placeholder="Alamat Lengkap" 
                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                            
-                            <p class="text-sm text-gray-600">Bagikan juga lokasi anda menggunakan Maps agar lebih akurat</p>
-                            
-                            <button type="button" 
-                                    id="share-location-btn"
-                                    class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                <svg class="w-5 h-5" viewBox="0 0 48 48">
-                                    <path fill="#1976D2" d="M24 9.5c-5.8 0-10.5 4.7-10.5 10.5s4.7 10.5 10.5 10.5 10.5-4.7 10.5-10.5S29.8 9.5 24 9.5z"/>
-                                    <path fill="#FFC107" d="M24 4C15.2 4 8 11.2 8 20c0 8.8 16 24 16 24s16-15.2 16-24c0-8.8-7.2-16-16-16zm0 21.5c-3 0-5.5-2.5-5.5-5.5s2.5-5.5 5.5-5.5 5.5 2.5 5.5 5.5-2.5 5.5-5.5 5.5z"/>
-                                </svg>
-                                <span class="text-sm font-medium">Google Maps</span>
-                            </button>
                         </div>
+                    </div>
+
+                    <!-- Keterangan / Tujuan Penyewaan Card -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <h3 class="text-lg font-bold text-gray-800">Keterangan / Tujuan Penyewaan</h3>
+                        </div>
+                        
+                        <textarea name="rental_purpose" 
+                                  id="rental-purpose"
+                                  rows="3" 
+                                  placeholder="Contoh: Untuk acara pernikahan, acara keluarga, dll." 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     </div>
 
                     <!-- Waktu Penyewaan Card -->
@@ -299,77 +316,13 @@
                         </div>
                     </div>
 
-                    <!-- Payment Method -->
+                    <!-- Payment Method (Fixed to Tunai) -->
                     <div class="mb-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
-                        <div class="flex gap-4 mb-6">
-                            @if($hasTransfer)
-                            <button type="button" 
-                                    class="payment-method-btn {{ $defaultMethod == 'transfer' ? 'active' : '' }} flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
-                                    data-method="transfer">
-                                Transfer
-                            </button>
-                            @endif
-                            
-                            @if($hasTunai)
-                            <button type="button" 
-                                    class="payment-method-btn {{ $defaultMethod == 'tunai' ? 'active' : '' }} flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
-                                    data-method="tunai">
-                                Tunai
-                            </button>
-                            @endif
-                        </div>
-                        <input type="hidden" name="payment_method" id="payment-method-hidden" value="{{ $defaultMethod }}">
-
-                        <!-- Transfer Payment Card -->
-                        <div id="transfer-payment" class="payment-content {{ $defaultMethod == 'transfer' ? '' : 'hidden' }}">
-                            <div class="rounded-2xl shadow-lg p-8 {{ $cardTextColor }}" style="{{ $cardStyle }}">
-                                <h4 class="text-2xl font-bold text-center mb-6">{{ $setting->bank_name ?? 'Bank Syariah Indonesia' }}</h4>
-                                
-                                <div class="flex items-start gap-6 mb-6">
-                                    <!-- Bank Logo -->
-                                    <div class="flex-shrink-0">
-                                        <div class="w-24 h-16 bg-white rounded-lg flex items-center justify-center shadow-md p-2">
-                                            <img src="{{ asset($bankLogoPath) }}" alt="{{ $setting->bank_name }}" class="w-full h-full object-contain">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex-1">
-                                        <p class="text-sm mb-1 opacity-90">Atas Nama</p>
-                                        <p class="text-lg font-bold mb-4">{{ $setting->bank_account_holder ?? 'BUMDes Desa Pematang Duku Timur' }}</p>
-                                        
-                                        <p class="text-sm mb-1 opacity-90">Nomor Rekening Tujuan</p>
-                                        <p class="text-3xl font-bold mb-2">{{ $setting->bank_account_number ?? '1234 5678 989' }}</p>
-                                    </div>
-                                    
-                                    <div class="text-right">
-                                        <p class="text-sm mb-1 opacity-90">Jumlah Yang Harus Dibayar</p>
-                                        <p class="text-3xl font-bold {{ $amountColor }}" id="total-amount-transfer">Rp. {{ number_format($item->harga_sewa * $quantity, 0, ',', '.') }}</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="border-t {{ $borderClass }} pt-6">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <label class="text-sm font-semibold">Upload Bukti Pembayaran</label>
-                                        <button type="button" 
-                                                onclick="document.getElementById('payment-proof').click()"
-                                                class="px-4 py-2 {{ $buttonClass }} rounded-lg transition-colors">
-                                            Pilih File
-                                        </button>
-                                    </div>
-                                    <input type="file" 
-                                           name="payment_proof" 
-                                           id="payment-proof" 
-                                           accept="image/*,application/pdf"
-                                           class="hidden">
-                                    <p id="file-name" class="text-sm opacity-80 italic">Belum ada file dipilih</p>
-                                    <a href="#" class="text-sm hover:underline mt-2 inline-block opacity-90">Kirim</a>
-                                </div>
-                            </div>
-                        </div>
+                        <input type="hidden" name="payment_method" id="payment-method-hidden" value="tunai">
 
                         <!-- Cash Payment Card -->
-                        <div id="cash-payment" class="payment-content {{ $defaultMethod == 'tunai' ? '' : 'hidden' }}">
+                        <div id="cash-payment" class="payment-content">
                             <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg p-8">
                                 <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">Silahkan Lakukan Pembayaran Ditempat</h4>
                                 
@@ -398,30 +351,102 @@
 
                 <!-- Jemput Method Form -->
                 <div id="jemput-form" class="delivery-form-content hidden">
+                    <!-- Important Note -->
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    <span class="font-bold">NB:</span> Anda akan melakukan pengantaran pengembalian alat sewa setelah waktu penyewaan selesai sesuai metode yang dipilih.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Alamat BUMDes Card -->
-                    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 hover:shadow-xl transition-all duration-300">
                         <div class="flex items-center gap-3 mb-4">
-                            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-                            </svg>
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
                             <h3 class="text-lg font-bold text-gray-800">Alamat Bumdes</h3>
                         </div>
                         
-                        <div class="flex items-center justify-between">
-                            <p class="text-gray-600">Lihat dan dapatkan juga Lokasi BUMDes untuk mempermudah penjemputan Alat Sewa</p>
-                            
-                            @if($setting && $setting->latitude && $setting->longitude)
-                            <a href="https://www.google.com/maps?q={{ $setting->latitude }},{{ $setting->longitude }}" 
-                               target="_blank"
-                               class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex-shrink-0 ml-4">
-                                <svg class="w-5 h-5" viewBox="0 0 48 48">
-                                    <path fill="#1976D2" d="M24 9.5c-5.8 0-10.5 4.7-10.5 10.5s4.7 10.5 10.5 10.5 10.5-4.7 10.5-10.5S29.8 9.5 24 9.5z"/>
-                                    <path fill="#FFC107" d="M24 4C15.2 4 8 11.2 8 20c0 8.8 16 24 16 24s16-15.2 16-24c0-8.8-7.2-16-16-16zm0 21.5c-3 0-5.5-2.5-5.5-5.5s2.5-5.5 5.5-5.5 5.5 2.5 5.5 5.5-2.5 5.5-5.5 5.5z"/>
-                                </svg>
-                                <span class="text-sm font-medium">Google Maps</span>
-                            </a>
-                            @endif
+                        <!-- Location Name -->
+                        @if($setting && $setting->location_name)
+                        <div class="mb-4 animate-fade-in">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 bg-blue-100 rounded-lg mt-1">
+                                    <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold text-gray-500 mb-1">Nama Lokasi</p>
+                                    <p class="text-base font-bold text-gray-800">{{ $setting->location_name }}</p>
+                                </div>
+                            </div>
                         </div>
+                        @endif
+                        
+                        <!-- Full Address -->
+                        @if($setting && $setting->address)
+                        <div class="mb-4 animate-fade-in" style="animation-delay: 0.1s">
+                            <div class="flex items-start gap-3">
+                                <div class="p-2 bg-green-100 rounded-lg mt-1">
+                                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-semibold text-gray-500 mb-1">Alamat Lengkap</p>
+                                    <p class="text-base text-gray-700 leading-relaxed">{{ $setting->address }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+                    <!-- Nama Penyewa Card -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 hover:shadow-xl transition-all duration-300">
+                        <div class="flex items-center gap-3 mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                            </svg>
+                            <h3 class="text-lg font-bold text-gray-800">Nama Penyewa</h3>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <input type="text" 
+                                   id="recipient-name-jemput"
+                                   placeholder="Nama Lengkap" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            
+                            <textarea id="delivery-address-jemput"
+                                      rows="3" 
+                                      placeholder="Alamat Lengkap" 
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Keterangan / Tujuan Penyewaan Card -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 hover:shadow-xl transition-all duration-300">
+                        <div class="flex items-center gap-3 mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <h3 class="text-lg font-bold text-gray-800">Keterangan / Tujuan Penyewaan</h3>
+                        </div>
+                        
+                        <textarea id="rental-purpose-jemput"
+                                  rows="3" 
+                                  placeholder="Contoh: Untuk acara pernikahan, acara keluarga, dll." 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     </div>
 
                     <!-- Waktu Penyewaan Card (Same as Antar) -->
@@ -510,76 +535,13 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Payment Method for Jemput -->
+                    <!-- Payment Method for Jemput (Fixed to Tunai) -->
                     <div class="mb-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
-                        <div class="flex gap-4 mb-6">
-                            @if($hasTransfer)
-                            <button type="button" 
-                                    class="payment-method-btn-jemput {{ $defaultMethod == 'transfer' ? 'active' : '' }} flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
-                                    data-method="transfer">
-                                Transfer
-                            </button>
-                            @endif
-                            
-                            @if($hasTunai)
-                            <button type="button" 
-                                    class="payment-method-btn-jemput {{ $defaultMethod == 'tunai' ? 'active' : '' }} flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
-                                    data-method="tunai">
-                                Tunai
-                            </button>
-                            @endif
-                        </div>
-                        <input type="hidden" name="payment_method_jemput" id="payment-method-jemput-hidden" value="{{ $defaultMethod }}">
-
-                        <!-- Transfer Payment Card for Jemput -->
-                        <div id="transfer-payment-jemput" class="payment-content-jemput {{ $defaultMethod == 'transfer' ? '' : 'hidden' }}">
-                            <div class="rounded-2xl shadow-lg p-8 {{ $cardTextColor }}" style="{{ $cardStyle }}">
-                                <h4 class="text-2xl font-bold text-center mb-6">{{ $setting->bank_name ?? 'Bank Syariah Indonesia' }}</h4>
-                                
-                                <div class="flex items-start gap-6 mb-6">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-24 h-16 bg-white rounded-lg flex items-center justify-center shadow-md p-2">
-                                            <img src="{{ asset($bankLogoPath) }}" alt="{{ $setting->bank_name }}" class="w-full h-full object-contain">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex-1">
-                                        <p class="text-sm mb-1 opacity-90">Atas Nama</p>
-                                        <p class="text-lg font-bold mb-4">{{ $setting->bank_account_holder ?? 'BUMDes Desa Pematang Duku Timur' }}</p>
-                                        
-                                        <p class="text-sm mb-1 opacity-90">Nomor Rekening Tujuan</p>
-                                        <p class="text-3xl font-bold mb-2">{{ $setting->bank_account_number ?? '1234 5678 989' }}</p>
-                                    </div>
-                                    
-                                    <div class="text-right">
-                                        <p class="text-sm mb-1 opacity-90">Jumlah Yang Harus Dibayar</p>
-                                        <p class="text-3xl font-bold {{ $amountColor }}" id="total-amount-transfer-jemput">Rp. {{ number_format($item->harga_sewa * $quantity, 0, ',', '.') }}</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="border-t {{ $borderClass }} pt-6">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <label class="text-sm font-semibold">Upload Bukti Pembayaran</label>
-                                        <button type="button" 
-                                                onclick="document.getElementById('payment-proof-jemput').click()"
-                                                class="px-4 py-2 {{ $buttonClass }} rounded-lg hover:bg-white/30 transition-colors">
-                                            Pilih File
-                                        </button>
-                                    </div>
-                                    <input type="file" 
-                                           name="payment_proof_jemput"
-                                           id="payment-proof-jemput" 
-                                           accept="image/*,application/pdf"
-                                           class="hidden">
-                                    <p id="file-name-jemput" class="text-sm opacity-80 italic">Belum ada file dipilih</p>
-                                    <a href="#" class="text-sm hover:underline mt-2 inline-block opacity-90">Kirim</a>
-                                </div>
-                            </div>
-                        </div>
+                        <input type="hidden" name="payment_method_jemput" id="payment-method-jemput-hidden" value="tunai">
 
                         <!-- Cash Payment Card for Jemput -->
-                        <div id="cash-payment-jemput" class="payment-content-jemput {{ $defaultMethod == 'tunai' ? '' : 'hidden' }}">
+                        <div id="cash-payment-jemput" class="payment-content-jemput">
                             <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg p-8">
                                 <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">Silahkan Lakukan Pembayaran Ditempat</h4>
                                 
@@ -785,6 +747,23 @@
             box-shadow: inset 0px 0px 0px 75px #4ade80;
         }
     }
+
+    /* Fade-in Animation for Address Card */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+        opacity: 0;
+    }
 </style>
 @endpush
 
@@ -967,55 +946,15 @@
             endDateJemput.addEventListener('change', calculateDaysJemput);
         }
 
-        // Payment Method Toggle for Antar
-        const paymentBtns = document.querySelectorAll('.payment-method-btn');
+        // Payment Method Fixed to Tunai
         const paymentMethodHidden = getEl('payment-method-hidden');
-        const transferPayment = getEl('transfer-payment');
+        if(paymentMethodHidden) paymentMethodHidden.value = 'tunai';
+
         const cashPayment = getEl('cash-payment');
+        if(cashPayment) cashPayment.classList.remove('hidden');
 
-        paymentBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const method = this.dataset.method;
-                
-                paymentBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                paymentMethodHidden.value = method;
-                
-                if (method === 'transfer') {
-                    if (transferPayment) transferPayment.classList.remove('hidden');
-                    if (cashPayment) cashPayment.classList.add('hidden');
-                } else {
-                    if (transferPayment) transferPayment.classList.add('hidden');
-                    if (cashPayment) cashPayment.classList.remove('hidden');
-                }
-            });
-        });
+        // Removed Transfer Toggle and Logic
 
-        // Payment Method Toggle for Jemput
-        const paymentBtnsJemput = document.querySelectorAll('.payment-method-btn-jemput');
-        const paymentMethodHiddenJemput = getEl('payment-method-jemput-hidden');
-        const transferPaymentJemput = getEl('transfer-payment-jemput');
-        const cashPaymentJemput = getEl('cash-payment-jemput');
-
-        paymentBtnsJemput.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const method = this.dataset.method;
-                
-                paymentBtnsJemput.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                paymentMethodHiddenJemput.value = method;
-                
-                if (method === 'transfer') {
-                    if (transferPaymentJemput) transferPaymentJemput.classList.remove('hidden');
-                    if (cashPaymentJemput) cashPaymentJemput.classList.add('hidden');
-                } else {
-                    if (transferPaymentJemput) transferPaymentJemput.classList.add('hidden');
-                    if (cashPaymentJemput) cashPaymentJemput.classList.remove('hidden');
-                }
-            });
-        });
 
         // File Upload Preview
         const paymentProof = getEl('payment-proof');
@@ -1038,46 +977,6 @@
                 if (this.files && this.files[0]) {
                     fileNameJemput.textContent = this.files[0].name;
                     fileNameJemput.classList.remove('italic');
-                }
-            });
-        }
-
-
-        // Google Maps Location Sharing
-        const shareLocationBtn = getEl('share-location-btn');
-        const latitudeInput = getEl('latitude-input');
-        const longitudeInput = getEl('longitude-input');
-
-        if (shareLocationBtn && latitudeInput && longitudeInput) {
-            shareLocationBtn.addEventListener('click', function() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            latitudeInput.value = position.coords.latitude;
-                            longitudeInput.value = position.coords.longitude;
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Lokasi Terkirim',
-                                text: 'Lokasi berhasil dibagikan!',
-                                confirmButtonColor: '#3085d6',
-                            });
-                        },
-                        (error) => {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Gagal mendapatkan lokasi. Pastikan GPS aktif.',
-                                confirmButtonColor: '#3085d6',
-                            });
-                        }
-                    );
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Tidak Didukung',
-                        text: 'Browser tidak mendukung geolocation.',
-                        confirmButtonColor: '#3085d6',
-                    });
                 }
             });
         }
@@ -1121,18 +1020,22 @@
                         const deliveryAddress = getEl('delivery-address')?.value;
                         const startDateVal = startDate?.value;
                         const endDateVal = endDate?.value;
+                        const rentalPurpose = getEl('rental-purpose')?.value;
 
-                        if (!recipientName || !deliveryAddress || !startDateVal || !endDateVal) {
+                        if (!recipientName || !deliveryAddress || !startDateVal || !endDateVal || !rentalPurpose) {
                             isValid = false;
-                            errorMessage = 'Mohon lengkapi semua field yang wajib diisi (Nama Penerima, Alamat Pengiriman, Tanggal Mulai, Tanggal Selesai)';
+                            errorMessage = 'Mohon lengkapi semua field yang wajib diisi (Nama, Alamat, Tujuan Sewa, Tanggal)';
                         }
                     } else {
                         const startDateVal = startDateJemput?.value;
                         const endDateVal = endDateJemput?.value;
+                        const rentalPurposeJemput = getEl('rental-purpose-jemput')?.value;
+                        const recipientNameJemput = getEl('recipient-name-jemput')?.value;
+                        const recipientAddressJemput = getEl('delivery-address-jemput')?.value;
 
-                        if (!startDateVal || !endDateVal) {
+                        if (!startDateVal || !endDateVal || !rentalPurposeJemput || !recipientNameJemput || !recipientAddressJemput) {
                             isValid = false;
-                            errorMessage = 'Mohon lengkapi Tanggal Mulai dan Tanggal Selesai';
+                            errorMessage = 'Mohon lengkapi Nama Penyewa, Alamat, Tanggal Mulai, Tanggal Selesai, dan Tujuan Sewa';
                         }
                     }
 
@@ -1185,6 +1088,21 @@
                     // Copy dates
                     if (startDateJemput && startDate) startDate.value = startDateJemput.value;
                     if (endDateJemput && endDate) endDate.value = endDateJemput.value;
+
+                    // Copy Rental Purpose
+                    const rentalPurpose = getEl('rental-purpose');
+                    const rentalPurposeJemput = getEl('rental-purpose-jemput');
+                    if (rentalPurposeJemput && rentalPurpose) rentalPurpose.value = rentalPurposeJemput.value;
+
+                    // Copy Recipient Name (Nama Penyewa)
+                    const recipientName = getEl('recipient-name');
+                    const recipientNameJemput = getEl('recipient-name-jemput');
+                    if (recipientNameJemput && recipientName) recipientName.value = recipientNameJemput.value;
+
+                    // Copy Address (Alamat Lengkap)
+                    const deliveryAddress = getEl('delivery-address');
+                    const deliveryAddressJemput = getEl('delivery-address-jemput');
+                    if (deliveryAddressJemput && deliveryAddress) deliveryAddress.value = deliveryAddressJemput.value;
                     
                     // Copy payment proof file if exists
                     const paymentProofJemput = getEl('payment-proof-jemput');

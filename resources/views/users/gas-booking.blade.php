@@ -94,6 +94,52 @@
                 <input type="hidden" name="gas_id" value="{{ $item->id }}">
                 <input type="hidden" name="quantity" id="hidden-quantity" value="{{ $quantity }}">
 
+                <!-- Alamat BUMDes Card -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-2 bg-red-100 rounded-lg">
+                            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800">Alamat Bumdes</h3>
+                    </div>
+                    
+                    <!-- Location Name -->
+                    @if($setting && $setting->location_name)
+                    <div class="mb-4 animate-fade-in">
+                        <div class="flex items-start gap-3">
+                            <div class="p-2 bg-blue-100 rounded-lg mt-1">
+                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-gray-500 mb-1">Nama Lokasi</p>
+                                <p class="text-base font-bold text-gray-800">{{ $setting->location_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    <!-- Full Address -->
+                    @if($setting && $setting->address)
+                    <div class="mb-4 animate-fade-in" style="animation-delay: 0.1s">
+                        <div class="flex items-start gap-3">
+                            <div class="p-2 bg-green-100 rounded-lg mt-1">
+                                <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-gray-500 mb-1">Alamat Lengkap</p>
+                                <p class="text-base text-gray-700 leading-relaxed">{{ $setting->address }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
                 <!-- Buyer Information Card -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
                     <div class="flex items-center gap-3 mb-4">
@@ -173,77 +219,13 @@
                     </div>
                 </div>
 
-                <!-- Payment Method -->
+                <!-- Payment Method (Fixed to Tunai) -->
                 <div class="mb-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
-                    <div class="flex gap-4 mb-6">
-                        @if($hasTransfer)
-                        <button type="button" 
-                                class="payment-method-btn {{ $defaultMethod == 'transfer' ? 'active' : '' }} flex-1 px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
-                                data-method="transfer">
-                            Transfer
-                        </button>
-                        @endif
-                        
-                        @if($hasTunai)
-                        <button type="button" 
-                                class="payment-method-btn {{ $defaultMethod == 'tunai' ? 'active' : '' }} flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
-                                data-method="tunai">
-                            Tunai
-                        </button>
-                        @endif
-                    </div>
-                    <input type="hidden" name="payment_method" id="payment-method-hidden" value="{{ $defaultMethod }}">
-
-                    <!-- Transfer Payment Card -->
-                    <div id="transfer-payment" class="payment-content {{ $defaultMethod == 'transfer' ? '' : 'hidden' }}">
-                        <div class="rounded-2xl shadow-lg p-8 {{ $cardTextColor }}" style="{{ $cardStyle }}">
-                            <h4 class="text-2xl font-bold text-center mb-6">{{ $setting->bank_name ?? 'Bank Syariah Indonesia' }}</h4>
-                            
-                            <div class="flex items-start gap-6 mb-6">
-                                <!-- Bank Logo -->
-                                <div class="flex-shrink-0">
-                                    <div class="w-24 h-16 bg-white rounded-lg flex items-center justify-center shadow-md p-2">
-                                        <img src="{{ asset($bankLogoPath) }}" alt="{{ $setting->bank_name }}" class="w-full h-full object-contain">
-                                    </div>
-                                </div>
-                                
-                                <div class="flex-1">
-                                    <p class="text-sm mb-1 opacity-90">Atas Nama</p>
-                                    <p class="text-lg font-bold mb-4">{{ $setting->bank_account_holder ?? 'BUMDes Desa Pematang Duku Timur' }}</p>
-                                    
-                                    <p class="text-sm mb-1 opacity-90">Nomor Rekening Tujuan</p>
-                                    <p class="text-3xl font-bold mb-2">{{ $setting->bank_account_number ?? '1234 5678 989' }}</p>
-                                </div>
-                                
-                                <div class="text-right">
-                                    <p class="text-sm mb-1 opacity-90">Jumlah Yang Harus Dibayar</p>
-                                    <p class="text-3xl font-bold {{ $amountColor }}" id="total-amount-transfer">Rp. {{ number_format($item->harga_satuan * $quantity, 0, ',', '.') }}</p>
-                                </div>
-                            </div>
-                            
-                            <div class="border-t {{ $borderClass }} pt-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <label class="text-sm font-semibold">Upload Bukti Pembayaran</label>
-                                    <button type="button" 
-                                            onclick="document.getElementById('payment-proof').click()"
-                                            class="px-4 py-2 {{ $buttonClass }} rounded-lg transition-colors">
-                                        Pilih File
-                                    </button>
-                                </div>
-                                <input type="file" 
-                                       name="payment_proof" 
-                                       id="payment-proof" 
-                                       accept="image/*,application/pdf"
-                                       class="hidden">
-                                <p id="file-name" class="text-sm opacity-80 italic">Belum ada file dipilih</p>
-                                <a href="#" class="text-sm hover:underline mt-2 inline-block opacity-90">Kirim</a>
-                            </div>
-                        </div>
-                    </div>
+                    <input type="hidden" name="payment_method" id="payment-method-hidden" value="tunai">
 
                     <!-- Cash Payment Card -->
-                    <div id="cash-payment" class="payment-content {{ $defaultMethod == 'tunai' ? '' : 'hidden' }}">
+                    <div id="cash-payment" class="payment-content">
                         <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg p-8">
                             <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">Silahkan Lakukan Pembayaran Ditempat</h4>
                             
@@ -491,33 +473,11 @@
             });
         }
 
-        // Payment Method Toggle
-        const paymentBtns = document.querySelectorAll('.payment-method-btn');
+        // Payment Method Check (ensure Tunai is active)
         const paymentMethodInput = document.getElementById('payment-method-hidden');
-        const transferPayment = document.getElementById('transfer-payment');
+        if(paymentMethodInput) paymentMethodInput.value = 'tunai';
         const cashPayment = document.getElementById('cash-payment');
-
-        paymentBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const method = btn.dataset.method;
-                
-                // Update button states
-                paymentBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                // Update hidden input
-                paymentMethodInput.value = method;
-                
-                // Toggle payment content
-                if (method === 'transfer') {
-                    if (transferPayment) transferPayment.classList.remove('hidden');
-                    if (cashPayment) cashPayment.classList.add('hidden');
-                } else {
-                    if (transferPayment) transferPayment.classList.add('hidden');
-                    if (cashPayment) cashPayment.classList.remove('hidden');
-                }
-            });
-        });
+        if(cashPayment) cashPayment.classList.remove('hidden');
 
         // File Upload Display
         const fileInput = document.getElementById('payment-proof');

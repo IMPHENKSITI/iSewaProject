@@ -90,11 +90,7 @@
                                 <div class="col-md-6">
                                     <p class="text-muted mb-1 text-uppercase small ls-1">Metode Pembayaran</p>
                                     <p class="fw-semibold">
-                                        @if($request->payment_method == 'tunai')
-                                            <span class="badge bg-success-subtle text-success">Tunai</span>
-                                        @else
-                                            <span class="badge bg-info-subtle text-info">Transfer Bank</span>
-                                        @endif
+                                        <span class="badge bg-success-subtle text-success">Tunai</span>
                                     </p>
                                 </div>
                                 <div class="col-md-6">
@@ -183,7 +179,7 @@
                                     <i class="bx bx-user fs-4"></i>
                                 </div>
                                 <div>
-                                    <h6 class="fw-bold mb-0">{{ $request->full_name ?? $request->user->name }}</h6>
+                                    <h6 class="fw-bold mb-0">{{ $request->full_name ?? $request->recipient_name ?? $request->user->name }}</h6>
                                     <small class="text-muted">Pelanggan</small>
                                 </div>
                             </div>
@@ -204,6 +200,15 @@
                                     <i class="bx bx-note me-1"></i>Catatan
                                 </small>
                                 <p class="mb-0 text-dark small">{{ $request->notes }}</p>
+                            </div>
+                            @endif
+
+                            @if($type === 'rental' && $request->rental_purpose)
+                            <div class="mt-4 p-3 bg-light rounded-3 border border-primary-subtle">
+                                <small class="text-primary-emphasis fw-bold d-block mb-1">
+                                    <i class="bx bx-info-circle me-1"></i>Tujuan Penyewaan
+                                </small>
+                                <p class="mb-0 text-dark small">{{ $request->rental_purpose }}</p>
                             </div>
                             @endif
                         </div>

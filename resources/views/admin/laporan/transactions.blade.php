@@ -3,260 +3,270 @@
 @section('title', 'Laporan Transaksi')
 
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-fluid py-4">
     
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h4 class="fw-bold py-3 mb-0">
-                        <span class="text-muted fw-light">Laporan /</span> Transaksi
-                    </h4>
-                    <p class="text-muted mb-0">Daftar lengkap transaksi penyewaan alat dan pembelian gas.</p>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold fs-3 mb-1 text-primary">Laporan Transaksi</h4>
+            <p class="text-muted mb-0">Rekapitulasi lengkap seluruh transaksi yang tercatat</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary shadow-sm rounded-pill px-4" onclick="window.print()">
+                <i class="bx bx-printer me-2"></i>Cetak Laporan
+            </button>
+            <button class="btn btn-outline-secondary shadow-sm rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#filterModal">
+                <i class="bx bx-filter-alt me-2"></i>Filter
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden position-relative">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="avatar avatar-md bg-primary-subtle text-primary rounded-3 p-2 me-3">
+                            <i class="bx bx-receipt fs-3"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold ls-1" style="font-size: 0.7rem;">Total Transaksi</small>
+                            <h4 class="fw-bold mb-0 text-dark">{{ $rentalRequests->count() + $gasOrders->count() }}</h4>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-secondary">
-                        <i class="bx bx-filter-alt me-1"></i> Filter
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden position-relative">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="avatar avatar-md bg-success-subtle text-success rounded-3 p-2 me-3">
+                            <i class="bx bx-check-double fs-3"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold ls-1" style="font-size: 0.7rem;">Selesai</small>
+                            <h4 class="fw-bold mb-0 text-dark">{{ $rentalRequests->where('status', 'completed')->count() + $gasOrders->where('status', 'completed')->count() }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden position-relative">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                         <div class="avatar avatar-md bg-info-subtle text-info rounded-3 p-2 me-3">
+                            <i class="bx bx-wrench fs-3"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold ls-1" style="font-size: 0.7rem;">Penyewaan</small>
+                            <h4 class="fw-bold mb-0 text-dark">{{ $rentalRequests->count() }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+             <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden position-relative">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                         <div class="avatar avatar-md bg-warning-subtle text-warning rounded-3 p-2 me-3">
+                            <i class="bx bxs-gas-pump fs-3"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted text-uppercase fw-bold ls-1" style="font-size: 0.7rem;">Gas</small>
+                            <h4 class="fw-bold mb-0 text-dark">{{ $gasOrders->count() }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white border-bottom py-3 px-4">
+             <ul class="nav nav-pills card-header-pills gap-2" id="reportTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active rounded-pill px-4 fw-semibold" id="rental-tab" data-bs-toggle="tab" data-bs-target="#rental-pane" type="button" role="tab">
+                        <i class="bx bx-wrench me-2"></i>Penyewaan Alat
+                        <span class="badge bg-white text-primary ms-2 shadow-sm">{{ $rentalRequests->count() }}</span>
                     </button>
-                    <button class="btn btn-primary" onclick="window.print()">
-                        <i class="bx bx-printer me-1"></i> Cetak Laporan
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link rounded-pill px-4 fw-semibold" id="gas-tab" data-bs-toggle="tab" data-bs-target="#gas-pane" type="button" role="tab">
+                        <i class="bx bxs-gas-pump me-2"></i>Pembelian Gas
+                        <span class="badge bg-white text-primary ms-2 shadow-sm">{{ $gasOrders->count() }}</span>
                     </button>
-                </div>
-            </div>
+                </li>
+            </ul>
         </div>
-    </div>
-
-    <!-- Summary Cards (Optional/Static for now) -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-6">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body d-flex align-items-center">
-                    <div class="avatar avatar-lg me-3">
-                        <span class="avatar-initial rounded-circle bg-label-primary">
-                            <i class='bx bx-receipt fs-3'></i>
-                        </span>
-                    </div>
-                    <div>
-                        <h5 class="mb-0 fw-bold">{{ $rentalRequests->count() + $gasOrders->count() }}</h5>
-                        <small class="text-muted">Total Transaksi</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card h-100 border-0 shadow-sm hover-lift">
-                <div class="card-body d-flex align-items-center">
-                    <div class="avatar avatar-lg me-3">
-                        <span class="avatar-initial rounded-circle bg-label-success">
-                            <i class='bx bx-check-circle fs-3'></i>
-                        </span>
-                    </div>
-                    <div>
-                        <h5 class="mb-0 fw-bold">{{ $rentalRequests->where('status', 'completed')->count() + $gasOrders->where('status', 'completed')->count() }}</h5>
-                        <small class="text-muted">Transaksi Selesai</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- RENTAL REQUESTS -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">
-                <i class="bx bx-wrench text-warning me-2"></i>Penyewaan Alat
-            </h5>
-            <span class="badge bg-label-primary rounded-pill">{{ $rentalRequests->count() }} Data</span>
-        </div>
+        
         <div class="card-body p-0">
-            @if($rentalRequests->isEmpty())
-                <div class="text-center py-5">
-                    <img src="{{ asset('Admin/img/illustrations/empty.png') }}" alt="No Data" width="150" class="mb-3 opacity-50">
-                    <p class="text-muted">Tidak ada transaksi penyewaan alat.</p>
-                </div>
-            @else
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-hover table-striped">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No. Pesanan</th>
-                                <th>Nama Pemesan</th>
-                                <th>Item</th>
-                                <th>Jumlah</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Tanggal</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0">
-                            @foreach($rentalRequests as $req)
-                                <tr>
-                                    <td><span class="fw-semibold">#{{ $req->order_number }}</span></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar avatar-xs me-2">
-                                                <span class="avatar-initial rounded-circle bg-label-secondary">{{ substr($req->full_name, 0, 1) }}</span>
+             <div class="tab-content" id="reportTabsContent">
+                
+                <!-- RENTAL RESULTS -->
+                <div class="tab-pane fade show active" id="rental-pane" role="tabpanel">
+                    @if($rentalRequests->isEmpty())
+                        <div class="text-center py-5">
+                            <div class="mb-3"><i class="bx bx-bar-chart-alt-2 fs-1 text-muted opacity-25"></i></div>
+                            <h6 class="text-muted fw-bold">Tidak ada data transaksi penyewaan</h6>
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4 py-3 text-secondary text-uppercase small fw-bold">ID & Tanggal</th>
+                                        <th class="py-3 text-secondary text-uppercase small fw-bold">Penyewa</th>
+                                        <th class="py-3 text-secondary text-uppercase small fw-bold">Alat</th>
+                                        <th class="py-3 text-secondary text-uppercase small fw-bold">Total</th>
+                                        <th class="py-3 text-secondary text-uppercase small fw-bold">Status</th>
+                                        <th class="text-end pe-4 py-3 text-secondary text-uppercase small fw-bold">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($rentalRequests as $req)
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold text-dark">#{{ $req->order_number ?? $req->id }}</div>
+                                            <small class="text-muted">{{ $req->created_at->format('d/m/Y H:i') }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar avatar-sm border rounded-circle p-1 me-2">
+                                                    <span class="avatar-initial rounded-circle bg-primary-subtle text-primary fw-bold">
+                                                        {{ strtoupper(substr($req->recipient_name ?? $req->user->name ?? 'U', 0, 1)) }}
+                                                    </span>
+                                                </div>
+                                                <span class="fw-medium text-dark">{{ $req->recipient_name ?? $req->user->name }}</span>
                                             </div>
-                                            {{ $req->full_name }}
-                                        </div>
-                                    </td>
-                                    <td>{{ $req->item_name }}</td>
-                                    <td>{{ $req->quantity }}</td>
-                                    <td class="fw-bold text-primary">Rp {{ number_format($req->price, 0, ',', '.') }}</td>
-                                    <td>
-                                        @if($req->status == 'pending')
-                                            <span class="badge bg-label-warning">Pending</span>
-                                        @elseif($req->status == 'approved')
-                                            <span class="badge bg-label-success">Disetujui</span>
-                                        @elseif($req->status == 'rejected')
-                                            <span class="badge bg-label-danger">Ditolak</span>
-                                        @elseif($req->status == 'completed')
-                                            <span class="badge bg-label-info">Selesai</span>
-                                        @else
-                                            <span class="badge bg-label-secondary">{{ ucfirst($req->status) }}</span>
-                                        @endif
-                                    </td>
-                                    <td><small class="text-muted">{{ $req->created_at->format('d M Y H:i') }}</small></td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                                <i class="bx bx-dots-vertical-rounded"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('admin.aktivitas.permintaan-pengajuan.show', ['id' => $req->id, 'type' => 'rental']) }}">
-                                                    <i class="bx bx-show-alt me-1"></i> Detail
-                                                </a>
-                                                @if($req->status == 'pending')
-                                                <a class="dropdown-item text-success" href="javascript:void(0);" onclick="confirmApprove({{ $req->id }}, 'rental')">
-                                                    <i class="bx bx-check me-1"></i> Setujui
-                                                </a>
-                                                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="showRejectModal({{ json_encode($req->id) }}, 'rental')">
-                                                    <i class="bx bx-x me-1"></i> Tolak
-                                                </a>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                        </td>
+                                        <td>
+                                            <div class="text-dark">{{ $req->item_name ?? 'Alat' }}</div>
+                                            <small class="text-muted">{{ $req->quantity }} Unit</small>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-primary">Rp {{ number_format($req->price ?? $req->total_amount, 0, ',', '.') }}</span>
+                                        </td>
+                                        <td>
+                                            @include('admin.partials.status-badge', ['status' => $req->status])
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <a href="{{ route('admin.aktivitas.permintaan-pengajuan.show', [$req->id, 'rental']) }}" class="btn btn-sm btn-light border shadow-sm rounded-pill px-3 text-primary">
+                                                <i class="bx bx-show me-1"></i>Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 </div>
-            @endif
-        </div>
-    </div>
 
-    <!-- GAS ORDERS -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">
-                <i class="bx bx-cylinder text-info me-2"></i>Pembelian Gas
-            </h5>
-            <span class="badge bg-label-primary rounded-pill">{{ $gasOrders->count() }} Data</span>
-        </div>
-        <div class="card-body p-0">
-            @if($gasOrders->isEmpty())
-                <div class="text-center py-5">
-                    <img src="{{ asset('Admin/img/illustrations/empty.png') }}" alt="No Data" width="150" class="mb-3 opacity-50">
-                    <p class="text-muted">Tidak ada transaksi pembelian gas.</p>
-                </div>
-            @else
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-hover table-striped">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No. Pesanan</th>
-                                <th>Nama Pemesan</th>
-                                <th>Item</th>
-                                <th>Jumlah</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Tanggal</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0">
-                            @foreach($gasOrders as $order)
-                                <tr>
-                                    <td><span class="fw-semibold">#{{ $order->order_number }}</span></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar avatar-xs me-2">
-                                                <span class="avatar-initial rounded-circle bg-label-secondary">{{ substr($order->full_name, 0, 1) }}</span>
+                <!-- GAS RESULTS -->
+                <div class="tab-pane fade" id="gas-pane" role="tabpanel">
+                    @if($gasOrders->isEmpty())
+                        <div class="text-center py-5">
+                            <div class="mb-3"><i class="bx bx-bar-chart-alt-2 fs-1 text-muted opacity-25"></i></div>
+                            <h6 class="text-muted fw-bold">Tidak ada data transaksi gas</h6>
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4 py-3 text-secondary text-uppercase small fw-bold">ID & Tanggal</th>
+                                        <th class="py-3 text-secondary text-uppercase small fw-bold">Pembeli</th>
+                                        <th class="py-3 text-secondary text-uppercase small fw-bold">Produk</th>
+                                        <th class="py-3 text-secondary text-uppercase small fw-bold">Total</th>
+                                        <th class="py-3 text-secondary text-uppercase small fw-bold">Status</th>
+                                        <th class="text-end pe-4 py-3 text-secondary text-uppercase small fw-bold">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($gasOrders as $order)
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="fw-bold text-dark">#{{ $order->order_number ?? $order->id }}</div>
+                                            <small class="text-muted">{{ $order->created_at->format('d/m/Y H:i') }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                 <div class="avatar avatar-sm border rounded-circle p-1 me-2">
+                                                    <span class="avatar-initial rounded-circle bg-info-subtle text-info fw-bold">
+                                                        {{ strtoupper(substr($order->full_name ?? $order->user->name ?? 'U', 0, 1)) }}
+                                                    </span>
+                                                </div>
+                                                <span class="fw-medium text-dark">{{ $order->full_name ?? $order->user->name }}</span>
                                             </div>
-                                            {{ $order->full_name }}
-                                        </div>
-                                    </td>
-                                    <td>{{ $order->item_name }}</td>
-                                    <td>{{ $order->quantity }}</td>
-                                    <td class="fw-bold text-info">Rp {{ number_format($order->price, 0, ',', '.') }}</td>
-                                    <td>
-                                        @if($order->status == 'pending')
-                                            <span class="badge bg-label-warning">Pending</span>
-                                        @elseif($order->status == 'approved')
-                                            <span class="badge bg-label-success">Disetujui</span>
-                                        @elseif($order->status == 'rejected')
-                                            <span class="badge bg-label-danger">Ditolak</span>
-                                        @elseif($order->status == 'completed')
-                                            <span class="badge bg-label-info">Selesai</span>
-                                        @else
-                                            <span class="badge bg-label-secondary">{{ ucfirst($order->status) }}</span>
-                                        @endif
-                                    </td>
-                                    <td><small class="text-muted">{{ $order->created_at->format('d M Y H:i') }}</small></td>
-                                    <td class="text-center">
-                                        <div class="dropdown">
-                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                                <i class="bx bx-dots-vertical-rounded"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('admin.aktivitas.permintaan-pengajuan.show', ['id' => $order->id, 'type' => 'gas']) }}">
-                                                    <i class="bx bx-show-alt me-1"></i> Detail
-                                                </a>
-                                                @if($order->status == 'pending')
-                                                <a class="dropdown-item text-success" href="javascript:void(0);" onclick="confirmApprove({{ json_encode($order->id) }}, 'gas')">
-                                                    <i class="bx bx-check me-1"></i> Setujui
-                                                </a>
-                                                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="showRejectModal({{ json_encode($order->id) }}, 'gas')">
-                                                    <i class="bx bx-x me-1"></i> Tolak
-                                                </a>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                        </td>
+                                        <td>
+                                            <div class="text-dark">{{ $order->item_name ?? 'Gas LPG' }}</div>
+                                            <small class="text-muted">{{ $order->quantity }} Tabung</small>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-primary">Rp {{ number_format($order->price ?? $order->total_amount, 0, ',', '.') }}</span>
+                                        </td>
+                                        <td>
+                                            @include('admin.partials.status-badge', ['status' => $order->status])
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <a href="{{ route('admin.aktivitas.permintaan-pengajuan.show', [$order->id, 'gas']) }}" class="btn btn-sm btn-light border shadow-sm rounded-pill px-3 text-primary">
+                                                <i class="bx bx-show me-1"></i>Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
                 </div>
-            @endif
+
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+<!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="rejectModalLabel">Tolak Permintaan</h5>
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold">Filter Laporan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="rejectForm" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="rejectId">
-                    <input type="hidden" name="type" id="rejectType">
+            <form action="{{ route('admin.laporan.transaksi') }}" method="GET">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label for="reason" class="form-label fw-semibold">Alasan Penolakan</label>
-                        <textarea name="reason" id="reason" class="form-control" rows="4" placeholder="Jelaskan alasan penolakan..." required></textarea>
+                        <label class="form-label fw-semibold text-muted small text-uppercase">Status</label>
+                        <select name="status" class="form-select border-0 bg-light py-2">
+                            <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu</option>
+                            <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                            <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                        </select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-muted small text-uppercase">Dari Tanggal</label>
+                            <input type="date" name="start_date" class="form-control border-0 bg-light py-2" value="{{ request('start_date') }}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-muted small text-uppercase">Sampai Tanggal</label>
+                            <input type="date" name="end_date" class="form-control border-0 bg-light py-2" value="{{ request('end_date') }}">
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger">Tolak Permintaan</button>
+                <div class="modal-footer border-top bg-light rounded-bottom-4">
+                    <a href="{{ route('admin.laporan.transaksi') }}" class="btn btn-link text-secondary text-decoration-none">Reset</a>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Terapkan Filter</button>
                 </div>
             </form>
         </div>
@@ -264,85 +274,20 @@
 </div>
 
 <style>
-    .hover-lift {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* Custom Tab Styling */
+    .nav-pills .nav-link {
+        color: #6c757d;
+        background-color: transparent;
+        transition: all 0.3s ease;
     }
-    .hover-lift:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    .nav-pills .nav-link:hover {
+        background-color: #f8f9fa;
+        color: #0d6efd;
+    }
+    .nav-pills .nav-link.active {
+        background-color: #0d6efd;
+        color: #fff;
+        box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
     }
 </style>
-
-@endsection
-
-@section('scripts')
-<script>
-function confirmApprove(id, type) {
-    Swal.fire({
-        title: 'Konfirmasi Persetujuan',
-        text: `Yakin ingin menyetujui permintaan ${type} ini?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#71dd37',
-        cancelButtonColor: '#8592a3',
-        confirmButtonText: 'Ya, Setujui',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = `{{ route('admin.aktivitas.permintaan-pengajuan.approve', ['id' => ':id', 'type' => ':type']) }}`.replace(':id', id).replace(':type', type);
-        }
-    });
-}
-
-function showRejectModal(id, type) {
-    document.getElementById('rejectId').value = id;
-    document.getElementById('rejectType').value = type;
-    const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
-    modal.show();
-}
-
-// Handle form submit
-document.getElementById('rejectForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const url = `{{ route('admin.aktivitas.permintaan-pengajuan.reject', ['id' => ':id', 'type' => ':type']) }}`
-        .replace(':id', formData.get('id'))
-        .replace(':type', formData.get('type'));
-
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            reason: formData.get('reason')
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Close modal
-        const modalEl = document.getElementById('rejectModal');
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        modal.hide();
-        
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: data.message || 'Permintaan berhasil ditolak.',
-            timer: 1500,
-            showConfirmButton: false
-        }).then(() => {
-            location.reload();
-        });
-    })
-    .catch(error => {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Terjadi kesalahan saat memproses permintaan.'
-        });
-    });
-});
-</script>
 @endsection
