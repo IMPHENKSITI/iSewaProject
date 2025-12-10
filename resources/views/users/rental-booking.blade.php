@@ -1168,6 +1168,17 @@
                 confirmationModal.style.display = 'none';
                 confirmationModal.classList.add('hidden');
 
+                // Show Loading with SweetAlert2
+                Swal.fire({
+                    title: 'Sedang Memproses...',
+                    text: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 // Copy jemput data to main form if jemput method is selected
                 const deliveryMethod = deliveryMethodInput ? deliveryMethodInput.value : 'antar';
                 if (deliveryMethod === 'jemput') {
@@ -1196,6 +1207,8 @@
                     }
                 })
                 .then(response => {
+                    Swal.close(); // Close loading
+
                     // Handle 401 Unauthorized - trigger login modal
                     if (response.status === 401) {
                         return response.json().then(data => {

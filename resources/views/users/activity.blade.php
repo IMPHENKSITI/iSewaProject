@@ -709,6 +709,16 @@
                 });
 
                 if (reason) {
+                    // Show Loading
+                    Swal.fire({
+                        title: 'Sedang Memproses...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                             Swal.showLoading();
+                        }
+                    });
+
                     try {
                         const response = await fetch(`/aktivitas/${type}/${id}/cancel`, {
                             method: 'POST',
@@ -769,6 +779,16 @@
                 });
 
                 if (result.isConfirmed) {
+                    // Show Loading
+                    Swal.fire({
+                        title: 'Sedang Menghapus...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                             Swal.showLoading();
+                        }
+                    });
+
                     try {
                         const response = await fetch(`/aktivitas/${type}/${id}`, {
                             method: 'DELETE',

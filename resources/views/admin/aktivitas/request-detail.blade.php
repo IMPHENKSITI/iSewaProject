@@ -571,6 +571,17 @@ document.getElementById('rejectForm').addEventListener('submit', function(e) {
         .replace(':id', formData.get('id'))
         .replace(':type', formData.get('type'));
 
+
+    
+    // Show Loading
+    Swal.fire({
+        title: 'Memproses...',
+        allowOutsideClick: false,
+        didOpen: () => {
+             Swal.showLoading();
+        }
+    });
+
     fetch(url, {
         method: 'POST',
         headers: {
@@ -632,6 +643,15 @@ function submitCancellationReject() {
 function submitCancellation(id, type, action, reason = null) {
     const url = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${type}/${id}/cancellation/${action}`;
 
+    // Show Loading
+    Swal.fire({
+        title: 'Memproses...',
+        allowOutsideClick: false,
+        didOpen: () => {
+             Swal.showLoading();
+        }
+    });
+
     fetch(url, {
         method: 'POST',
         headers: {
@@ -670,6 +690,15 @@ function updateStatus(newStatus) {
         confirmButtonText: 'Ya, Update'
     }).then((result) => {
         if (result.isConfirmed) {
+            // Show Loading
+            Swal.fire({
+                title: 'Memproses...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                     Swal.showLoading();
+                }
+            });
+
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -745,6 +774,15 @@ if (returnForm) {
             confirmButtonText: 'Ya, Konfirmasi'
         }).then((result) => {
             if (result.isConfirmed) {
+                // Show Loading
+                Swal.fire({
+                    title: 'Memproses...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                         Swal.showLoading();
+                    }
+                });
+
                 fetch(url, {
                     method: 'POST',
                     headers: {

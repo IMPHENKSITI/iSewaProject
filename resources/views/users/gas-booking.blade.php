@@ -584,6 +584,17 @@
                 gasConfirmationModal.style.display = 'none';
                 gasConfirmationModal.classList.add('hidden');
 
+                // Show Loading with SweetAlert2
+                Swal.fire({
+                    title: 'Sedang Memproses...',
+                    text: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 const formData = new FormData(gasBookingForm);
 
                 fetch('{{ route("gas.booking.store") }}', {
@@ -594,7 +605,10 @@
                         'Accept': 'application/json'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    Swal.close(); // Close loading
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         gasReceiptId = data.receipt_id;
