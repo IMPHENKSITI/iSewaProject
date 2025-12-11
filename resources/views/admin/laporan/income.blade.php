@@ -41,9 +41,18 @@
                             <h3 class="fw-bold mb-0 text-dark">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</h3>
                         </div>
                     </div>
-                     <div class="d-flex align-items-center small text-muted">
-                        <i class="bx bx-trending-up text-success me-1"></i>
-                        <span class="text-success fw-semibold me-2">+12.5%</span> dari bulan lalu
+                    <div class="d-flex align-items-center small text-muted">
+                        @if($growth['total'] > 0)
+                            <i class="bx bx-trending-up text-success me-1"></i>
+                            <span class="text-success fw-semibold me-2">+{{ $growth['total'] }}%</span>
+                        @elseif($growth['total'] < 0)
+                            <i class="bx bx-trending-down text-danger me-1"></i>
+                            <span class="text-danger fw-semibold me-2">{{ $growth['total'] }}%</span>
+                        @else
+                            <i class="bx bx-minus text-secondary me-1"></i>
+                            <span class="text-secondary fw-semibold me-2">0%</span>
+                        @endif
+                        dari bulan lalu
                     </div>
                 </div>
             </div>
@@ -61,8 +70,17 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center small text-muted">
-                        <i class="bx bx-trending-up text-success me-1"></i>
-                        <span class="text-success fw-semibold me-2">+8.2%</span> dari bulan lalu
+                        @if($growth['rental'] > 0)
+                            <i class="bx bx-trending-up text-success me-1"></i>
+                            <span class="text-success fw-semibold me-2">+{{ $growth['rental'] }}%</span>
+                        @elseif($growth['rental'] < 0)
+                            <i class="bx bx-trending-down text-danger me-1"></i>
+                            <span class="text-danger fw-semibold me-2">{{ $growth['rental'] }}%</span>
+                        @else
+                            <i class="bx bx-minus text-secondary me-1"></i>
+                            <span class="text-secondary fw-semibold me-2">0%</span>
+                        @endif
+                        dari bulan lalu
                     </div>
                 </div>
             </div>
@@ -80,8 +98,17 @@
                         </div>
                     </div>
                      <div class="d-flex align-items-center small text-muted">
-                        <i class="bx bx-trending-down text-danger me-1"></i>
-                        <span class="text-danger fw-semibold me-2">-2.4%</span> dari bulan lalu
+                        @if($growth['gas'] > 0)
+                            <i class="bx bx-trending-up text-success me-1"></i>
+                            <span class="text-success fw-semibold me-2">+{{ $growth['gas'] }}%</span>
+                        @elseif($growth['gas'] < 0)
+                            <i class="bx bx-trending-down text-danger me-1"></i>
+                            <span class="text-danger fw-semibold me-2">{{ $growth['gas'] }}%</span>
+                        @else
+                            <i class="bx bx-minus text-secondary me-1"></i>
+                            <span class="text-secondary fw-semibold me-2">0%</span>
+                        @endif
+                        dari bulan lalu
                     </div>
                 </div>
             </div>

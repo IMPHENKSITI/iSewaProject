@@ -140,8 +140,38 @@ class ReportController extends Controller
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
             
-        // Get Total Pendapatan data for the detailed chart
-        $totalPendapatanData = $this->getTotalPendapatanData();
+        // Get Selected Month (for Detail View & Growth Calculation)
+        $selectedMonth = $request->input('month', date('m'));
+        $selectedYear = $year; // Use the selected year context
+
+        // Get Current Month Data
+        $currentMonthData = $this->getTotalPendapatanData($selectedMonth, $selectedYear);
+
+        // Get Previous Month Data
+        $prevMonth = $selectedMonth - 1;
+        $prevYear = $selectedYear;
+        if ($prevMonth == 0) {
+            $prevMonth = 12;
+            $prevYear--;
+        }
+        $prevMonthData = $this->getTotalPendapatanData($prevMonth, $prevYear);
+
+        // Calculate Growth Function
+        $calculateGrowth = function($current, $previous) {
+            if ($previous == 0) {
+                return $current > 0 ? 100 : 0;
+            }
+            return round((($current - $previous) / $previous) * 100, 1);
+        };
+
+        $growth = [
+            'total' => $calculateGrowth($currentMonthData['total']['revenue'], $prevMonthData['total']['revenue']),
+            'rental' => $calculateGrowth($currentMonthData['rental']['revenue'], $prevMonthData['rental']['revenue']),
+            'gas' => $calculateGrowth($currentMonthData['gas']['revenue'], $prevMonthData['gas']['revenue']),
+        ];
+
+        // Pass Total Pendapatan Data (for Detail View) - same as currentMonthData
+        $totalPendapatanData = $currentMonthData;
         
         // Get Unit Populer data (rental vs gas comparison)
         $unitPopulerData = $this->getUnitPopulerData($year);
@@ -160,7 +190,8 @@ class ReportController extends Controller
             'gasCount',
             'year',
             'totalPendapatanData',
-            'unitPopulerData'
+            'unitPopulerData',
+            'growth'
         ));
     }
     
@@ -200,12 +231,8 @@ class ReportController extends Controller
     /**
      * Get Total Pendapatan data - Revenue breakdown by unit
      */
-    private function getTotalPendapatanData()
-    {
-        // Get current month/year or from request
-        $month = request('month', date('m'));
-        $year = request('year', date('Y'));
-        
+    private function getTotalPendapatanData($month, $year)
+    {   
         // Rental Equipment Revenue
         $rentalRevenue = RentalBooking::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)

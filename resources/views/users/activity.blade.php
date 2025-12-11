@@ -193,10 +193,10 @@
                                 <!-- Right Column -->
                                 <div class="space-y-4">
                                     <!-- Transaction Receipt -->
+                                    @if($booking->payment_proof)
                                     <div>
                                         <p class="text-sm text-gray-500 mb-2">Bukti Transaksi</p>
                                         <div class="flex gap-2">
-                                            @if($booking->payment_proof)
                                             <a href="{{ asset('storage/' . $booking->payment_proof) }}" 
                                                target="_blank"
                                                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
@@ -207,11 +207,9 @@
                                                class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
                                                 Unduh Bukti Transaksi
                                             </a>
-                                            @else
-                                            <p class="text-gray-400 text-sm">Belum ada bukti transaksi</p>
-                                            @endif
                                         </div>
                                     </div>
+                                    @endif
 
                                     <!-- Auto-Generated Receipt -->
                                     <div>
@@ -253,16 +251,23 @@
                                         <p class="text-sm text-gray-500 mb-3">Kondisi Pesanan Sewa Tiba</p>
                                         <div class="space-y-3">
                                             @php
-                                                $timeline = [
-                                                    ['status' => 'confirmed', 'label' => 'Pesanan dikonfirmasi', 'time' => $booking->confirmed_at],
-                                                    ['status' => 'being_prepared', 'label' => 'Pesanan sedang dipersiapkan', 'time' => null],
-                                                    ['status' => 'in_delivery', 'label' => 'Pesanan dalam proses pengantaran', 'time' => $booking->delivery_time],
-                                                    ['status' => 'arrived', 'label' => 'Pesanan tiba di alamat tujuan', 'time' => $booking->arrival_time],
-                                                ];
+                                                if ($booking->delivery_method == 'jemput') {
+                                                    $timeline = [
+                                                        ['status' => 'confirmed', 'label' => 'Pesanan dikonfirmasi', 'time' => $booking->confirmed_at],
+                                                        ['status' => 'arrived', 'label' => 'Pesanan sudah di ambil oleh penyewa', 'time' => $booking->arrival_time],
+                                                    ];
+                                                } else {
+                                                    $timeline = [
+                                                        ['status' => 'confirmed', 'label' => 'Pesanan dikonfirmasi', 'time' => $booking->confirmed_at],
+                                                        ['status' => 'being_prepared', 'label' => 'Pesanan sedang dipersiapkan', 'time' => null],
+                                                        ['status' => 'in_delivery', 'label' => 'Pesanan dalam proses pengantaran', 'time' => $booking->delivery_time],
+                                                        ['status' => 'arrived', 'label' => 'Pesanan tiba di alamat tujuan', 'time' => $booking->arrival_time],
+                                                    ];
+                                                }
                                                 
                                                 $currentStatusIndex = array_search($booking->status, array_column($timeline, 'status'));
                                                 if ($booking->status === 'completed') {
-                                                    $currentStatusIndex = 3; // Max index for arrived
+                                                    $currentStatusIndex = count($timeline) - 1;
                                                 }
                                                 // Handle false return if search fails (and not completed)
                                                 if ($currentStatusIndex === false) $currentStatusIndex = 0;
@@ -297,11 +302,11 @@
                                     <!-- Delivery Proof -->
                                     @if($booking->delivery_proof_image)
                                     <div>
-                                        <p class="text-sm text-gray-500 mb-2">Bukti Pengiriman</p>
+                                        <p class="text-sm text-gray-500 mb-2">{{ $booking->delivery_method == 'jemput' ? 'Bukti Penjemputan' : 'Bukti Pengiriman' }}</p>
                                         <a href="{{ asset('storage/' . $booking->delivery_proof_image) }}" 
                                            target="_blank"
                                            class="inline-block px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors">
-                                            Lihat Bukti Pengiriman
+                                            {{ $booking->delivery_method == 'jemput' ? 'Lihat Bukti Penjemputan' : 'Lihat Bukti Pengiriman' }}
                                         </a>
                                     </div>
                                     @endif
@@ -494,10 +499,10 @@
                                 <!-- Right Column -->
                                 <div class="space-y-4">
                                     <!-- Transaction Receipt -->
+                                    @if($order->proof_of_payment)
                                     <div>
                                         <p class="text-sm text-gray-500 mb-2">Bukti Transaksi</p>
                                         <div class="flex gap-2">
-                                            @if($order->proof_of_payment)
                                             <a href="{{ asset('storage/' . $order->proof_of_payment) }}" 
                                                target="_blank"
                                                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
@@ -508,11 +513,9 @@
                                                class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
                                                 Unduh Bukti Transaksi
                                             </a>
-                                            @else
-                                            <p class="text-gray-400 text-sm">Belum ada bukti transaksi</p>
-                                            @endif
                                         </div>
                                     </div>
+                                    @endif
 
                                     <!-- Auto-Generated Receipt -->
                                     <div>
