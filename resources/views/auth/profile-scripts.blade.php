@@ -60,13 +60,14 @@ document.addEventListener('DOMContentLoaded', function() {
             errorSpan.textContent = message;
             errorSpan.classList.remove('hidden');
             
+            // Auto hide setelah 5 detik
             setTimeout(() => {
                 errorSpan.classList.add('opacity-0');
                 setTimeout(() => {
                     errorSpan.classList.add('hidden');
                     errorSpan.classList.remove('opacity-0');
                 }, 300);
-            }, 3000);
+            }, 5000);
         }
     }
 
@@ -155,6 +156,22 @@ document.addEventListener('DOMContentLoaded', function() {
     formChangePassword?.addEventListener('submit', async function(e) {
         e.preventDefault();
         clearProfileErrors(this);
+
+        // Get form values
+        const newPassword = document.getElementById('profile-password-new').value;
+        const confirmPassword = document.getElementById('profile-password-confirm').value;
+
+        // Validasi frontend: Password minimal 8 karakter
+        if (newPassword.length < 8) {
+            showProfileError(this, 'new_password', 'Password minimal 8 karakter');
+            return;
+        }
+
+        // Validasi frontend: Password dan konfirmasi harus sama
+        if (newPassword !== confirmPassword) {
+            showProfileError(this, 'new_password_confirmation', 'Konfirmasi password tidak cocok');
+            return;
+        }
 
         const formData = new FormData(this);
         const submitBtn = this.querySelector('button[type="submit"]');
