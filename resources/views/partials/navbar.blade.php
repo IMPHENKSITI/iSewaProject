@@ -164,7 +164,7 @@
     </nav>
 
     {{-- Auth Section --}}
-    <div class="px-6 py-6 border-t mt-2">
+    <div class="px-5 py-6 border-t mt-2">
         @auth
             <div class="flex items-center gap-3 mb-4 pb-4 border-b">
                 <div class="w-12 h-12 rounded-full overflow-hidden bg-[#D1D5DB] flex-shrink-0">
@@ -198,11 +198,22 @@
                 </form>
             </div>
         @else
+            {{-- ================================================ --}}
+            {{-- TOMBOL SAMA PERSIS DENGAN DESKTOP --}}
+            {{-- ================================================ --}}
             <div class="space-y-3">
-                <button id="btn-open-login-mobile" type="button" class="block w-full text-center px-6 py-2.5 rounded-full font-medium bg-white text-blue-600 border-2 border-blue-500 hover:bg-blue-600 hover:text-white transition">
-                    Masuk
-                </button>
-                <button id="btn-open-register-mobile" type="button" class="block w-full text-center px-6 py-2.5 rounded-full font-medium text-white hover:shadow-lg transition" style="background: linear-gradient(to right, #7dc8f0 0%, #45aaf2 100%);">
+                {{-- Tombol Masuk dengan Gradient Border --}}
+                <div class="relative group">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-amber-500 rounded-full opacity-70 group-hover:opacity-100 group-hover:blur-[2px] transition-all duration-300"></div>
+                    <button id="btn-open-login-mobile" type="button" class="relative w-full px-6 py-2.5 text-blue-600 rounded-full text-[15px] font-medium bg-white hover:shadow-lg transition-all duration-300">
+                        Masuk
+                    </button>
+                </div>
+
+                {{-- Tombol Daftar dengan Gradient Background --}}
+                <button id="btn-open-register-mobile" type="button"
+                    class="w-full px-6 py-3 text-white rounded-full text-[15px] font-medium hover:shadow-lg transition-all duration-300"
+                    style="background: linear-gradient(to right, #7dc8f0 0%, #78c7f0 3%, #73c6f0 6%, #6ec5f0 9%, #69c4f0 12%, #64c3f0 15%, #5fc2f0 18%, #5ac1f0 21%, #55c0f0 24%, #50bff0 27%, #4bbef0 30%, #4abdf1 33%, #49bcf1 36%, #48bbf1 39%, #47baf1 42%, #46b9f1 45%, #45b8f2 48%, #45b7f2 51%, #45b6f2 54%, #45b5f2 57%, #45b4f2 60%, #45b3f2 63%, #45b2f2 66%, #45b1f2 69%, #45b0f2 72%, #45aff2 75%, #45aef2 78%, #45adf2 81%, #45acf2 84%, #45abf2 87%, #45aaf2 90%, #45aaf2 93%, #45aaf2 96%, #45aaf2 100%);">
                     Daftar
                 </button>
             </div>

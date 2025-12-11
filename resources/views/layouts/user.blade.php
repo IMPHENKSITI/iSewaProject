@@ -33,6 +33,34 @@
         .animate-section:nth-child(6) { animation-delay: 0.6s; }
         .animate-section:nth-child(7) { animation-delay: 0.7s; }
         .animate-section:nth-child(8) { animation-delay: 0.8s; }
+
+        /* ================================================ */
+        /* RESPONSIVE BACKGROUND OPTIMIZATION */
+        /* ================================================ */
+        
+        /* Hide complex backgrounds on mobile */
+        @media (max-width: 767px) {
+            .bg-decorative {
+                opacity: 0.3 !important;
+            }
+            .bg-hide-mobile {
+                display: none !important;
+            }
+        }
+
+        /* Tablet adjustments */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .bg-decorative {
+                opacity: 0.5 !important;
+            }
+        }
+
+        /* Desktop - full opacity */
+        @media (min-width: 1024px) {
+            .bg-decorative {
+                opacity: 0.85 !important;
+            }
+        }
     </style>
 @endpush
 
@@ -53,18 +81,17 @@
 @endsection
 
 @push('scripts')
-    {{-- Skrip Global (Inline untuk menghindari masalah cache) --}}
+    {{-- Skrip Global --}}
     <script>
         /**
          * Fungsionalitas Navbar & Menu Seluler
          */
-        // Logika Navbar & Sidebar
         const Navbar = {
             init() {
                 this.initSidebar();
                 this.initMobileDropdowns();
                 this.initScrollEffect();
-                this.initMobileAuthButtons(); // TAMBAHAN: Init tombol auth mobile
+                this.initMobileAuthButtons();
             },
 
             // Sidebar Seluler
@@ -74,7 +101,10 @@
                 const overlay = document.getElementById('mobile-overlay');
                 const closeBtn = document.getElementById('sidebar-close');
 
-                if (!menuBtn || !sidebar || !overlay) return;
+                if (!menuBtn || !sidebar || !overlay) {
+                    console.log('Sidebar elements not found');
+                    return;
+                }
 
                 const openSidebar = () => {
                     sidebar.classList.remove('-translate-x-full');
@@ -90,7 +120,7 @@
                     document.body.style.overflow = '';
                 };
 
-                // Simpan closeSidebar ke window agar bisa diakses dari initMobileAuthButtons
+                // Simpan ke window untuk akses global
                 window.closeMobileSidebar = closeSidebar;
 
                 menuBtn.addEventListener('click', openSidebar);
@@ -98,7 +128,7 @@
                 overlay.addEventListener('click', closeSidebar);
 
                 // Tutup saat link diklik
-                sidebar.querySelectorAll('a:not(#bumdes-toggle)').forEach(link => {
+                sidebar.querySelectorAll('a').forEach(link => {
                     link.addEventListener('click', closeSidebar);
                 });
             },
@@ -111,7 +141,8 @@
 
                 if (!toggle || !subMenu) return;
 
-                toggle.addEventListener('click', () => {
+                toggle.addEventListener('click', (e) => {
+                    e.preventDefault();
                     subMenu.classList.toggle('hidden');
                     if (arrow) {
                         arrow.classList.toggle('rotate-180');
@@ -135,14 +166,14 @@
                 });
             },
 
-            // TAMBAHAN: Handler untuk tombol auth di mobile
+            // Handler untuk tombol auth di mobile
             initMobileAuthButtons() {
                 const mobileLoginBtn = document.getElementById('btn-open-login-mobile');
                 const mobileRegisterBtn = document.getElementById('btn-open-register-mobile');
                 const desktopLoginBtn = document.getElementById('btn-open-login');
                 const desktopRegisterBtn = document.getElementById('btn-open-register');
 
-                // Tombol Login Mobile -> trigger tombol desktop
+                // Tombol Login Mobile -> trigger modal login
                 if (mobileLoginBtn) {
                     mobileLoginBtn.addEventListener('click', () => {
                         // Tutup sidebar dulu
@@ -158,7 +189,7 @@
                     });
                 }
 
-                // Tombol Register Mobile -> trigger tombol desktop
+                // Tombol Register Mobile -> trigger modal register
                 if (mobileRegisterBtn) {
                     mobileRegisterBtn.addEventListener('click', () => {
                         // Tutup sidebar dulu
@@ -188,13 +219,11 @@
     @if(session('open_login_modal'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Tunggu sampai DOM dan scripts.blade.php ter-load
                 setTimeout(() => {
                     const overlay = document.getElementById('auth-modal-overlay');
                     const modalLogin = document.getElementById('modal-login');
                     
                     if (overlay && modalLogin) {
-                        // ⭐ EXACT LOGIC dari openModal() function untuk smooth transition yang SAMA
                         document.querySelectorAll('.modal-content').forEach(m => {
                             m.classList.add('hidden');
                             m.classList.remove('scale-100', 'opacity-100');
