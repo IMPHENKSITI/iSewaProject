@@ -58,7 +58,7 @@ class RentalBooking extends Model
     ];
 
     /**
-     * Get the user that made the booking
+     * Ambil pengguna yang membuat pemesanan
      */
     public function user()
     {
@@ -66,7 +66,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Get the rental item (barang)
+     * Ambil barang sewaan
      */
     public function barang()
     {
@@ -74,7 +74,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Get formatted total amount
+     * Ambil total harga terformat
      */
     public function getFormattedTotalAttribute()
     {
@@ -82,7 +82,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Get formatted start date
+     * Ambil tanggal mulai terformat
      */
     public function getFormattedStartDateAttribute()
     {
@@ -90,7 +90,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Get formatted end date
+     * Ambil tanggal selesai terformat
      */
     public function getFormattedEndDateAttribute()
     {
@@ -98,7 +98,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Check if booking is for delivery (antar)
+     * Periksa jika pemesanan adalah untuk diantar
      */
     public function isDelivery()
     {
@@ -106,7 +106,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Check if booking is for pickup (jemput)
+     * Periksa jika pemesanan adalah untuk dijemput
      */
     public function isPickup()
     {
@@ -114,7 +114,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Check if payment is via transfer
+     * Periksa jika pembayaran via transfer
      */
     public function isTransfer()
     {
@@ -122,7 +122,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Check if payment is cash (tunai)
+     * Periksa jika pembayaran tunai
      */
     public function isCash()
     {
@@ -130,7 +130,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Generate unique order number
+     * Buat nomor pesanan unik
      */
     public static function generateOrderNumber()
     {
@@ -142,7 +142,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Check if cancellation is requested
+     * Periksa jika ada permintaan pembatalan
      */
     public function hasCancellationRequest()
     {
@@ -150,7 +150,7 @@ class RentalBooking extends Model
     }
 
     /**
-     * Check if order can be cancelled
+     * Periksa jika pesanan bisa dibatalkan
      */
     public function canBeCancelled()
     {

@@ -9,7 +9,7 @@ class RentalUserController extends Controller
 {
     public function index()
     {
-        // Fetch all rental items (exclude broken items)
+        // Ambil semua item penyewaan (kecuali item rusak)
         $items = Barang::where('status', '!=', 'rusak')
                        ->orderBy('created_at', 'desc')
                        ->get();
@@ -19,10 +19,10 @@ class RentalUserController extends Controller
 
     public function show($id)
     {
-        // Fetch specific rental item
+        // Ambil item penyewaan spesifik
         $item = Barang::findOrFail($id);
         
-        // Fetch system settings for location
+        // Ambil pengaturan sistem untuk lokasi
         $setting = \App\Models\SystemSetting::first();
         
         return view('users.rental-detail', compact('item', 'setting'));

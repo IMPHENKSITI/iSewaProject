@@ -10,14 +10,14 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        // Get all notifications for the authenticated user, ordered by newest first
+        // Ambil semua notifikasi untuk pengguna yang diautentikasi, diurutkan dari yang terbaru
         $notifications = Notification::where('user_id', auth()->id())
-            ->orWhereNull('user_id') // Include broadcast notifications
+            ->orWhereNull('user_id') // Sertakan notifikasi siaran
             ->with(['admin', 'user'])
             ->orderByDesc('created_at')
             ->get();
 
-        // Count unread notifications
+        // Hitung notifikasi yang belum dibaca
         $unreadCount = $notifications->where('is_read', false)->count();
 
         return view('users.notifications', compact('notifications', 'unreadCount'));

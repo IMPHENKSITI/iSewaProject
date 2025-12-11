@@ -422,7 +422,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    (function() {
+    document.addEventListener('DOMContentLoaded', function() {
         'use strict';
 
         const pricePerUnit = {{ $item->harga_satuan }};
@@ -627,6 +627,6 @@
                 window.location.href = '{{ route("user.activity") }}';
             });
         }
-    })();
+    });
 </script>
 @endpush

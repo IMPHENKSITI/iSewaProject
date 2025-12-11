@@ -10,94 +10,121 @@ use Illuminate\Support\Facades\Response;
 
 class ReceiptController extends Controller
 {
+    protected $receiptService;
+
+    public function __construct(\App\Services\ReceiptGeneratorService $receiptService)
+    {
+        $this->receiptService = $receiptService;
+    }
+
     /**
-     * View rental receipt
+     * Lihat bukti transaksi penyewaan
      */
     public function viewRentalReceipt($id)
     {
         $booking = RentalBooking::findOrFail($id);
         
-        // Check if user owns this booking or is admin
+        // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
         if ($booking->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
-        if (!$booking->receipt_path || !Storage::disk('public')->exists($booking->receipt_path)) {
-            abort(404, 'Receipt not found');
+        // Selalu buat ulang bukti transaksi untuk memastikan data/status terbaru
+        $path = $this->receiptService->generateRentalReceipt($booking);
+        
+        // Perbarui pesanan dengan jalur baru jika berubah
+        if ($booking->receipt_path !== $path) {
+            $booking->receipt_path = $path;
+            $booking->save();
         }
         
-        $path = Storage::disk('public')->path($booking->receipt_path);
+        $fullPath = Storage::disk('public')->path($path);
         
-        return Response::file($path, [
+        return Response::file($fullPath, [
             'Content-Type' => 'image/png',
             'Content-Disposition' => 'inline; filename="Bukti_Transaksi_' . $booking->order_number . '.png"'
         ]);
     }
     
     /**
-     * Download rental receipt
+     * Unduh bukti transaksi penyewaan
      */
     public function downloadRentalReceipt($id)
     {
         $booking = RentalBooking::findOrFail($id);
         
-        // Check if user owns this booking or is admin
+        // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
         if ($booking->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
-        if (!$booking->receipt_path || !Storage::disk('public')->exists($booking->receipt_path)) {
-            abort(404, 'Receipt not found');
+        // Selalu buat ulang bukti transaksi untuk memastikan data/status terbaru
+        $path = $this->receiptService->generateRentalReceipt($booking);
+        
+        // Perbarui pesanan dengan jalur baru jika berubah
+        if ($booking->receipt_path !== $path) {
+            $booking->receipt_path = $path;
+            $booking->save();
         }
         
         return Storage::disk('public')->download(
-            $booking->receipt_path,
+            $path,
             'Bukti_Transaksi_Penyewaan_' . $booking->order_number . '.png'
         );
     }
     
     /**
-     * View gas receipt
+     * Lihat bukti transaksi gas
      */
     public function viewGasReceipt($id)
     {
         $order = GasOrder::findOrFail($id);
         
-        // Check if user owns this order or is admin
+        // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
         if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
-        if (!$order->receipt_path || !Storage::disk('public')->exists($order->receipt_path)) {
-            abort(404, 'Receipt not found');
+        // Selalu buat ulang bukti transaksi untuk memastikan data/status terbaru
+        $path = $this->receiptService->generateGasReceipt($order);
+        
+        // Perbarui pesanan dengan jalur baru jika berubah
+        if ($order->receipt_path !== $path) {
+            $order->receipt_path = $path;
+            $order->save();
         }
         
-        $path = Storage::disk('public')->path($order->receipt_path);
+        $fullPath = Storage::disk('public')->path($path);
         
-        return Response::file($path, [
+        return Response::file($fullPath, [
             'Content-Type' => 'image/png',
             'Content-Disposition' => 'inline; filename="Bukti_Transaksi_' . $order->order_number . '.png"'
         ]);
     }
     
     /**
-     * Download gas receipt
+     * Unduh bukti transaksi gas
      */
     public function downloadGasReceipt($id)
     {
         $order = GasOrder::findOrFail($id);
         
-        // Check if user owns this order or is admin
+        // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
         if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
-        if (!$order->receipt_path || !Storage::disk('public')->exists($order->receipt_path)) {
-            abort(404, 'Receipt not found');
+        // Selalu buat ulang bukti transaksi untuk memastikan data/status terbaru
+        $path = $this->receiptService->generateGasReceipt($order);
+        
+        // Perbarui pesanan dengan jalur baru jika berubah
+        if ($order->receipt_path !== $path) {
+            $order->receipt_path = $path;
+            $order->save();
         }
         
         return Storage::disk('public')->download(
-            $order->receipt_path,
+            $path,
             'Bukti_Transaksi_Gas_' . $order->order_number . '.png'
         );
     }

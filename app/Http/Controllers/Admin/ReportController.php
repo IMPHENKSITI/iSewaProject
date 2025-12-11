@@ -19,13 +19,13 @@ class ReportController extends Controller
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
 
-        // Rental Query
+        // Query Penyewaan
         $rentalQuery = RentalBooking::with('user')->orderByDesc('created_at');
         
-        // Gas Query
+        // Query Gas
         $gasQuery = GasOrder::with('user')->orderByDesc('created_at');
 
-        // Apply Filters
+        // Terapkan Filter
         if ($status && $status !== 'all') {
             $rentalQuery->where('status', $status);
             $gasQuery->where('status', $status);
@@ -51,7 +51,7 @@ class ReportController extends Controller
     {
         $year = $request->input('year', date('Y'));
 
-        // Hitung total pendapatan per unit dari sistem (Yearly Filter)
+        // Hitung total pendapatan per unit dari sistem (Filter Tahunan)
         $totalPenyewaan = RentalBooking::whereYear('created_at', $year)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->sum('total_amount');
@@ -61,7 +61,7 @@ class ReportController extends Controller
             ->selectRaw('SUM(price * quantity) as total')
             ->value('total') ?? 0;
         
-        // Hitung total dari manual reports (Yearly Filter)
+        // Hitung total dari laporan manual (Filter Tahunan)
         $manualPenyewaan = ManualReport::whereYear('transaction_date', $year)
             ->where('category', 'penyewaan')
             ->sum(\DB::raw('amount * quantity'));
@@ -105,7 +105,7 @@ class ReportController extends Controller
             $monthlyIncome[getMonthName($month)] += $amount;
         }
         
-        // Pendapatan dari manual reports
+        // Pendapatan dari laporan manual
         $manualMonthly = ManualReport::selectRaw('SUM(amount * quantity) as total, MONTH(transaction_date) as month')
             ->whereYear('transaction_date', $year)
             ->groupBy('month')
@@ -121,17 +121,17 @@ class ReportController extends Controller
             $dataPoints[] = ['label' => $month, 'y' => $income];
         }
 
-        // Ambil data untuk detail per unit (Filtered by Year)
+        // Ambil data untuk detail per unit (Difilter Berdasarkan Tahun)
         $rentalRequests = RentalBooking::whereYear('created_at', $year)->get(); // For count & stats
         $gasOrders = GasOrder::whereYear('created_at', $year)->get();
         
-        // Ambil manual reports (Filtered by Year)
+        // Ambil laporan manual (Difilter Berdasarkan Tahun)
         $manualReports = ManualReport::with('creator')
             ->whereYear('transaction_date', $year)
             ->orderByDesc('transaction_date')
             ->get();
 
-        // Hitung total transaksi untuk Donut Chart (Yearly Filter)
+        // Hitung total transaksi untuk Donut Chart (Filter Tahunan)
         $rentalCount = RentalBooking::whereYear('created_at', $year)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
@@ -140,14 +140,14 @@ class ReportController extends Controller
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
             
-        // Get Selected Month (for Detail View & Growth Calculation)
+        // Ambil Bulan Terpilih (untuk Tampilan Detail & Perhitungan Pertumbuhan)
         $selectedMonth = $request->input('month', date('m'));
         $selectedYear = $year; // Use the selected year context
 
-        // Get Current Month Data
+        // Ambil Data Bulan Saat Ini
         $currentMonthData = $this->getTotalPendapatanData($selectedMonth, $selectedYear);
 
-        // Get Previous Month Data
+        // Ambil Data Bulan Sebelumnya
         $prevMonth = $selectedMonth - 1;
         $prevYear = $selectedYear;
         if ($prevMonth == 0) {
@@ -156,7 +156,7 @@ class ReportController extends Controller
         }
         $prevMonthData = $this->getTotalPendapatanData($prevMonth, $prevYear);
 
-        // Calculate Growth Function
+        // Hitung Fungsi Pertumbuhan
         $calculateGrowth = function($current, $previous) {
             if ($previous == 0) {
                 return $current > 0 ? 100 : 0;
@@ -170,10 +170,10 @@ class ReportController extends Controller
             'gas' => $calculateGrowth($currentMonthData['gas']['revenue'], $prevMonthData['gas']['revenue']),
         ];
 
-        // Pass Total Pendapatan Data (for Detail View) - same as currentMonthData
+        // Teruskan Data Total Pendapatan (untuk Tampilan Detail) - sama seperti currentMonthData
         $totalPendapatanData = $currentMonthData;
         
-        // Get Unit Populer data (rental vs gas comparison)
+        // Ambil data Unit Populer (perbandingan penyewaan vs gas)
         $unitPopulerData = $this->getUnitPopulerData($year);
 
         return view('admin.laporan.income', compact(
@@ -196,7 +196,7 @@ class ReportController extends Controller
     }
     
     /**
-     * Get Unit Populer data - Comparison between rental and gas sales
+     * Ambil data Unit Populer - Perbandingan antara penyewaan dan penjualan gas
      */
     private function getUnitPopulerData($year)
     {
@@ -205,13 +205,13 @@ class ReportController extends Controller
         $gasData = [];
         
         for ($month = 1; $month <= 12; $month++) {
-            // Count rental orders
+            // Hitung pesanan penyewaan
             $rentalCount = RentalBooking::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->count();
             
-            // Count gas orders
+            // Hitung pesanan gas
             $gasCount = GasOrder::whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
@@ -229,11 +229,11 @@ class ReportController extends Controller
     }
 
     /**
-     * Get Total Pendapatan data - Revenue breakdown by unit
+     * Ambil data Total Pendapatan - Rincian pendapatan berdasarkan unit
      */
     private function getTotalPendapatanData($month, $year)
     {   
-        // Rental Equipment Revenue
+        // Pendapatan Penyewaan Alat
         $rentalRevenue = RentalBooking::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
@@ -244,7 +244,7 @@ class ReportController extends Controller
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
         
-        // Gas Sales Revenue
+        // Pendapatan Penjualan Gas
         $gasRevenue = GasOrder::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
@@ -255,7 +255,7 @@ class ReportController extends Controller
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
 
-        // Manual Reports Revenue
+        // Pendapatan Laporan Manual
         $manualRevenue = ManualReport::whereYear('transaction_date', $year)
             ->whereMonth('transaction_date', $month)
             ->sum(\DB::raw('amount * quantity'));
@@ -293,7 +293,7 @@ class ReportController extends Controller
     {
         $query = ActivityLog::with('user')->orderByDesc('created_at');
 
-        // Search (Description or User Name)
+        // Cari (Deskripsi atau Nama Pengguna)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -305,12 +305,12 @@ class ReportController extends Controller
             });
         }
 
-        // Filter by Action
+        // Filter berdasarkan Aksi
         if ($request->filled('action')) {
             $query->where('action', 'like', "%{$request->action}%");
         }
 
-        // Filter by Date
+        // Filter berdasarkan Tanggal
         if ($request->filled('date')) {
             $query->whereDate('created_at', $request->date);
         }
@@ -321,7 +321,7 @@ class ReportController extends Controller
     }
     
     /**
-     * Store a new manual transaction
+     * Simpan transaksi manual baru
      */
     public function storeManualTransaction(Request $request)
     {
@@ -333,7 +333,7 @@ class ReportController extends Controller
             'quantity' => 'required|integer|min:1',
             'payment_method' => 'required|in:tunai',
             'transaction_date' => 'required|date',
-            'proof_image' => 'nullable|image|max:2048', // Max 2MB
+            'proof_image' => 'nullable|image|max:2048', // Maks 2MB
         ], [
             'category.required' => 'Kategori harus dipilih',
             'category.in' => 'Kategori tidak valid',
@@ -392,7 +392,7 @@ class ReportController extends Controller
     }
     
     /**
-     * Update an existing manual transaction
+     * Perbarui transaksi manual yang ada
      */
     public function updateManualTransaction(Request $request, $id)
     {
@@ -428,7 +428,7 @@ class ReportController extends Controller
             ];
 
             if ($request->hasFile('proof_image')) {
-                // Delete old image if exists
+                // Hapus gambar lama jika ada
                 if ($manualReport->proof_image && file_exists(public_path($manualReport->proof_image))) {
                     unlink(public_path($manualReport->proof_image));
                 }
@@ -455,7 +455,7 @@ class ReportController extends Controller
     }
     
     /**
-     * Delete a manual transaction
+     * Hapus transaksi manual
      */
     public function destroyManualTransaction($id)
     {

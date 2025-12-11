@@ -44,11 +44,12 @@ class GasOrder extends Model
         'arrival_time' => 'datetime',
         'completion_time' => 'datetime',
         'cancellation_requested_at' => 'datetime',
+        'confirmed_at' => 'datetime',
         'price' => 'decimal:2',
     ];
 
     /**
-     * Get the user that made the order
+     * Ambil pengguna yang membuat pesanan
      */
     public function user()
     {
@@ -56,7 +57,7 @@ class GasOrder extends Model
     }
 
     /**
-     * Get the gas product
+     * Ambil produk gas
      */
     public function gas()
     {
@@ -64,7 +65,7 @@ class GasOrder extends Model
     }
 
     /**
-     * Get formatted total amount
+     * Ambil total harga terformat
      */
     public function getFormattedTotalAttribute()
     {
@@ -72,7 +73,7 @@ class GasOrder extends Model
     }
 
     /**
-     * Generate unique order number
+     * Buat nomor pesanan unik
      */
     public static function generateOrderNumber()
     {
@@ -84,7 +85,7 @@ class GasOrder extends Model
     }
 
     /**
-     * Check if cancellation is requested
+     * Periksa jika ada permintaan pembatalan
      */
     public function hasCancellationRequest()
     {
@@ -92,7 +93,7 @@ class GasOrder extends Model
     }
 
     /**
-     * Check if order can be cancelled
+     * Periksa jika pesanan bisa dibatalkan
      */
     public function canBeCancelled()
     {

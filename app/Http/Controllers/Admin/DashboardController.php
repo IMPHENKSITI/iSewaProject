@@ -18,11 +18,11 @@ use Illuminate\Support\Facades\DB;
 class DashboardController extends Controller
 {
    /**
- * Display Dashboard
+ * Tampilkan Dashboard
  */
 public function index()
 {
-    // Fetch pending rental bookings
+    // Ambil pemesanan penyewaan yang tertunda
     $currentYear = date('Y');
     $rentalRequests = RentalBooking::with(['user', 'barang'])
         ->where('status', 'pending')
@@ -33,7 +33,7 @@ public function index()
             return $item;
         });
 
-    // Fetch pending gas orders
+    // Ambil pesanan gas yang tertunda
     $gasRequests = GasOrder::with('user')
         ->where('status', 'pending')
         ->get()
@@ -43,10 +43,10 @@ public function index()
             return $item;
         });
 
-    // Merge and sort by created_at desc
+    // Gabungkan dan urutkan berdasarkan created_at desc
     $latestRequests = $rentalRequests->concat($gasRequests)->sortByDesc('created_at')->take(5);
 
-    // Calculate real stats
+    // Hitung statistik nyata
     $totalOrders = RentalBooking::count() + GasOrder::count();
     
     // Hitung total order selesai/sukses
@@ -67,10 +67,10 @@ public function index()
     $totalPending = $rentalRequests->count() + $gasRequests->count();
 
     // ========================================
-    // REAL DATA CALCULATIONS FOR CHARTS
+    // PERHITUNGAN DATA NYATA UNTUK GRAFIK
     // ========================================
     
-    // Calculate monthly performance (total transactions per month)
+    // Hitung performa bulanan (total transaksi per bulan)
     $monthlyPerformance = [];
     
     for ($month = 1; $month <= 12; $month++) {
@@ -87,7 +87,7 @@ public function index()
         $monthlyPerformance[] = $rentalMonthCount + $gasMonthCount;
     }
     
-    // Calculate monthly income and expenses (SAME AS ReportController)
+    // Hitung pendapatan dan pengeluaran bulanan (SAMA SEPERTI ReportController)
     $monthlyIncome = [
         'Januari' => 0,
         'Februari' => 0,
@@ -112,7 +112,7 @@ public function index()
         $monthlyIncome[getMonthName($month)] += $amount;
     }
 
-    // Pendapatan dari gas orders
+    // Pendapatan dari pesanan gas
     foreach (GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
         ->whereYear('created_at', $currentYear)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
@@ -121,7 +121,7 @@ public function index()
         $monthlyIncome[getMonthName($month)] += $amount;
     }
     
-    // Pendapatan dari manual reports
+    // Pendapatan dari laporan manual
     foreach (ManualReport::selectRaw('SUM(amount * quantity) as total, MONTH(transaction_date) as month')
         ->whereYear('transaction_date', $currentYear)
         ->groupBy('month')
@@ -129,10 +129,10 @@ public function index()
         $monthlyIncome[getMonthName($month)] += $amount;
     }
     
-    // Expenses - set to 0 for now
+    // Pengeluaran - setel ke 0 untuk saat ini
     $monthlyExpenses = array_fill(0, 12, 0);
     
-    // Calculate popular items statistics (real data from database)
+    // Hitung statistik item populer (data nyata dari database)
     $popularItems = [
         'gas_lpg_3kg' => GasOrder::where('item_name', 'LIKE', '%3%')->count(),
         'sound_system' => RentalBooking::whereHas('barang', function($q) {
@@ -156,7 +156,7 @@ public function index()
         'totalPending' => $totalPending,
         'rentalCount' => $rentalCount,
         'gasCount' => $gasCount,
-        // Real data for charts
+        // Data nyata untuk grafik
         'monthlyPerformance' => $monthlyPerformance,
         'monthlyIncome' => $monthlyIncome,
         'monthlyExpenses' => $monthlyExpenses,
@@ -167,25 +167,25 @@ public function index()
     $data['unitPenyewaan'] = Barang::count(); 
     $data['unitGas'] = Gas::count();
 
-    // Get Total Pendapatan data for the new chart
+    // Ambil data Total Pendapatan untuk grafik baru
     $data['totalPendapatanData'] = $this->getTotalPendapatanData();
     
-    // Get Popular Products
+    // Ambil Produk Populer
     $data['popularProducts'] = $this->getPopularProducts();
 
     return view('admin.dashboard.index', $data);
 }
 
 /**
- * Get Total Pendapatan data - Revenue breakdown by unit
+ * Ambil data Total Pendapatan - Rincian pendapatan berdasarkan unit
  */
 private function getTotalPendapatanData()
 {
-    // Get current month/year or from request
+    // Ambil bulan/tahun saat ini atau dari permintaan
     $month = request('month', date('m'));
     $year = request('year', date('Y'));
     
-    // Rental Equipment Revenue
+    // Pendapatan Penyewaan Alat
     $rentalRevenue = RentalBooking::whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
@@ -196,7 +196,7 @@ private function getTotalPendapatanData()
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->count();
     
-    // Gas Sales Revenue
+    // Pendapatan Penjualan Gas
     $gasRevenue = GasOrder::whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
@@ -207,7 +207,7 @@ private function getTotalPendapatanData()
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->count();
 
-    // Manual Reports Revenue
+    // Pendapatan Laporan Manual
     $manualRevenue = ManualReport::whereYear('transaction_date', $year)
         ->whereMonth('transaction_date', $month)
         ->sum(\DB::raw('amount * quantity'));
@@ -240,7 +240,7 @@ private function getTotalPendapatanData()
 }
 
     /**
-     * Global Search - Search across all tables
+     * Pencarian Global - Cari di semua tabel
      */
     public function globalSearch(Request $request)
     {
@@ -250,7 +250,7 @@ private function getTotalPendapatanData()
             return redirect()->route('admin.dashboard');
         }
         
-        // Search in Rental Products (Barang)
+        // Cari di Produk Penyewaan (Barang)
         $rentalProducts = Barang::where('nama_barang', 'LIKE', "%{$search}%")
             ->orWhere('kategori', 'LIKE', "%{$search}%")
             ->get()
@@ -267,7 +267,7 @@ private function getTotalPendapatanData()
                 ];
             });
         
-        // Search in Gas Products
+        // Cari di Produk Gas
         $gasProducts = Gas::where('jenis_gas', 'LIKE', "%{$search}%")
             ->orWhere('kategori', 'LIKE', "%{$search}%")
             ->get()
@@ -284,7 +284,7 @@ private function getTotalPendapatanData()
                 ];
             });
         
-        // Search in Users
+        // Cari di Pengguna
         $users = User::where('name', 'LIKE', "%{$search}%")
             ->orWhere('email', 'LIKE', "%{$search}%")
             ->get()
@@ -301,7 +301,7 @@ private function getTotalPendapatanData()
                 ];
             });
         
-        // Search in BUMDes Members
+        // Cari di Anggota BUMDes
         $bumdesMembers = \App\Models\BumdesMember::where('name', 'LIKE', "%{$search}%")
             ->orWhere('position', 'LIKE', "%{$search}%")
             ->get()
@@ -318,7 +318,7 @@ private function getTotalPendapatanData()
                 ];
             });
         
-        // Search in Transactions (Rental)
+        // Cari di Transaksi (Penyewaan)
         $rentalTransactions = RentalBooking::with('user')
             ->where('status', 'LIKE', "%{$search}%")
             ->orWhereHas('user', function($q) use ($search) {
@@ -339,7 +339,7 @@ private function getTotalPendapatanData()
             });
         
         
-        // Search in Transactions (Gas)
+        // Cari di Transaksi (Gas)
         $gasTransactions = GasOrder::with('user')
             ->where('status', 'LIKE', "%{$search}%")
             ->orWhereHas('user', function($q) use ($search) {
@@ -359,7 +359,7 @@ private function getTotalPendapatanData()
                 ];
             });
         
-        // Merge all results
+        // Gabungkan semua hasil
         $results = collect()
             ->concat($rentalProducts)
             ->concat($gasProducts)
@@ -375,7 +375,7 @@ private function getTotalPendapatanData()
 
 
     /**
-     * Display Profile Page
+     * Tampilkan Halaman Profil
      */
     public function profile()
     {
@@ -384,7 +384,7 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Update Profile
+     * Perbarui Profil
      */
     public function profileUpdate(Request $request)
     {
@@ -409,7 +409,7 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Display Settings Page
+     * Tampilkan Halaman Pengaturan
      */
     public function settings()
     {
@@ -418,7 +418,7 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Update Settings (Password Change)
+     * Perbarui Pengaturan (Ganti Password)
      */
     public function settingsUpdate(Request $request)
     {
@@ -434,12 +434,12 @@ private function getTotalPendapatanData()
             'password.confirmed' => 'Password confirmation does not match',
         ]);
 
-        // Check if current password is correct
+        // Periksa apakah password saat ini benar
         if (!Hash::check($validated['current_password'], $user->password)) {
             return back()->withErrors(['current_password' => 'Current password is incorrect']);
         }
 
-        // Update password
+        // Perbarui password
         $user->update([
             'password' => Hash::make($validated['password'])
         ]);
@@ -448,7 +448,7 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Display Users List
+     * Tampilkan Daftar Pengguna
      */
     public function usersList()
     {
@@ -457,7 +457,7 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Show Create User Form
+     * Tampilkan Formulir Buat Pengguna
      */
     public function usersCreate()
     {
@@ -465,7 +465,7 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Store New User
+     * Simpan Pengguna Baru
      */
     public function usersStore(Request $request)
     {
@@ -497,7 +497,7 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Show Edit User Form
+     * Tampilkan Formulir Edit Pengguna
      */
     public function usersEdit($id)
     {
@@ -506,7 +506,7 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Update User
+     * Perbarui Pengguna
      */
     public function usersUpdate(Request $request, $id)
     {
@@ -525,7 +525,7 @@ private function getTotalPendapatanData()
             'email.unique' => 'Email already exists',
         ]);
 
-        // Update password if provided
+        // Perbarui password jika disediakan
         if ($request->filled('password')) {
             $request->validate([
                 'password' => 'required|min:8|confirmed',
@@ -543,13 +543,13 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Delete User
+     * Hapus Pengguna
      */
     public function usersDestroy($id)
     {
         $user = User::findOrFail($id);
 
-        // Prevent deleting own account
+        // Cegah penghapusan akun sendiri
         if ($user->id === Auth::id()) {
             return redirect()->route('admin.manajemen-pengguna.index')->with('error', 'You cannot delete your own account!');
         }
@@ -558,7 +558,7 @@ private function getTotalPendapatanData()
         return redirect()->route('admin.manajemen-pengguna.index')->with('success', 'User deleted successfully!');
     }
     /**
-     * Display Connections Page
+     * Tampilkan Halaman Koneksi
      */
     public function connections()
     {
@@ -566,7 +566,7 @@ private function getTotalPendapatanData()
         return view('admin.settings.connections', compact('user'));
     }
     /**
-     * Display Notifications Page
+     * Tampilkan Halaman Notifikasi
      */
     public function notifications()
     {
@@ -574,17 +574,17 @@ private function getTotalPendapatanData()
         return view('admin.settings.notifications', compact('user'));
     }
     /**
-     * Update Notifications Settings
+     * Perbarui Pengaturan Notifikasi
      */
     public function notificationsUpdate(Request $request)
     {
-        // Handle notification preferences update
-        // You can save these preferences to database if needed
+        // Tangani pembaruan preferensi notifikasi
+        // Anda dapat menyimpan preferensi ini ke database jika diperlukan
 
         return back()->with('success', 'Notification preferences updated successfully!');
     }
     /**
-     * Display Maintenance Page
+     * Tampilkan Halaman Pemeliharaan
      */
     public function maintenance()
     {
@@ -592,11 +592,11 @@ private function getTotalPendapatanData()
     }
 
     /**
-     * Get Popular Products (Top 4 most rented/sold items)
+     * Ambil Produk Populer (4 item paling banyak disewa/dijual)
      */
     private function getPopularProducts()
     {
-        // 1. Get Rental Scores
+        // 1. Ambil Skor Penyewaan
         $rentalPopularity = RentalBooking::select('barang_id', DB::raw('SUM(quantity) as total_sold'))
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->whereNotNull('barang_id')
@@ -604,7 +604,7 @@ private function getTotalPendapatanData()
             ->with('barang')
             ->get();
 
-        // 2. Map Rental to common format
+        // 2. Petakan Penyewaan ke format umum
         $products = $rentalPopularity->map(function ($item) {
             if (!$item->barang) return null;
             return (object) [
@@ -622,7 +622,7 @@ private function getTotalPendapatanData()
             ];
         })->filter();
 
-        // 3. Get Gas Scores
+        // 3. Ambil Skor Gas
         $gasPopularity = GasOrder::select('gas_id', DB::raw('SUM(quantity) as total_sold'))
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->whereNotNull('gas_id')
@@ -630,7 +630,7 @@ private function getTotalPendapatanData()
             ->with('gas')
             ->get();
 
-        // 4. Map Gas to common format
+        // 4. Petakan Gas ke format umum
         $gasProducts = $gasPopularity->map(function ($item) {
             if (!$item->gas) return null;
             return (object) [
@@ -648,12 +648,12 @@ private function getTotalPendapatanData()
             ];
         })->filter();
 
-        // 5. Merge, Sort, Take 4
+        // 5. Gabungkan, Urutkan, Ambil 4
         return $products->concat($gasProducts)->sortByDesc('sold')->take(4);
     }
 }
 
-// Helper function for month names (same as in ReportController)
+// Fungsi bantuan untuk nama bulan (sama seperti di ReportController)
 if (!function_exists('getMonthName')) {
     function getMonthName($month)
     {

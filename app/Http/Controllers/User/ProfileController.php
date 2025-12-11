@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class ProfileController extends Controller
 {
     /**
-     * Display profile page
+     * Tampilkan halaman profil
      */
     public function index()
     {
@@ -26,7 +26,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update profile data
+     * Perbarui data profil
      */
     public function update(Request $request)
     {
@@ -59,11 +59,11 @@ class ProfileController extends Controller
             'gender' => $validated['gender'],
         ]);
 
-        // Handle avatar upload or deletion
+        // Tangani unggahan atau penghapusan avatar
         if ($request->hasFile('profile') || $request->input('delete_avatar') == '1') {
-            // Delete old avatar if exists
+            // Hapus avatar lama jika ada
             if ($user->file) {
-                // Check if file exists in storage before deleting
+                // Periksa apakah file ada di penyimpanan sebelum menghapus
                 if (Storage::disk('local')->exists($user->file->path)) {
                     Storage::delete($user->file->path);
                 }
@@ -90,7 +90,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * STEP 1: Send OTP for password change
+     * LANGKAH 1: Kirim OTP untuk ganti password
      */
     public function changePassword(Request $request)
     {
@@ -114,7 +114,7 @@ class ProfileController extends Controller
 
             $user = auth()->user();
 
-            // Verify current password
+            // Verifikasi password saat ini
             if (!Hash::check($validated['current_password'], $user->password)) {
                 return response()->json([
                     'success' => false,
@@ -124,10 +124,10 @@ class ProfileController extends Controller
                 ], 422);
             }
 
-            // Generate OTP
+            // Buat OTP
             $otpCode = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
 
-            // Save to session (NOT database)
+            // Simpan ke sesi (BUKAN database)
             session([
                 'profile_password_change' => [
                     'user_id' => $user->id,
@@ -160,7 +160,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * STEP 2: Verify OTP and update password
+     * LANGKAH 2: Verifikasi OTP dan perbarui password
      */
     public function verifyOtp(Request $request)
     {
@@ -185,7 +185,7 @@ class ProfileController extends Controller
                 ], 400);
             }
 
-            // Check expiration
+            // Periksa kadaluarsa
             if (now()->greaterThan($sessionData['otp_expires_at'])) {
                 return response()->json([
                     'success' => false,
@@ -193,7 +193,7 @@ class ProfileController extends Controller
                 ], 400);
             }
 
-            // Verify OTP
+            // Verifikasi OTP
             if ($sessionData['otp_code'] !== $validated['otp']) {
                 return response()->json([
                     'success' => false,
@@ -201,13 +201,13 @@ class ProfileController extends Controller
                 ], 400);
             }
 
-            // Update password
+            // Perbarui password
             $user = auth()->user();
             $user->update([
                 'password' => Hash::make($sessionData['new_password'])
             ]);
 
-            // Clear session
+            // Hapus sesi
             session()->forget('profile_password_change');
 
             return response()->json([
@@ -225,7 +225,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * STEP 3: Resend OTP
+     * LANGKAH 3: Kirim ulang OTP
      */
     public function resendOtp(Request $request)
     {
@@ -246,7 +246,7 @@ class ProfileController extends Controller
                 ], 400);
             }
 
-            // Generate new OTP
+            // Buat OTP baru
             $newOtpCode = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
             $sessionData['otp_code'] = $newOtpCode;
             $sessionData['otp_expires_at'] = now()->addMinutes(5);

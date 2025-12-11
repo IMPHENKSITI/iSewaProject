@@ -28,7 +28,7 @@ class ManualReport extends Model
     ];
 
     /**
-     * Relationship: Manual report belongs to a user (creator)
+     * Relasi: Laporan manual milik pengguna (pembuat)
      */
     public function creator()
     {
@@ -36,7 +36,7 @@ class ManualReport extends Model
     }
 
     /**
-     * Scope: Filter by category
+     * Cakupan: Filter berdasarkan kategori
      */
     public function scopeByCategory($query, $category)
     {
@@ -44,7 +44,7 @@ class ManualReport extends Model
     }
 
     /**
-     * Scope: Filter by date range
+     * Cakupan: Filter berdasarkan rentang tanggal
      */
     public function scopeDateRange($query, $startDate, $endDate)
     {
@@ -52,7 +52,7 @@ class ManualReport extends Model
     }
 
     /**
-     * Scope: Filter by current year
+     * Cakupan: Filter berdasarkan tahun ini
      */
     public function scopeCurrentYear($query)
     {
@@ -60,7 +60,7 @@ class ManualReport extends Model
     }
 
     /**
-     * Accessor: Get formatted amount
+     * Aksesor: Ambil jumlah terformat
      */
     public function getFormattedAmountAttribute()
     {
@@ -68,7 +68,7 @@ class ManualReport extends Model
     }
 
     /**
-     * Accessor: Get total (amount * quantity)
+     * Aksesor: Ambil total (jumlah * kuantitas)
      */
     public function getTotalAttribute()
     {
@@ -76,7 +76,7 @@ class ManualReport extends Model
     }
 
     /**
-     * Accessor: Get formatted total
+     * Aksesor: Ambil total terformat
      */
     public function getFormattedTotalAttribute()
     {
@@ -84,7 +84,7 @@ class ManualReport extends Model
     }
 
     /**
-     * Accessor: Get category badge color
+     * Aksesor: Ambil warna badge kategori
      */
     public function getCategoryBadgeAttribute()
     {
@@ -98,7 +98,7 @@ class ManualReport extends Model
     }
 
     /**
-     * Accessor: Get category label
+     * Aksesor: Ambil label kategori
      */
     public function getCategoryLabelAttribute()
     {

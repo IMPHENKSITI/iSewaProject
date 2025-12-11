@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Storage;
 class ReceiptGeneratorService
 {
     /**
-     * Generate receipt for rental booking
+     * Buat bukti transaksi untuk pemesanan penyewaan
      */
     public function generateRentalReceipt(RentalBooking $booking)
     {
-        // Load background template
+        // Muat template latar belakang
         $backgroundPath = public_path('admin/img/transaksi/bukti-penyewaan-alat.png');
         
         if (!file_exists($backgroundPath)) {
@@ -24,154 +24,164 @@ class ReceiptGeneratorService
         $imageWidth = imagesx($image);
         $imageHeight = imagesy($image);
         
-        // Set colors
+        // Atur warna
         $black = imagecolorallocate($image, 0, 0, 0);
         $red = imagecolorallocate($image, 255, 0, 0);
         $green = imagecolorallocate($image, 0, 170, 0);
         
-        // Font path
+        // Jalur font
         $fontPath = public_path('fonts/arial.ttf');
         
-        // Font sizes - REALLY BIG for readability
-        $normalSize = 78;  // Normal text - MUCH BIGGER
-        $headerSize = 66;  // Section headers - MUCH BIGGER
+        // Ukuran font
+        $normalSize = 24;
+        $headerSize = 28;
         
-        // Adjusted layout for bigger fonts
-        $startY = 280;
-        $lineHeight = 70;  // More space for bigger fonts
+        // Konfigurasi tata letak
+        $startY = 400;      // Posisi mulai lebih rendah untuk membersihkan area logo
+        $lineHeight = 55;   // Tinggi baris ditingkatkan untuk keterbacaan yang lebih baik
+        $labelX = 130;      // Margin kiri untuk label (ditingkatkan untuk jarak "2 jari")
+        $valueX = 500;      // Margin kiri untuk nilai (titik dua sejajar)
         
         // No. Pesanan
         $y = $startY;
-        $this->addText($image, 'No. Pesanan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $booking->order_number, 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'No. Pesanan', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $booking->order_number, $valueX, $y, $normalSize, $black, $fontPath);
         
         // Waktu Pemesanan
         $y += $lineHeight;
-        $this->addText($image, 'Waktu Pemesanan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $booking->created_at->locale('id')->isoFormat('dddd, DD MMMM YYYY  HH:mm') . ' WIB', 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Waktu Pemesanan', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $booking->created_at->locale('id')->isoFormat('dddd, DD MMMM YYYY  HH:mm') . ' WIB', $valueX, $y, $normalSize, $black, $fontPath);
         
         // Nama Pemesan
         $y += $lineHeight;
-        $this->addText($image, 'Nama Akun Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $booking->user->name, 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Nama Akun Pemesan', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $booking->user->name, $valueX, $y, $normalSize, $black, $fontPath);
         
         // Email
         $y += $lineHeight;
-        $this->addText($image, 'Email Akun Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $booking->user->email, 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Email Akun Pemesan', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $booking->user->email, $valueX, $y, $normalSize, $black, $fontPath);
 
-        // Horizontal line for section separation
-        $y += 30;
-        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        // Pemisah
+        $y += 60;
+        $this->drawLine($image, 130, $y, $imageWidth - 130, $y, $black);
         
         // Header: Nama dan Alamat Penyewa
-        $y += 40;
-        $this->addText($image, 'Nama dan Alamat Penyewa', 50, $y, $headerSize, $black, $fontPath, true);
+        $y += 70;
+        $this->addText($image, 'Nama dan Alamat Penyewa', $labelX, $y, $headerSize, $black, $fontPath, true);
 
-        // Nama Lengkap (Input)
-        $y += $lineHeight;
-        $this->addText($image, 'Nama Lengkap', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . ($booking->recipient_name ?? '-'), 400, $y, $normalSize, $black, $fontPath);
+        // Nama Lengkap
+        $y += 85;
+        $this->addText($image, 'Nama Lengkap', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($booking->recipient_name ?? '-'), $valueX, $y, $normalSize, $black, $fontPath);
 
-        // Alamat Lengkap (Input)
+        // Alamat
         $y += $lineHeight;
-        $this->addText($image, 'Alamat', 50, $y, $normalSize, $black, $fontPath, true);
-        // Wrap address text if too long? For now just truncate or let it be. GD doesn't wrap automatically. 
-        // We'll rely on the image being wide enough or text being short enough for this iteration.
-        $this->addText($image, ': ' . ($booking->delivery_address ?? '-'), 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Alamat', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($booking->delivery_address ?? '-'), $valueX, $y, $normalSize, $black, $fontPath);
 
         // Metode
         $y += $lineHeight;
-        $this->addText($image, 'Metode', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . ucfirst($booking->delivery_method), 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Metode', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ucfirst($booking->delivery_method), $valueX, $y, $normalSize, $black, $fontPath);
 
-        // Tujuan Penyewaan
+        // Tujuan Sewa
         $y += $lineHeight;
-        $this->addText($image, 'Tujuan Sewa', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . ($booking->rental_purpose ?? '-'), 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Tujuan Sewa', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($booking->rental_purpose ?? '-'), $valueX, $y, $normalSize, $black, $fontPath);
         
-        // Horizontal line
-        $y += 30;
-        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        // Pemisah
+        $y += 60;
+        $this->drawLine($image, 130, $y, $imageWidth - 130, $y, $black);
         
-        // Informasi Pembayaran Header
-        $y += 40;
-        $this->addText($image, 'Informasi Pembayaran', 50, $y, $headerSize, $black, $fontPath, true);
+        // Header: Informasi Pembayaran
+        $y += 70;
+        $this->addText($image, 'Informasi Pembayaran', $labelX, $y, $headerSize, $black, $fontPath, true);
         
         // Waktu Pembayaran
-        $y += $lineHeight;
-        $this->addText($image, 'Waktu Pembayaran', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . ($booking->confirmed_at ? $booking->confirmed_at->locale('id')->isoFormat('dddd, DD MMMM YYYY  HH:mm') . ' WIB' : '-'), 400, $y, $normalSize, $black, $fontPath);
+        $y += 85;
+        $this->addText($image, 'Waktu Pembayaran', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($booking->confirmed_at ? $booking->confirmed_at->locale('id')->isoFormat('dddd, DD MMMM YYYY  HH:mm') . ' WIB' : '-'), $valueX, $y, $normalSize, $black, $fontPath);
         
         // Metode Pembayaran
         $y += $lineHeight;
-        $this->addText($image, 'Metode Pembayaran', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $this->getPaymentMethodLabel($booking->payment_method), 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Metode Pembayaran', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $this->getPaymentMethodLabel($booking->payment_method), $valueX, $y, $normalSize, $black, $fontPath);
         
         // Total Pembayaran
         $y += $lineHeight;
-        $this->addText($image, 'Total Pembayaran', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': Rp. ' . number_format($booking->total_amount, 0, ',', '.'), 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Total Pembayaran', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': Rp. ' . number_format($booking->total_amount, 0, ',', '.'), $valueX, $y, $normalSize, $black, $fontPath);
         
         // Status
         $y += $lineHeight;
-        $this->addText($image, 'Status', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Status', $labelX, $y, $normalSize, $black, $fontPath, true);
         $statusText = $this->getStatusLabel($booking->status);
         $statusColor = in_array($booking->status, ['completed', 'confirmed']) ? $green : (in_array($booking->status, ['cancelled', 'rejected']) ? $red : $black);
-        $this->addText($image, ': ' . $statusText, 400, $y, $normalSize, $statusColor, $fontPath);
+        $this->addText($image, ': ' . $statusText, $valueX, $y, $normalSize, $statusColor, $fontPath);
         
-        // Horizontal line
-        $y += 30;
-        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        // Pemisah
+        $y += 60;
+        $this->drawLine($image, 130, $y, $imageWidth - 130, $y, $black);
         
-        // Detail Pembayaran Header
-        $y += 40;
-        $this->addText($image, 'Detail Pembayaran', 50, $y, $headerSize, $black, $fontPath, true);
+        // Header: Detail Pembayaran
+        $y += 70;
+        $this->addText($image, 'Detail Pembayaran', $labelX, $y, $headerSize, $black, $fontPath, true);
         
-        // Table Headers
-        $y += $lineHeight;
-        $this->addText($image, 'Keterangan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, 'Jumlah', 450, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, 'Satuan', 600, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, 'Total', 850, $y, $normalSize, $black, $fontPath, true);
+        // Header Tabel - Spasi disesuaikan
+        $y += 85;
+        $col1 = 130;
+        $col2 = 530;
+        $col3 = 730;
+        $col4 = 980;
         
-        // Line under headers
-        $y += 10;
-        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        $this->addText($image, 'Keterangan', $col1, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Jumlah', $col2, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Satuan', $col3, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Total', $col4, $y, $normalSize, $black, $fontPath, true);
         
-        // Table Data
-        $y += 35;
+        // Garis di bawah header
+        $y += 15;
+        $this->drawLine($image, 130, $y, $imageWidth - 130, $y, $black);
+        
+        // Data Tabel
+        $y += 60;
         $itemName = $booking->barang->nama_barang;
         $quantity = (string)$booking->quantity;
         $unitPrice = 'Rp. ' . number_format($booking->barang->harga, 0, ',', '.');
         $total = 'Rp. ' . number_format($booking->total_amount, 0, ',', '.');
         
-        $this->addText($image, $itemName, 50, $y, $normalSize, $black, $fontPath);
-        $this->addText($image, $quantity, 450, $y, $normalSize, $black, $fontPath);
-        $this->addText($image, $unitPrice, 600, $y, $normalSize, $black, $fontPath);
-        $this->addText($image, $total, 850, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, $itemName, $col1, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, $quantity, $col2, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, $unitPrice, $col3, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, $total, $col4, $y, $normalSize, $black, $fontPath);
         
-        // Line
-        $y += 35;
-        $this->drawLine($image, 450, $y, $imageWidth - 50, $y, $black);
+        // Pemisah Footer Tabel
+        $y += 60;
+        $this->drawLine($image, 530, $y, $imageWidth - 130, $y, $black);
         
         // Total Pemesanan
-        $y += 35;
-        $this->addText($image, 'Total Pemesanan', 450, $y, $normalSize, $black, $fontPath);
-        $this->addText($image, 'Rp. ' . number_format($booking->total_amount, 0, ',', '.'), 850, $y, $normalSize, $black, $fontPath);
+        $y += 60;
+        $this->addText($image, 'Total Pemesanan', 530, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Rp. ' . number_format($booking->total_amount, 0, ',', '.'), 980, $y, $normalSize, $black, $fontPath);
         
-        // Total Dibayar (Bold)
+        // Total Dibayar
         $y += $lineHeight;
-        $this->addText($image, 'Total Dibayar', 450, $y, $headerSize, $black, $fontPath, true);
-        $this->addText($image, 'Rp. ' . number_format($booking->total_amount, 0, ',', '.'), 850, $y, $headerSize, $black, $fontPath, true);
+        $this->addText($image, 'Total Dibayar', 530, $y, $headerSize, $black, $fontPath, true);
+        $this->addText($image, 'Rp. ' . number_format($booking->total_amount, 0, ',', '.'), 980, $y, $headerSize, $black, $fontPath, true);
         
-        // Footer
-        $y += 80;
+        // Tanda tangan footer
+        // Jarak footer sebelum blok tanda tangan ditambahkan
+        $y += 150;
         $location = 'Bengkalis';
         $date = $booking->created_at->locale('id')->isoFormat('DD MMMM YYYY');
-        $this->addText($image, $location . ', ' . $date, 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, $location . ', ' . $date, 130, $y, $normalSize, $black, $fontPath, true);
+        $y += $lineHeight;
+        $this->addText($image, 'Hormat Kami', 130, $y, $normalSize, $black, $fontPath);
         
-        // Save receipt
+        $y += 420; // Ruang untuk tanda tangan (Lebih besar karena teks iSewa dihapus sesuai edit pengguna, tapi butuh ruang)
+         
+        // Simpan bukti transaksi
         $filename = 'receipt_rental_' . $booking->order_number . '_' . time() . '.png';
         $path = 'receipts/rental/' . $filename;
         
@@ -191,11 +201,11 @@ class ReceiptGeneratorService
     }
 
     /**
-     * Generate receipt for gas order
+     * Buat bukti transaksi untuk pesanan gas
      */
     public function generateGasReceipt(GasOrder $order)
     {
-        // Load background template
+        // Muat template latar belakang
         $backgroundPath = public_path('admin/img/transaksi/bukti-gas.png');
         
         if (!file_exists($backgroundPath)) {
@@ -206,143 +216,156 @@ class ReceiptGeneratorService
         $imageWidth = imagesx($image);
         $imageHeight = imagesy($image);
         
-        // Set colors
+        // Atur warna
         $black = imagecolorallocate($image, 0, 0, 0);
         $red = imagecolorallocate($image, 255, 0, 0);
         $green = imagecolorallocate($image, 0, 170, 0);
         
-        // Font path
+        // Jalur font
         $fontPath = public_path('fonts/arial.ttf');
         
-        // Font sizes - REALLY BIG for readability
-        $normalSize = 78;  // Normal text - MUCH BIGGER
-        $headerSize = 66;  // Section headers - MUCH BIGGER
+        // Ukuran font
+        $normalSize = 24;
+        $headerSize = 28;
         
-        // Adjusted layout for bigger fonts
-        $startY = 280;
-        $lineHeight = 70;  // More space for bigger fonts
+        // Tata letak disesuaikan
+        // Tata letak disesuaikan
+        $startY = 400;
+        $lineHeight = 55;
+        $labelX = 130;
+        $valueX = 500;
         
         // No. Pesanan
         $y = $startY;
-        $this->addText($image, 'No. Pesanan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $order->order_number, 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'No. Pesanan', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $order->order_number, $valueX, $y, $normalSize, $black, $fontPath);
         
         // Waktu Pemesanan
         $y += $lineHeight;
-        $this->addText($image, 'Waktu Pemesanan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $order->created_at->locale('id')->isoFormat('dddd, DD MMMM YYYY  HH:mm') . ' WIB', 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Waktu Pemesanan', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $order->created_at->locale('id')->isoFormat('dddd, DD MMMM YYYY  HH:mm') . ' WIB', $valueX, $y, $normalSize, $black, $fontPath);
         
         // Nama Pemesan
         $y += $lineHeight;
-        $this->addText($image, 'Nama Akun Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $order->user->name, 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Nama Akun Pemesan', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $order->user->name, $valueX, $y, $normalSize, $black, $fontPath);
         
         // Email
         $y += $lineHeight;
-        $this->addText($image, 'Email Akun Pemesan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $order->user->email, 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Email Akun Pemesan', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $order->user->email, $valueX, $y, $normalSize, $black, $fontPath);
 
-        // Horizontal line for section separation
-        $y += 30;
-        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        // Pemisah
+        $y += 60;
+        $this->drawLine($image, 130, $y, $imageWidth - 130, $y, $black);
         
         // Header: Nama dan Alamat Pembeli Gas
-        $y += 40;
-        $this->addText($image, 'Nama dan Alamat Pembeli Gas', 50, $y, $headerSize, $black, $fontPath, true);
+        $y += 70;
+        $this->addText($image, 'Nama dan Alamat Pembeli Gas', $labelX, $y, $headerSize, $black, $fontPath, true);
 
-        // Nama Lengkap (Input)
-        $y += $lineHeight;
-        $this->addText($image, 'Nama Lengkap', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . ($order->full_name ?? '-'), 400, $y, $normalSize, $black, $fontPath);
+        // Nama Lengkap
+        $y += 85;
+        $this->addText($image, 'Nama Lengkap', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($order->full_name ?? '-'), $valueX, $y, $normalSize, $black, $fontPath);
 
-        // Alamat Lengkap (Input)
+        // Alamat
         $y += $lineHeight;
-        $this->addText($image, 'Alamat', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . ($order->address ?? '-'), 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Alamat', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($order->address ?? '-'), $valueX, $y, $normalSize, $black, $fontPath);
         
-        // Horizontal line
-        $y += 30;
-        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        // Pemisah
+        $y += 60;
+        $this->drawLine($image, 130, $y, $imageWidth - 130, $y, $black);
         
-        // Informasi Pembayaran Header
-        $y += 40;
-        $this->addText($image, 'Informasi Pembayaran', 50, $y, $headerSize, $black, $fontPath, true);
+        // Header: Informasi Pembayaran
+        $y += 70;
+        $this->addText($image, 'Informasi Pembayaran', $labelX, $y, $headerSize, $black, $fontPath, true);
         
         // Waktu Pembayaran
-        $y += $lineHeight;
-        $this->addText($image, 'Waktu Pembayaran', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . ($order->confirmed_at ? $order->confirmed_at->locale('id')->isoFormat('dddd, DD MMMM YYYY  HH:mm') . ' WIB' : '-'), 400, $y, $normalSize, $black, $fontPath);
+        $y += 85;
+        $this->addText($image, 'Waktu Pembayaran', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . ($order->confirmed_at ? $order->confirmed_at->locale('id')->isoFormat('dddd, DD MMMM YYYY  HH:mm') . ' WIB' : '-'), $valueX, $y, $normalSize, $black, $fontPath);
         
         // Metode Pembayaran
         $y += $lineHeight;
-        $this->addText($image, 'Metode Pembayaran', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': ' . $this->getPaymentMethodLabel($order->payment_method), 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Metode Pembayaran', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': ' . $this->getPaymentMethodLabel($order->payment_method), $valueX, $y, $normalSize, $black, $fontPath);
         
         // Total Pembayaran
         $totalPrice = $order->price * $order->quantity;
         $y += $lineHeight;
-        $this->addText($image, 'Total Pembayaran', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, ': Rp. ' . number_format($totalPrice, 0, ',', '.'), 400, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Total Pembayaran', $labelX, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, ': Rp. ' . number_format($totalPrice, 0, ',', '.'), $valueX, $y, $normalSize, $black, $fontPath);
         
         // Status
         $y += $lineHeight;
-        $this->addText($image, 'Status', 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Status', $labelX, $y, $normalSize, $black, $fontPath, true);
         $statusText = $this->getStatusLabel($order->status);
         $statusColor = in_array($order->status, ['completed', 'confirmed']) ? $green : (in_array($order->status, ['cancelled', 'rejected']) ? $red : $black);
-        $this->addText($image, ': ' . $statusText, 400, $y, $normalSize, $statusColor, $fontPath);
+        $this->addText($image, ': ' . $statusText, $valueX, $y, $normalSize, $statusColor, $fontPath);
         
-        // Horizontal line
-        $y += 30;
-        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        // Pemisah
+        $y += 60;
+        $this->drawLine($image, 130, $y, $imageWidth - 130, $y, $black);
         
-        // Detail Pembayaran Header
-        $y += 40;
-        $this->addText($image, 'Detail Pembayaran', 50, $y, $headerSize, $black, $fontPath, true);
+        // Header: Detail Pembayaran
+        $y += 70;
+        $this->addText($image, 'Detail Pembayaran', $labelX, $y, $headerSize, $black, $fontPath, true);
         
-        // Table Headers
-        $y += $lineHeight;
-        $this->addText($image, 'Keterangan', 50, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, 'Jumlah', 450, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, 'Satuan', 600, $y, $normalSize, $black, $fontPath, true);
-        $this->addText($image, 'Total', 850, $y, $normalSize, $black, $fontPath, true);
+        // Header Tabel
+        $y += 85;
+        $col1 = 130;
+        $col2 = 530;
+        $col3 = 730;
+        $col4 = 980;
         
-        // Line under headers
-        $y += 10;
-        $this->drawLine($image, 50, $y, $imageWidth - 50, $y, $black);
+        $this->addText($image, 'Keterangan', $col1, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Jumlah', $col2, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Satuan', $col3, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, 'Total', $col4, $y, $normalSize, $black, $fontPath, true);
         
-        // Table Data
-        $y += 35;
+        // Garis di bawah header
+        $y += 15;
+        $this->drawLine($image, 130, $y, $imageWidth - 130, $y, $black);
+        
+        // Data Tabel
+        $y += 60;
         $itemName = $order->item_name;
         $quantity = (string)$order->quantity;
         $unitPrice = 'Rp. ' . number_format($order->price, 0, ',', '.');
         $total = 'Rp. ' . number_format($totalPrice, 0, ',', '.');
         
-        $this->addText($image, $itemName, 50, $y, $normalSize, $black, $fontPath);
-        $this->addText($image, $quantity, 450, $y, $normalSize, $black, $fontPath);
-        $this->addText($image, $unitPrice, 600, $y, $normalSize, $black, $fontPath);
-        $this->addText($image, $total, 850, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, $itemName, $col1, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, $quantity, $col2, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, $unitPrice, $col3, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, $total, $col4, $y, $normalSize, $black, $fontPath);
         
-        // Line
-        $y += 35;
-        $this->drawLine($image, 450, $y, $imageWidth - 50, $y, $black);
+        // Pemisah Footer Tabel
+        $y += 60;
+        $this->drawLine($image, 530, $y, $imageWidth - 130, $y, $black);
         
         // Total Pemesanan
-        $y += 35;
-        $this->addText($image, 'Total Pemesanan', 450, $y, $normalSize, $black, $fontPath);
-        $this->addText($image, 'Rp. ' . number_format($totalPrice, 0, ',', '.'), 850, $y, $normalSize, $black, $fontPath);
+        $y += 60;
+        $this->addText($image, 'Total Pemesanan', 530, $y, $normalSize, $black, $fontPath);
+        $this->addText($image, 'Rp. ' . number_format($totalPrice, 0, ',', '.'), 980, $y, $normalSize, $black, $fontPath);
         
-        // Total Dibayar (Bold)
+        // Total Dibayar
         $y += $lineHeight;
-        $this->addText($image, 'Total Dibayar', 450, $y, $headerSize, $black, $fontPath, true);
-        $this->addText($image, 'Rp. ' . number_format($totalPrice, 0, ',', '.'), 850, $y, $headerSize, $black, $fontPath, true);
+        $this->addText($image, 'Total Dibayar', 530, $y, $headerSize, $black, $fontPath, true);
+        $this->addText($image, 'Rp. ' . number_format($totalPrice, 0, ',', '.'), 980, $y, $headerSize, $black, $fontPath, true);
         
-        // Footer
-        $y += 80;
+        // Tanda tangan footer
+        // Jarak footer sebelum blok tanda tangan ditambahkan
+        $y += 150;
         $location = 'Bengkalis';
         $date = $order->created_at->locale('id')->isoFormat('DD MMMM YYYY');
-        $this->addText($image, $location . ', ' . $date, 50, $y, $normalSize, $black, $fontPath, true);
+        $this->addText($image, $location . ', ' . $date, 130, $y, $normalSize, $black, $fontPath, true);
+        $y += $lineHeight;
+        $this->addText($image, 'Hormat Kami', 130, $y, $normalSize, $black, $fontPath);
         
-        // Save receipt
+        $y += 420; // Ruang untuk tanda tangan (Lebih besar karena teks iSewa dihapus sesuai edit pengguna, tapi butuh ruang)
+        
+        // Simpan bukti transaksi
         $filename = 'receipt_gas_' . $order->order_number . '_' . time() . '.png';
         $path = 'receipts/gas/' . $filename;
         
@@ -360,9 +383,33 @@ class ReceiptGeneratorService
         
         return $path;
     }
+    
+    /**
+     * Tambahkan teks rata tengah
+     */
+    protected function addCenteredText($image, $text, $y, $size, $color, $fontPath, $imageWidth, $bold = false) 
+    {
+        if (file_exists($fontPath)) {
+            $bbox = imagettfbbox($size, 0, $fontPath, $text);
+            $textWidth = $bbox[2] - $bbox[0];
+            $x = ($imageWidth - $textWidth) / 2;
+            
+            imagettftext($image, $size, 0, $x, $y, $color, $fontPath, $text);
+            
+            if ($bold) {
+                imagettftext($image, $size, 0, $x + 1, $y, $color, $fontPath, $text);
+            }
+        } else {
+            // Alternatif untuk teks rata tengah jika font hilang (perkiraan kasar)
+            $fontWidth = imagefontwidth(5);
+            $textWidth = strlen($text) * $fontWidth;
+            $x = ($imageWidth - $textWidth) / 2;
+            imagestring($image, 5, $x, $y, $text, $color);
+        }
+    }
 
     /**
-     * Draw horizontal line
+     * Gambar garis horizontal
      */
     protected function drawLine($image, $x1, $y, $x2, $y2, $color)
     {
@@ -372,7 +419,7 @@ class ReceiptGeneratorService
     }
 
     /**
-     * Add text to image using GD
+     * Tambahkan teks ke gambar menggunakan GD
      */
     protected function addText($image, $text, $x, $y, $size, $color, $fontPath, $bold = false)
     {

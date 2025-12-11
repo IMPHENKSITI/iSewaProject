@@ -13,28 +13,28 @@ use Illuminate\Support\Facades\Storage;
 class RentalBookingController extends Controller
 {
     /**
-     * Show the booking form
+     * Tampilkan formulir pemesanan
      */
     public function create($itemId)
     {
-        // Fetch the rental item
+        // Ambil item penyewaan
         $item = Barang::findOrFail($itemId);
         
-        // Fetch system settings for bank account and location
+        // Ambil pengaturan sistem untuk rekening bank dan lokasi
         $setting = SystemSetting::first();
         
-        // Get quantity from request (from detail page)
+        // Ambil jumlah dari permintaan (dari halaman detail)
         $quantity = request()->get('quantity', 1);
         
         return view('users.rental-booking', compact('item', 'setting', 'quantity'));
     }
 
     /**
-     * Store the booking
+     * Simpan pemesanan
      */
     public function store(Request $request)
     {
-        // Validate the request
+        // Validasi permintaan
         $validated = $request->validate([
             'barang_id' => 'required|exists:barang,id',
             'delivery_method' => 'required|in:antar,jemput',
@@ -43,33 +43,33 @@ class RentalBookingController extends Controller
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:tunai',
             
-            // Recipient & Address (Required for both Antar & Jemput)
+            // Penerima & Alamat (Wajib untuk Antar & Jemput)
             'recipient_name' => 'required|string|max:255',
             'delivery_address' => 'required|string',
             
-            // For 'transfer' payment method
+            // Untuk metode pembayaran 'transfer'
             'payment_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             
-            // New Purpose Field
+            // Bidang Tujuan Baru
             'rental_purpose' => 'required|string|max:1000',
         ]);
 
-        // Calculate days count
+        // Hitung jumlah hari
         $startDate = \Carbon\Carbon::parse($validated['start_date']);
         $endDate = \Carbon\Carbon::parse($validated['end_date']);
         $daysCount = $startDate->diffInDays($endDate) + 1;
 
-        // Get item to calculate total
+        // Ambil item untuk menghitung total
         $item = Barang::findOrFail($validated['barang_id']);
         $totalAmount = $item->harga_sewa * $validated['quantity'];
 
-        // Handle payment proof upload
+        // Tangani unggahan bukti pembayaran
         $paymentProofPath = null;
         if ($request->hasFile('payment_proof')) {
             $paymentProofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
         }
 
-        // Create the booking
+        // Buat pemesanan
         $booking = RentalBooking::create([
             'user_id' => Auth::id(),
             'barang_id' => $validated['barang_id'],
@@ -87,7 +87,7 @@ class RentalBookingController extends Controller
             'status' => 'pending',
         ]);
 
-        // Create transaction receipt
+        // Buat bukti transaksi
         $receipt = \App\Models\TransactionReceipt::create([
             'booking_type' => 'rental',
             'booking_id' => $booking->id,
@@ -99,7 +99,7 @@ class RentalBookingController extends Controller
             'payment_method' => $validated['payment_method'],
         ]);
 
-        // Create admin notification
+        // Buat notifikasi admin
         \App\Models\AdminNotification::create([
             'type' => 'rental_request',
             'reference_id' => $booking->id,
@@ -112,7 +112,7 @@ class RentalBookingController extends Controller
             'success' => true,
             'message' => 'Pemesanan berhasil dibuat!',
             'booking_id' => $booking->id,
-            'receipt_id' => $booking->id, // Use booking ID for receipt routes
+            'receipt_id' => $booking->id, // Gunakan ID pesanan untuk rute bukti transaksi
             'receipt_number' => $receipt->receipt_number,
         ]);
     }
