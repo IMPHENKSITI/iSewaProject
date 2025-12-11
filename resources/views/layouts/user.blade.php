@@ -64,6 +64,7 @@
                 this.initSidebar();
                 this.initMobileDropdowns();
                 this.initScrollEffect();
+                this.initMobileAuthButtons(); // TAMBAHAN: Init tombol auth mobile
             },
 
             // Sidebar Seluler
@@ -88,6 +89,9 @@
                     setTimeout(() => overlay.classList.add('hidden'), 300);
                     document.body.style.overflow = '';
                 };
+
+                // Simpan closeSidebar ke window agar bisa diakses dari initMobileAuthButtons
+                window.closeMobileSidebar = closeSidebar;
 
                 menuBtn.addEventListener('click', openSidebar);
                 closeBtn?.addEventListener('click', closeSidebar);
@@ -129,8 +133,55 @@
                         navbar.classList.add('bg-white/10');
                     }
                 });
+            },
+
+            // TAMBAHAN: Handler untuk tombol auth di mobile
+            initMobileAuthButtons() {
+                const mobileLoginBtn = document.getElementById('btn-open-login-mobile');
+                const mobileRegisterBtn = document.getElementById('btn-open-register-mobile');
+                const desktopLoginBtn = document.getElementById('btn-open-login');
+                const desktopRegisterBtn = document.getElementById('btn-open-register');
+
+                // Tombol Login Mobile -> trigger tombol desktop
+                if (mobileLoginBtn) {
+                    mobileLoginBtn.addEventListener('click', () => {
+                        // Tutup sidebar dulu
+                        if (window.closeMobileSidebar) {
+                            window.closeMobileSidebar();
+                        }
+                        // Trigger tombol desktop setelah sidebar tertutup
+                        setTimeout(() => {
+                            if (desktopLoginBtn) {
+                                desktopLoginBtn.click();
+                            }
+                        }, 350);
+                    });
+                }
+
+                // Tombol Register Mobile -> trigger tombol desktop
+                if (mobileRegisterBtn) {
+                    mobileRegisterBtn.addEventListener('click', () => {
+                        // Tutup sidebar dulu
+                        if (window.closeMobileSidebar) {
+                            window.closeMobileSidebar();
+                        }
+                        // Trigger tombol desktop setelah sidebar tertutup
+                        setTimeout(() => {
+                            if (desktopRegisterBtn) {
+                                desktopRegisterBtn.click();
+                            }
+                        }, 350);
+                    });
+                }
             }
         };
+
+        // ================================================
+        // PENTING: PANGGIL Navbar.init() saat DOM ready!
+        // ================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            Navbar.init();
+        });
     </script>
 
     {{-- Picu Modal Login jika Sesi Ada --}}
