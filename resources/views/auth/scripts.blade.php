@@ -9,9 +9,6 @@
         // ========================================
         // UTILITY FUNCTIONS
         // ========================================
-        // ========================================
-        // UTILITY FUNCTIONS (Refactored for Reliability)
-        // ========================================
         function openModal(modal) {
             if (!modal) return;
 
