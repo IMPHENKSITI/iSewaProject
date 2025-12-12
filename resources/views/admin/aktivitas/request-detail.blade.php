@@ -402,7 +402,16 @@
                                 </span>
                             </div>
 
-                            @if($request->status === 'pending')
+                            @if($request->cancellation_status === 'pending')
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-danger rounded-pill py-2" onclick="handleCancellation({{ $request->id }}, '{{ $type }}', 'approve')">
+                                        <i class="bx bx-check-double me-2"></i>Setujui Pembatalan
+                                    </button>
+                                    <button class="btn btn-secondary rounded-pill py-2" onclick="showCancellationRejectModal({{ $request->id }}, '{{ $type }}')">
+                                        <i class="bx bx-x-circle me-2"></i>Tolak Pembatalan
+                                    </button>
+                                </div>
+                            @elseif($request->status === 'pending')
                                 <div class="d-grid gap-2">
                                     <button class="btn btn-success rounded-pill py-2" onclick="confirmApprove({{ $request->id }}, '{{ $type }}')">
                                         <i class="bx bx-check me-2"></i>Setujui Pengajuan

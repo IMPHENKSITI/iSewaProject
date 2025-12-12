@@ -1,7 +1,7 @@
 @extends('layouts.user')
 
 @php
-    // Card styling logic (same as rental booking)
+    // Logika styling kartu (sama seperti penyewaan alat)
     $cardStyle = 'background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);'; // default blue
     $amountColor = 'text-yellow-300'; // Default amount color
     $cardTextColor = 'text-white';
@@ -25,7 +25,7 @@
         $style = $setting->card_gradient_style;
         $cardStyle = 'background: ' . ($gradients[$style] ?? $gradients['blue']) . ';';
         
-        // Determine colors based on background (SAME AS RENTAL BOOKING)
+        // Tentukan warna berdasarkan latar belakang (SAMA SEPERTI PENYEWAAN ALAT)
         if (in_array($style, ['white', 'silver', 'gold', 'transparent'])) {
             $amountColor = 'text-red-600';
             $cardTextColor = 'text-gray-800';
@@ -40,7 +40,7 @@
         }
     }
     
-    // Get cash payment description
+    // Dapatkan deskripsi pembayaran tunai
     $cashDescription = $setting->cash_payment_description ?? 'Yani - Bendahara BUMDes';
 
     // Bank Logo Mapping
@@ -55,7 +55,7 @@
     ];
     $bankLogoPath = $bankLogos[$setting->bank_name ?? ''] ?? 'admin/img/banks/bsi.png';
     
-    // Determine available payment methods with better fallback
+    // Tentukan metode pembayaran yang tersedia dengan fallback yang lebih baik
     $methods = $setting?->payment_methods ?? ['transfer', 'tunai'];
     if (!is_array($methods) || empty($methods)) {
         $methods = ['transfer', 'tunai'];
@@ -63,13 +63,13 @@
     $hasTransfer = in_array('transfer', $methods);
     $hasTunai = in_array('tunai', $methods);
     
-    // Ensure at least one method is available
+    // Pastikan setidaknya satu metode tersedia
     if (!$hasTransfer && !$hasTunai) {
         $hasTransfer = true;
         $hasTunai = true;
     }
     
-    // Determine default active method
+    // Tentukan metode aktif default
     $defaultMethod = $hasTransfer ? 'transfer' : 'tunai';
 @endphp
 
@@ -82,7 +82,7 @@
         <div class="absolute inset-0 bg-white/25 pointer-events-none"></div>
 
         <div class="max-w-5xl mx-auto px-6 relative z-20">
-            <!-- Header with Gradient Text (Centered) -->
+            <!-- Header dengan Teks Gradien (Tengah) -->
             <div class="text-center mb-12 mt-8">
                 <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">
                     Pembelian Gas
@@ -105,7 +105,7 @@
                         <h3 class="text-lg font-bold text-gray-800">Alamat Bumdes</h3>
                     </div>
                     
-                    <!-- Location Name -->
+                    <!-- Nama Lokasi -->
                     @if($setting && $setting->location_name)
                     <div class="mb-4 animate-fade-in">
                         <div class="flex items-start gap-3">
@@ -122,7 +122,7 @@
                     </div>
                     @endif
                     
-                    <!-- Full Address -->
+                    <!-- Alamat Lengkap -->
                     @if($setting && $setting->address)
                     <div class="mb-4 animate-fade-in" style="animation-delay: 0.1s">
                         <div class="flex items-start gap-3">
@@ -140,7 +140,7 @@
                     @endif
                 </div>
 
-                <!-- Buyer Information Card -->
+                <!-- Kartu Informasi Pembeli -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
                     <div class="flex items-center gap-3 mb-4">
                         <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
@@ -166,9 +166,9 @@
                     </div>
                 </div>
 
-                <!-- Product Card -->
+                <!-- Kartu Produk -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <div class="flex gap-6">
+                    <div class="flex flex-col sm:flex-row gap-6">
                         <!-- Product Image -->
                         <img src="{{ asset('storage/' . $item->foto) }}" 
                              alt="{{ $item->jenis_gas }}" 
@@ -229,12 +229,12 @@
                         <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg p-8">
                             <h4 class="text-2xl font-bold text-center text-gray-800 mb-6">Silahkan Lakukan Pembayaran Ditempat</h4>
                             
-                            <div class="flex items-center justify-between">
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div>
                                     <p class="text-lg text-gray-700">{{ $cashDescription }}</p>
                                 </div>
                                 
-                                <div class="text-right">
+                                <div class="text-center sm:text-right">
                                     <p class="text-sm text-gray-600 mb-1">Jumlah Yang Harus Dibayar</p>
                                     <p class="text-3xl font-bold text-red-600" id="total-amount-cash">Rp. {{ number_format($item->harga_satuan * $quantity, 0, ',', '.') }}</p>
                                 </div>

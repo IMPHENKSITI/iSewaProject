@@ -81,7 +81,39 @@ class RequestController extends Controller
             'active_rental_count' => RentalBooking::whereIn('status', ['confirmed', 'being_prepared', 'in_delivery', 'arrived'])->sum('quantity'),
         ];
 
-        return view('admin.aktivitas.requests', compact('rentalRequests', 'gasOrders', 'stats', 'status', 'category'));
+        // Hitung notifikasi detail
+        $notificationCounts = [
+            'rental' => [
+                'pending' => RentalBooking::where('status', 'pending')->count(),
+                'cancellation' => RentalBooking::where('cancellation_status', 'pending')->count(),
+                'total' => RentalBooking::where('status', 'pending')->orWhere('cancellation_status', 'pending')->count()
+            ],
+            'gas' => [
+                'pending' => GasOrder::where('status', 'pending')->count(),
+                'cancellation' => GasOrder::where('cancellation_status', 'pending')->count(),
+                'total' => GasOrder::where('status', 'pending')->orWhere('cancellation_status', 'pending')->count()
+            ],
+        ];
+
+        return view('admin.aktivitas.requests', compact('rentalRequests', 'gasOrders', 'stats', 'status', 'category', 'notificationCounts'));
+    }
+
+    public function getCounts()
+    {
+        $counts = [
+            'rental' => [
+                'pending' => RentalBooking::where('status', 'pending')->count(),
+                'cancellation' => RentalBooking::where('cancellation_status', 'pending')->count(),
+                'total' => RentalBooking::where('status', 'pending')->orWhere('cancellation_status', 'pending')->count()
+            ],
+            'gas' => [
+                'pending' => GasOrder::where('status', 'pending')->count(),
+                'cancellation' => GasOrder::where('cancellation_status', 'pending')->count(),
+                'total' => GasOrder::where('status', 'pending')->orWhere('cancellation_status', 'pending')->count()
+            ],
+        ];
+
+        return response()->json($counts);
     }
 
     public function show($id, $type)

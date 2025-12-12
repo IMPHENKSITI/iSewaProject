@@ -130,7 +130,13 @@
                     }
                 });
             }
+            }
         };
+
+        // Initialize Navbar
+        document.addEventListener('DOMContentLoaded', () => {
+             Navbar.init();
+        });
     </script>
 
     {{-- Picu Modal Login jika Sesi Ada --}}

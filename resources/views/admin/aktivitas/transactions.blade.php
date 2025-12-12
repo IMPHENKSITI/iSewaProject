@@ -148,7 +148,7 @@
                                             <small class="text-muted">ID: #{{ $payment->order_number ?? $payment->id }}</small>
                                         </td>
                                         <td>
-                                            <span class="fw-bold text-dark">Rp {{ number_format($payment->total_price ?? 0, 0, ',', '.') }}</span>
+                                            <span class="fw-bold text-dark">Rp {{ number_format($payment->total_amount ?? 0, 0, ',', '.') }}</span>
                                         </td>
                                         <td>
                                             @if($payment->payment_method == 'tunai')
@@ -177,16 +177,7 @@
                                                         <i class="bx bx-receipt fs-5"></i>
                                                     </a>
                                                 @endif
-                                                @if($payment->status != 'completed')
-                                                    <button class="btn btn-sm btn-light border shadow-sm rounded-circle p-2 text-success hover-success" 
-                                                            onclick="verifyPayment({{ $payment->id }}, 'rental')" title="Verifikasi">
-                                                        <i class="bx bx-check fs-5"></i>
-                                                    </button>
-                                                    <button class="btn btn-sm btn-light border shadow-sm rounded-circle p-2 text-danger hover-danger" 
-                                                            onclick="rejectPayment({{ $payment->id }}, 'rental')" title="Tolak">
-                                                        <i class="bx bx-x fs-5"></i>
-                                                    </button>
-                                                @endif
+                                                
                                             </div>
                                         </td>
                                     </tr>
@@ -242,7 +233,7 @@
                                             <small class="text-muted">{{ $payment->quantity }} Tabung</small>
                                         </td>
                                         <td>
-                                             <span class="fw-bold text-dark">Rp {{ number_format($payment->total_price ?? 0, 0, ',', '.') }}</span>
+                                             <span class="fw-bold text-dark">Rp {{ number_format(($payment->price ?? 0) * ($payment->quantity ?? 1), 0, ',', '.') }}</span>
                                         </td>
                                         <td>
                                             @if($payment->payment_method == 'tunai')
@@ -271,16 +262,7 @@
                                                         <i class="bx bx-receipt fs-5"></i>
                                                     </a>
                                                 @endif
-                                                @if($payment->status != 'completed')
-                                                    <button class="btn btn-sm btn-light border shadow-sm rounded-circle p-2 text-success hover-success" 
-                                                            onclick="verifyPayment({{ $payment->id }}, 'gas')" title="Verifikasi">
-                                                        <i class="bx bx-check fs-5"></i>
-                                                    </button>
-                                                    <button class="btn btn-sm btn-light border shadow-sm rounded-circle p-2 text-danger hover-danger" 
-                                                            onclick="rejectPayment({{ $payment->id }}, 'gas')" title="Tolak">
-                                                        <i class="bx bx-x fs-5"></i>
-                                                    </button>
-                                                @endif
+                                                
                                             </div>
                                         </td>
                                     </tr>
@@ -295,91 +277,4 @@
     </div>
 </div>
 
-<!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-4 border-0">
-            <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title fw-bold">Tolak Bukti Pembayaran</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="rejectForm" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label text-muted">Alasan Penolakan <span class="text-danger">*</span></label>
-                        <textarea name="reason" class="form-control bg-light border-0 py-3" rows="4" placeholder="Jelaskan alasan penolakan bukti pembayaran..." required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger rounded-pill px-4">
-                        Tolak Bukti
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<style>
-    /* Custom Tab Styling */
-    .nav-pills .nav-link {
-        color: #6c757d;
-        background-color: transparent;
-        transition: all 0.3s ease;
-    }
-    .nav-pills .nav-link:hover {
-        background-color: #f8f9fa;
-        color: #0d6efd;
-    }
-    .nav-pills .nav-link.active {
-        background-color: #0d6efd;
-        color: #fff;
-        box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
-    }
-    .hover-primary:hover { background-color: #0d6efd !important; color: white !important; border-color: #0d6efd !important; }
-    .hover-success:hover { background-color: #198754 !important; color: white !important; border-color: #198754 !important; }
-    .hover-danger:hover { background-color: #dc3545 !important; color: white !important; border-color: #dc3545 !important; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-function verifyPayment(id, type) {
-    Swal.fire({
-        title: 'Verifikasi Pembayaran?',
-        text: 'Bukti pembayaran akan diverifikasi.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Verifikasi',
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#198754',
-        cancelButtonColor: '#6c757d'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading() });
-            
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `{{ url('admin/aktivitas/bukti-transaksi') }}/${id}/${type}/verify`;
-            
-            const csrf = document.createElement('input');
-            csrf.type = 'hidden';
-            csrf.name = '_token';
-            csrf.value = '{{ csrf_token() }}';
-            form.appendChild(csrf);
-            
-            document.body.appendChild(form);
-            form.submit();
-        }
-    });
-}
-
-function rejectPayment(id, type) {
-    const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
-    const form = document.getElementById('rejectForm');
-    form.action = `{{ url('admin/aktivitas/bukti-transaksi') }}/${id}/${type}/reject`;
-    modal.show();
-}
-</script>
 @endsection

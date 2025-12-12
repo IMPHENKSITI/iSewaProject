@@ -3,7 +3,7 @@
 @section('page')
 <main class="flex-grow relative w-full">
     <section class="relative z-10 min-h-screen pt-32 pb-16">
-        <!-- Decorative Background Elements -->
+        <!-- Elemen Dekoratif Latar Belakang -->
         <div class="absolute inset-0 pointer-events-none overflow-hidden">
             <!-- Top Left Blue Wave -->
             <svg class="absolute top-0 left-0 w-[500px] h-[400px] opacity-30" style="transform: translate(-20%, -10%);">
@@ -56,20 +56,20 @@
                 </h1>
             </div>
 
-            <!-- Product Cards Grid -->
+            <!-- Grid Kartu Produk -->
             @if($items->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto">
                     @foreach($items as $item)
                     <a href="{{ route('rental.equipment.show', $item->id) }}" class="block">
                     <div class="product-card bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 mx-auto w-full max-w-[380px]">
-                        <!-- Product Image -->
+                        <!-- Gambar Produk -->
                         <div class="product-image-wrapper mb-6 relative aspect-[4/3] overflow-hidden rounded-2xl">
                             <img src="{{ asset('storage/' . $item->foto) }}" 
                                  alt="{{ $item->nama_barang }}"
                                  class="product-image w-full h-full object-cover">
                         </div>
 
-                        <!-- Product Name Only -->
+                        <!-- Nama Produk Saja -->
                         <div class="product-info text-center">
                             <h3 class="product-name text-sm font-bold text-gray-800 mb-2">
                                 {{ $item->nama_barang }}
@@ -80,7 +80,7 @@
                     @endforeach
                 </div>
             @else
-                <!-- Empty State -->
+                <!-- Kondisi Kosong -->
                 <div class="text-center py-20">
                     <svg class="w-24 h-24 mx-auto mb-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
@@ -166,10 +166,10 @@
 
 @push('scripts')
 <script>
-    // Smooth scroll to top on page load
+    // Gulir halus ke atas saat halaman dimuat
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Add loading state for images
+    // Tambahkan status loading untuk gambar
     document.addEventListener('DOMContentLoaded', () => {
         const images = document.querySelectorAll('.product-image');
         images.forEach(img => {

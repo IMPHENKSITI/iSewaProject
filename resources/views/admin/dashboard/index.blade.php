@@ -179,7 +179,7 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        @include('admin.partials.status-badge', ['status' => $request->status])
+                                                        @include('admin.partials.status-badge', ['status' => $request->status, 'cancelStatus' => $request->cancellation_status])
                                                     </td>
                                                     <td class="text-end pe-4">
                                                         <div class="d-flex gap-2 justify-content-end">
@@ -188,17 +188,31 @@
                                                                data-bs-toggle="tooltip" title="Lihat Detail">
                                                                 <i class="bx bx-show"></i>
                                                             </a>
-                                                            @if($request->status == 'pending')
-                                                            <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
-                                                                    onclick="approveRequest({{ $request->id }}, '{{ $request->type }}')"
-                                                                    data-bs-toggle="tooltip" title="Setujui">
-                                                                <i class="bx bx-check"></i>
-                                                            </button>
-                                                            <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
-                                                                    onclick="rejectRequest({{ $request->id }}, '{{ $request->type }}')"
-                                                                    data-bs-toggle="tooltip" title="Tolak">
-                                                                <i class="bx bx-x"></i>
-                                                            </button>
+                                                            
+                                                            @if($request->cancellation_status == 'pending')
+                                                                {{-- Tombol Aksi untuk Pembatalan --}}
+                                                                <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
+                                                                        onclick="handleCancellation({{ $request->id }}, '{{ $request->type }}', 'approve')"
+                                                                        data-bs-toggle="tooltip" title="Setujui Pembatalan">
+                                                                    <i class="bx bx-check-double"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
+                                                                        onclick="handleCancellation({{ $request->id }}, '{{ $request->type }}', 'reject')"
+                                                                        data-bs-toggle="tooltip" title="Tolak Pembatalan">
+                                                                    <i class="bx bx-x-circle"></i>
+                                                                </button>
+                                                            @elseif($request->status == 'pending')
+                                                                {{-- Tombol Aksi untuk Pesanan Baru --}}
+                                                                <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
+                                                                        onclick="approveRequest({{ $request->id }}, '{{ $request->type }}')"
+                                                                        data-bs-toggle="tooltip" title="Setujui">
+                                                                    <i class="bx bx-check"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
+                                                                        onclick="rejectRequest({{ $request->id }}, '{{ $request->type }}')"
+                                                                        data-bs-toggle="tooltip" title="Tolak">
+                                                                    <i class="bx bx-x"></i>
+                                                                </button>
                                                             @endif
                                                         </div>
                                                     </td>
@@ -247,6 +261,88 @@
                 </div>
 
                 <script>
+                    function handleCancellation(id, type, action) {
+                        let title, text, confirmBtn, icon;
+                        
+                        if (action === 'approve') {
+                            title = 'Setujui Pembatalan?';
+                            text = "Pesanan akan dibatalkan sesuai permintaan pengguna.";
+                            confirmBtn = 'Ya, Setujui Pembatalan';
+                            icon = 'warning';
+                        } else {
+                            // Untuk penolakan pembatalan, kita butuh input alasan
+                            // Gunakan SweetAlert dengan input
+                            Swal.fire({
+                                title: 'Tolak Pembatalan',
+                                input: 'textarea',
+                                inputLabel: 'Alasan Penolakan',
+                                inputPlaceholder: 'Jelaskan kenapa pembatalan ditolak...',
+                                inputAttributes: {
+                                    'aria-label': 'Jelaskan kenapa pembatalan ditolak'
+                                },
+                                showCancelButton: true,
+                                confirmButtonText: 'Tolak Pembatalan',
+                                cancelButtonText: 'Batal',
+                                inputValidator: (value) => {
+                                    if (!value) {
+                                        return 'Anda harus menuliskan alasan penolakan!'
+                                    }
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    submitCancellationResponse(id, type, action, result.value);
+                                }
+                            });
+                            return; // Hentikan eksekusi di sini, lanjut di submitCancellationResponse
+                        }
+
+                        Swal.fire({
+                            title: title,
+                            text: text,
+                            icon: icon,
+                            showCancelButton: true,
+                            confirmButtonColor: action === 'approve' ? '#198754' : '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: confirmBtn,
+                            cancelButtonText: 'Batal'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                submitCancellationResponse(id, type, action, null);
+                            }
+                        });
+                    }
+
+                    function submitCancellationResponse(id, type, action, reason) {
+                        Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading() });
+                        
+                        let url = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${type}/${id}/cancellation/${action}`;
+                        let body = { 
+                            _token: '{{ csrf_token() }}' 
+                        };
+                        
+                        if (reason) {
+                            body.admin_response = reason;
+                        }
+
+                        fetch(url, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json' 
+                            },
+                            body: JSON.stringify(body)
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.success) {
+                                Swal.fire('Berhasil', data.message, 'success').then(() => location.reload());
+                            } else {
+                                Swal.fire('Gagal', data.message, 'error');
+                            }
+                        })
+                        .catch(err => Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'));
+                    }
+
                     function approveRequest(id, type) {
                         Swal.fire({
                             title: 'Setujui Pesanan?',

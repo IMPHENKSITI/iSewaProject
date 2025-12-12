@@ -232,6 +232,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/transaksi', [DashboardController::class, 'index'])->name('admin.aktivitas.transaksi.index');
         Route::get('/kemitraan', [DashboardController::class, 'index'])->name('admin.aktivitas.kemitraan.index');
 
+        Route::get('/permintaan-pengajuan/notification-counts', [\App\Http\Controllers\Admin\RequestController::class, 'getCounts'])->name('admin.aktivitas.permintaan-pengajuan.counts');
         Route::get('/permintaan-pengajuan', [\App\Http\Controllers\Admin\RequestController::class, 'index'])->name('admin.aktivitas.permintaan-pengajuan.index');
         Route::get('/permintaan-pengajuan/{id}/{type}', [\App\Http\Controllers\Admin\RequestController::class, 'show'])->name('admin.aktivitas.permintaan-pengajuan.show');
         Route::post('/permintaan-pengajuan/{id}/{type}/approve', [\App\Http\Controllers\Admin\RequestController::class, 'approve'])->name('admin.aktivitas.permintaan-pengajuan.approve');

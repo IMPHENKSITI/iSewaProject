@@ -6,7 +6,7 @@
     <!-- Bagian Carousel -->
 
 
-    {{-- UTAMA --}}<main class="flex-grow relative w-full">
+    {{-- UTAMA --}}<main class="flex-grow relative w-full overflow-x-hidden">
 
         {{-- BAGIAN BERANDA --}}<section id="beranda" class="relative z-10">
             <div class="w-full mx-auto">

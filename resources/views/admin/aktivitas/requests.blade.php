@@ -8,7 +8,7 @@
         $activeTab = request('tab', 'rental');
     @endphp
     
-    <!-- Page Header -->
+    <!-- Judul Header Halaman -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold fs-3 mb-1 text-primary">Permintaan Pengajuan</h4>
@@ -22,7 +22,7 @@
     </div>
 
     <!-- Statistics Cards -->
-    <!-- Statistics Cards -->
+    <!-- Statistik Pesanan -->
     <div class="row g-3 mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
         <!-- Total Pesanan -->
         <div class="col">
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <!-- Status Filters -->
+    <!-- Filter Status -->
     <div class="d-flex gap-2 mb-4 overflow-auto pb-2">
         <a href="{{ route('admin.aktivitas.permintaan-pengajuan.index', ['status' => 'all'] + request()->except('status')) }}" 
            class="btn btn-sm rounded-pill px-3 {{ request('status', 'all') == 'all' ? 'btn-dark' : 'btn-outline-dark border-0 bg-white shadow-sm' }}">
@@ -114,23 +114,52 @@
         </a>
     </div>
 
-    <!-- Main Content Tabs -->
+    <!-- Tab Konten Utama -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-header bg-white border-bottom py-3 px-4">
+        <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <ul class="nav nav-pills card-header-pills gap-2" id="orderTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {{ $activeTab == 'rental' ? 'active' : '' }} rounded-pill px-4 fw-semibold" id="rental-tab" data-bs-toggle="tab" data-bs-target="#rental-pane" type="button" role="tab">
                         <i class="bx bx-wrench me-2"></i>Penyewaan Alat
-                        <span class="badge bg-white text-primary ms-2 shadow-sm">{{ $rentalRequests->count() }}</span>
+                        @php $rentalTotal = $notificationCounts['rental']['total'] ?? 0; @endphp
+                        @php $rentalCount = $rentalTotal > 0 ? $rentalTotal : $rentalRequests->count(); @endphp
+                        <span id="rental-badge" 
+                              class="badge {{ $rentalTotal > 0 ? 'bg-danger text-white' : 'bg-white text-primary' }} ms-2 shadow-sm"
+                              data-default-count="{{ $rentalRequests->count() }}">
+                            {{ $rentalCount }}
+                        </span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link {{ $activeTab == 'gas' ? 'active' : '' }} rounded-pill px-4 fw-semibold" id="gas-tab" data-bs-toggle="tab" data-bs-target="#gas-pane" type="button" role="tab">
                         <i class="bx bxs-gas-pump me-2"></i>Pembelian Gas
-                        <span class="badge bg-white text-primary ms-2 shadow-sm">{{ $gasOrders->count() }}</span>
+                        @php $gasTotal = $notificationCounts['gas']['total'] ?? 0; @endphp
+                        @php $gasCount = $gasTotal > 0 ? $gasTotal : $gasOrders->count(); @endphp
+                        <span id="gas-badge" 
+                              class="badge {{ $gasTotal > 0 ? 'bg-danger text-white' : 'bg-white text-primary' }} ms-2 shadow-sm"
+                              data-default-count="{{ $gasOrders->count() }}">
+                            {{ $gasCount }}
+                        </span>
                     </button>
                 </li>
             </ul>
+
+            {{-- Area Teks Notifikasi --}}
+            <div id="notification-text" class="text-danger fw-semibold small d-flex align-items-center mt-2 mt-md-0">
+                {{-- Teks akan dimasukkan lewat JS --}}
+                @php
+                    $messages = [];
+                    // Rental
+                    if($notificationCounts['rental']['pending'] > 0) $messages[] = $notificationCounts['rental']['pending'] . " Pesanan Alat Baru";
+                    if($notificationCounts['rental']['cancellation'] > 0) $messages[] = $notificationCounts['rental']['cancellation'] . " Pembatalan Alat";
+                    // Gas
+                    if($notificationCounts['gas']['pending'] > 0) $messages[] = $notificationCounts['gas']['pending'] . " Pesanan Gas Baru";
+                    if($notificationCounts['gas']['cancellation'] > 0) $messages[] = $notificationCounts['gas']['cancellation'] . " Pembatalan Gas";
+
+                    $finalMessage = !empty($messages) ? '<i class="bx bx-bell bx-tada me-2"></i>Anda memiliki: ' . implode(', ', $messages) : '';
+                @endphp
+                {!! $finalMessage !!}
+            </div>
         </div>
         
         <div class="card-body p-0">
@@ -191,17 +220,31 @@
                                                    data-bs-toggle="tooltip" title="Lihat Detail">
                                                     <i class="bx bx-show"></i>
                                                 </a>
-                                                @if($req->status == 'pending')
-                                                <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
-                                                        onclick="approveRequest({{ $req->id }}, 'rental')"
-                                                        data-bs-toggle="tooltip" title="Setujui">
-                                                    <i class="bx bx-check"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
-                                                        onclick="rejectRequest({{ $req->id }}, 'rental')"
-                                                        data-bs-toggle="tooltip" title="Tolak">
-                                                    <i class="bx bx-x"></i>
-                                                </button>
+
+                                                @if($req->cancellation_status == 'pending')
+                                                    {{-- Tombol Aksi untuk Pembatalan --}}
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
+                                                            onclick="handleCancellation({{ $req->id }}, 'rental', 'approve')"
+                                                            data-bs-toggle="tooltip" title="Setujui Pembatalan">
+                                                        <i class="bx bx-check-double"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
+                                                            onclick="handleCancellation({{ $req->id }}, 'rental', 'reject')"
+                                                            data-bs-toggle="tooltip" title="Tolak Pembatalan">
+                                                        <i class="bx bx-x-circle"></i>
+                                                    </button>
+                                                @elseif($req->status == 'pending')
+                                                    {{-- Tombol Aksi untuk Pesanan Baru --}}
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
+                                                            onclick="approveRequest({{ $req->id }}, 'rental')"
+                                                            data-bs-toggle="tooltip" title="Setujui">
+                                                        <i class="bx bx-check"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
+                                                            onclick="rejectRequest({{ $req->id }}, 'rental')"
+                                                            data-bs-toggle="tooltip" title="Tolak">
+                                                        <i class="bx bx-x"></i>
+                                                    </button>
                                                 @endif
                                             </div>
                                         </td>
@@ -267,17 +310,31 @@
                                                    data-bs-toggle="tooltip" title="Lihat Detail">
                                                     <i class="bx bx-show"></i>
                                                 </a>
-                                                @if($order->status == 'pending')
-                                                <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
-                                                        onclick="approveRequest({{ $order->id }}, 'gas')"
-                                                        data-bs-toggle="tooltip" title="Setujui">
-                                                    <i class="bx bx-check"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
-                                                        onclick="rejectRequest({{ $order->id }}, 'gas')"
-                                                        data-bs-toggle="tooltip" title="Tolak">
-                                                    <i class="bx bx-x"></i>
-                                                </button>
+                                                
+                                                @if($order->cancellation_status == 'pending')
+                                                    {{-- Tombol Aksi untuk Pembatalan --}}
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
+                                                            onclick="handleCancellation({{ $order->id }}, 'gas', 'approve')"
+                                                            data-bs-toggle="tooltip" title="Setujui Pembatalan">
+                                                        <i class="bx bx-check-double"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
+                                                            onclick="handleCancellation({{ $order->id }}, 'gas', 'reject')"
+                                                            data-bs-toggle="tooltip" title="Tolak Pembatalan">
+                                                        <i class="bx bx-x-circle"></i>
+                                                    </button>
+                                                @elseif($order->status == 'pending')
+                                                    {{-- Tombol Aksi untuk Pesanan Baru --}}
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-success" 
+                                                            onclick="approveRequest({{ $order->id }}, 'gas')"
+                                                            data-bs-toggle="tooltip" title="Setujui">
+                                                        <i class="bx bx-check"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-danger" 
+                                                            onclick="rejectRequest({{ $order->id }}, 'gas')"
+                                                            data-bs-toggle="tooltip" title="Tolak">
+                                                        <i class="bx bx-x"></i>
+                                                    </button>
                                                 @endif
                                             </div>
                                         </td>
@@ -376,6 +433,88 @@
         });
     }
 
+    function handleCancellation(id, type, action) {
+        let title, text, confirmBtn, icon;
+        
+        if (action === 'approve') {
+            title = 'Setujui Pembatalan?';
+            text = "Pesanan akan dibatalkan sesuai permintaan pengguna.";
+            confirmBtn = 'Ya, Setujui Pembatalan';
+            icon = 'warning';
+        } else {
+            // Untuk penolakan pembatalan, kita butuh input alasan
+            // Gunakan SweetAlert dengan input
+            Swal.fire({
+                title: 'Tolak Pembatalan',
+                input: 'textarea',
+                inputLabel: 'Alasan Penolakan',
+                inputPlaceholder: 'Jelaskan kenapa pembatalan ditolak...',
+                inputAttributes: {
+                    'aria-label': 'Jelaskan kenapa pembatalan ditolak'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Tolak Pembatalan',
+                cancelButtonText: 'Batal',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Anda harus menuliskan alasan penolakan!'
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    submitCancellationResponse(id, type, action, result.value);
+                }
+            });
+            return; // Hentikan eksekusi di sini, lanjut di submitCancellationResponse
+        }
+
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            showCancelButton: true,
+            confirmButtonColor: action === 'approve' ? '#198754' : '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: confirmBtn,
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                submitCancellationResponse(id, type, action, null);
+            }
+        });
+    }
+
+    function submitCancellationResponse(id, type, action, reason) {
+        Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading() });
+        
+        let url = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${type}/${id}/cancellation/${action}`;
+        let body = { 
+            _token: '{{ csrf_token() }}' 
+        };
+        
+        if (reason) {
+            body.admin_response = reason;
+        }
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json' 
+            },
+            body: JSON.stringify(body)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                Swal.fire('Berhasil', data.message, 'success').then(() => location.reload());
+            } else {
+                Swal.fire('Gagal', data.message, 'error');
+            }
+        })
+        .catch(err => Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'));
+    }
+
     function rejectRequest(id, type) {
         const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
         document.getElementById('rejectForm').action = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${id}/${type}/reject`;
@@ -411,6 +550,54 @@
                 updateFilterLinks(type);
             });
         });
+
+        // Real-time Notification Polling
+        function checkNotificationCounts() {
+            fetch('{{ route("admin.aktivitas.permintaan-pengajuan.counts") }}')
+                .then(response => response.json())
+                .then(data => {
+                    updateBadge('rental', data.rental.total);
+                    updateBadge('gas', data.gas.total);
+                    updateNotificationText(data);
+                })
+                .catch(error => console.error('Error fetching counts:', error));
+        }
+
+        function updateBadge(type, count) {
+            const badge = document.getElementById(type + '-badge');
+            if (count > 0) {
+                // Show Notification Style
+                badge.className = 'badge bg-danger text-white ms-2 shadow-sm';
+                badge.innerText = count;
+            } else {
+                // Revert to Default Style (List Count)
+                const defaultCount = badge.getAttribute('data-default-count');
+                badge.className = 'badge bg-white text-primary ms-2 shadow-sm';
+                badge.innerText = defaultCount;
+            }
+        }
+
+        function updateNotificationText(data) {
+            const container = document.getElementById('notification-text');
+            let messages = [];
+
+            if (data.rental.pending > 0) messages.push(data.rental.pending + " Pesanan Alat Baru");
+            if (data.rental.cancellation > 0) messages.push(data.rental.cancellation + " Pembatalan Alat");
+            
+            if (data.gas.pending > 0) messages.push(data.gas.pending + " Pesanan Gas Baru");
+            if (data.gas.cancellation > 0) messages.push(data.gas.cancellation + " Pembatalan Gas");
+
+            if (messages.length > 0) {
+                container.innerHTML = '<i class="bx bx-bell bx-tada me-2"></i>Anda memiliki: ' + messages.join(', ');
+                container.classList.remove('d-none');
+            } else {
+                container.innerHTML = '';
+                container.classList.add('d-none');
+            }
+        }
+
+        // Check initially and poll every 15 seconds
+        setInterval(checkNotificationCounts, 15000);
     });
 </script>
 @endsection

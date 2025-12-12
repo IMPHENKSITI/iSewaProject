@@ -122,21 +122,21 @@
                         </button>
                     </div>
                 @endauth
+            </div>
 
-                <div class="md:hidden">
-                    <button id="mobile-menu-button"
-                        class="text-gray-700 hover:text-blue-600 focus:outline-none transition-colors duration-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
+            <div class="md:hidden relative z-50">
+                <button id="mobile-menu-btn"
+                    class="p-2 text-gray-700 hover:text-blue-600 focus:outline-none transition-all duration-200 active:bg-gray-100 rounded-lg active:scale-95">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
         </div>
 
         {{-- Overlay --}}
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/40 hidden z-40 transition-opacity duration-300"></div>
+        <div id="mobile-overlay" class="fixed inset-0 bg-black/40 hidden z-40 transition-opacity duration-300"></div>
 
         {{-- Sidebar Mobile --}}
         <div id="mobile-sidebar"
@@ -169,20 +169,61 @@
                     <a href="{{ route('bumdes.laporan') }}" class="block py-2 hover:text-blue-600 transition">Laporan</a>
                 </div>
 
-                <a href="#profil" class="block px-6 py-3 hover:text-blue-600 transition">Profil iSewa</a>
+                <a href="{{ route('isewa.profile') }}" class="block px-6 py-3 hover:text-blue-600 transition">Profil iSewa</a>
             </nav>
 
             <div class="px-6 pt-6 pb-12 border-t mt-4 space-y-3">
-                <button id="btn-open-login-mobile" type="button"
-                    class="block w-full text-center px-6 py-2 rounded-full font-medium bg-white text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white transition">
-                    Masuk
-                </button>
+                @auth
+                    {{-- Tampilan Mobile Saat Sudah Login --}}
+                    <div class="flex flex-col space-y-4">
+                        <div class="flex items-center gap-3 px-2 mb-2">
+                            <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                                @if (auth()->user()->file)
+                                    <img src="{{ auth()->user()->file->file_stream }}" alt="Avatar" class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center bg-blue-500 text-white">
+                                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-gray-800">{{ auth()->user()->name }}</span>
+                                <span class="text-xs text-gray-500">{{ auth()->user()->email }}</span>
+                            </div>
+                        </div>
 
-                <button id="btn-open-register-mobile" type="button"
-                    class="block w-full text-center px-6 py-2 rounded-full font-medium text-white hover:shadow-lg transition"
-                    style="background: linear-gradient(to right, #7dc8f0 0%, #45aaf2 100%);">
-                    Daftar
-                </button>
+                        <a href="{{ route('profile') }}" class="block w-full text-left px-4 py-2.5 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition">
+                            Profil Saya
+                        </a>
+                        <a href="{{ route('user.activity') }}" class="block w-full text-left px-4 py-2.5 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition">
+                            Aktivitas & Riwayat
+                        </a>
+                        <a href="{{ route('user.notifications') }}" class="block w-full text-left px-4 py-2.5 rounded-lg hover:bg-blue-50 text-gray-700 font-medium transition">
+                            Notifikasi
+                        </a>
+
+                        <form action="{{ route('auth.logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="block w-full text-left px-4 py-2.5 rounded-lg hover:bg-red-50 text-red-600 font-medium transition">
+                                Keluar
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    {{-- Tampilan Mobile Belum Login --}}
+                    <button id="btn-open-login-mobile" type="button"
+                        class="block w-full text-center px-6 py-2 rounded-full font-medium bg-white text-blue-600 border border-blue-600 hover:bg-blue-600 hover:text-white transition">
+                        Masuk
+                    </button>
+
+                    <button id="btn-open-register-mobile" type="button"
+                        class="block w-full text-center px-6 py-2 rounded-full font-medium text-white hover:shadow-lg transition"
+                        style="background: linear-gradient(to right, #7dc8f0 0%, #45aaf2 100%);">
+                        Daftar
+                    </button>
+                @endauth
             </div>
         </div>
 </nav>

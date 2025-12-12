@@ -22,10 +22,13 @@ class DashboardController extends Controller
  */
 public function index()
 {
-    // Ambil pemesanan penyewaan yang tertunda
+    // Ambil pemesanan penyewaan yang tertunda atau minta batal
     $currentYear = date('Y');
     $rentalRequests = RentalBooking::with(['user', 'barang'])
-        ->where('status', 'pending')
+        ->where(function($q) {
+            $q->where('status', 'pending')
+              ->orWhere('cancellation_status', 'pending');
+        })
         ->get()
         ->map(function ($item) {
             $item->type = 'rental';
@@ -33,9 +36,12 @@ public function index()
             return $item;
         });
 
-    // Ambil pesanan gas yang tertunda
+    // Ambil pesanan gas yang tertunda atau minta batal
     $gasRequests = GasOrder::with('user')
-        ->where('status', 'pending')
+        ->where(function($q) {
+             $q->where('status', 'pending')
+               ->orWhere('cancellation_status', 'pending');
+        })
         ->get()
         ->map(function ($item) {
             $item->type = 'gas';

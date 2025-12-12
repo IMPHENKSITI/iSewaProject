@@ -9,15 +9,15 @@
         <div class="absolute inset-0 bg-white/25 pointer-events-none"></div>
 
         <div class="max-w-5xl mx-auto px-6 relative z-20">
-            <!-- Header with Gradient Text (Centered) -->
+            <!-- Header dengan Teks Gradien (Tengah) -->
             <div class="text-center mb-12 mt-8">
                 <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#115789] to-[#60a5fa] bg-clip-text text-transparent">
                     Aktivitas
                 </h1>
             </div>
 
-            <!-- Toggle Menu -->
-            <div class="flex justify-center gap-6 mb-10">
+            <!-- Menu Pilihan -->
+            <div class="flex flex-col sm:flex-row justify-center gap-6 mb-10 items-center">
                 <!-- Penyewaan Card -->
                 <div class="activity-menu-card active cursor-pointer" data-type="rental">
                     <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent">
@@ -39,14 +39,14 @@
                 </div>
             </div>
 
-            <!-- Rental Bookings Section -->
+                <!-- Bagian Pesanan Sewa -->
             <div id="rental-section" class="activity-section space-y-6">
                 @forelse($rentalBookings as $booking)
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <!-- Main Card Content -->
+                    <!-- Konten Kartu Utama -->
                     <div class="p-6">
                         <div class="flex gap-6">
-                            <!-- Product Image -->
+                            <!-- Gambar Produk -->
                             @if($booking->barang && $booking->barang->foto)
                             <img src="{{ asset('storage/' . $booking->barang->foto) }}" 
                                  alt="{{ $booking->barang->nama_barang }}" 
@@ -59,7 +59,7 @@
                             @endif
                             
                             <div class="flex-1">
-                                <!-- Product Name -->
+                                <!-- Nama Produk -->
                                 <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $booking->barang->nama_barang }}</h3>
                                 
                                 <!-- Date and Time -->
@@ -106,6 +106,11 @@
                                             'returned' => ['text' => 'Dikembalikan', 'color' => 'text-green-600', 'dot' => 'bg-green-600'],
                                         ];
                                         $status = $statusConfig[$booking->status] ?? ['text' => ucfirst($booking->status), 'color' => 'text-gray-600', 'dot' => 'bg-gray-600'];
+                                        
+                                        // Override status if cancellation is pending
+                                        if ($booking->cancellation_status === 'pending') {
+                                            $status = ['text' => 'Permintaan Pembatalan', 'color' => 'text-yellow-600', 'dot' => 'bg-yellow-600'];
+                                        }
                                     @endphp
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full {{ $status['dot'] }}"></span>
@@ -135,7 +140,7 @@
                         </div>
                     </div>
 
-                    <!-- Expandable Detail Section -->
+                    <!-- Bagian Detail yang Dapat Diperluas -->
                     <div id="rental-detail-{{ $booking->id }}" class="detail-section hidden border-t border-gray-200">
                         <div class="p-6 bg-gray-50">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -192,7 +197,7 @@
 
                                 <!-- Right Column -->
                                 <div class="space-y-4">
-                                    <!-- Transaction Receipt -->
+                                    <!-- Bukti Transaksi -->
                                     @if($booking->payment_proof)
                                     <div>
                                         <p class="text-sm text-gray-500 mb-2">Bukti Transaksi</p>
@@ -359,15 +364,15 @@
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                     <!-- Main Card Content -->
                     <div class="p-6">
-                        <div class="flex gap-6">
+                        <div class="flex flex-col sm:flex-row gap-6">
                             <!-- Product Image -->
                             @if($order->gas && $order->gas->foto)
                             <img src="{{ asset('storage/' . $order->gas->foto) }}" 
                                  alt="{{ $order->item_name }}" 
-                                 class="w-32 h-32 object-cover rounded-lg flex-shrink-0"
+                                 class="w-full sm:w-32 h-48 sm:h-32 object-cover rounded-lg flex-shrink-0"
                                  onerror="this.src='{{ asset('User/img/elemen/F2.png') }}'">
                             @else
-                            <div class="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <div class="w-full sm:w-32 h-48 sm:h-32 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <img src="{{ asset('User/img/elemen/F2.png') }}" alt="Gas" class="w-16 h-16 object-contain">
                             </div>
                             @endif
@@ -400,9 +405,9 @@
                             </div>
                             
                             <!-- Right Side: Status and Payment -->
-                            <div class="text-right">
+                            <div class="text-left sm:text-right mt-4 sm:mt-0">
                                 <!-- Status Badge -->
-                                <div class="flex items-center justify-end gap-2 mb-3">
+                                <div class="flex items-center justify-start sm:justify-end gap-2 mb-3">
                                     <span class="text-sm font-semibold">Status Pembelian</span>
                                     @php
                                         $statusConfig = [
@@ -419,6 +424,11 @@
                                             'rejected' => ['text' => 'Ditolak', 'color' => 'text-red-600', 'dot' => 'bg-red-600'],
                                         ];
                                         $status = $statusConfig[$order->status] ?? ['text' => ucfirst($order->status), 'color' => 'text-gray-600', 'dot' => 'bg-gray-600'];
+                                        
+                                        // Override status if cancellation is pending
+                                        if ($order->cancellation_status === 'pending') {
+                                            $status = ['text' => 'Permintaan Pembatalan', 'color' => 'text-yellow-600', 'dot' => 'bg-yellow-600'];
+                                        }
                                     @endphp
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full {{ $status['dot'] }}"></span>

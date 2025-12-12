@@ -188,6 +188,7 @@
                                     </div>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-900">M.Wahid Riono</h3>
+                                <p class="text-gray-600 text-sm font-medium mt-1">Frontend Developer</p>
                             </div>
                         </div>
                     </div>
@@ -207,6 +208,7 @@
                                     </div>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-900">Mushlihul Arif</h3>
+                                <p class="text-gray-600 text-sm font-medium mt-1">UI/UX Designer</p>
                             </div>
                         </div>
                     </div>
@@ -219,13 +221,14 @@
                                 <div class="relative mb-4">
                                     <div class="p-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6 0%, #60a5fa 50%, #FCD34D 100%);">
                                         <div class="w-32 h-32 rounded-full overflow-hidden bg-white p-1">
-                                            <img src="{{ asset('User/img/avatars/wanita.png') }}" 
+                                            <img src="{{ asset('User/img/avatars/safika1.png') }}" 
                                                  alt="Safika" 
                                                  class="w-full h-full object-cover rounded-full">
                                         </div>
                                     </div>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-900">Safika</h3>
+                                <p class="text-gray-600 text-sm font-medium mt-1">Project Manager</p>
                             </div>
                         </div>
                     </div>

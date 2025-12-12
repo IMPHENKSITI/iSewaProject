@@ -1,7 +1,7 @@
 @extends('layouts.user')
 
 @php
-    // Determine card background style based on admin settings
+    // Tentukan gaya latar belakang kartu berdasarkan pengaturan admin
     $cardStyle = 'background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);'; // default blue
     $amountColor = 'text-yellow-300'; // Default amount color
     $cardTextColor = 'text-white'; // Default card text color
@@ -25,7 +25,7 @@
         $style = $setting->card_gradient_style;
         $cardStyle = 'background: ' . ($gradients[$style] ?? $gradients['blue']) . ';';
         
-        // Determine colors based on background
+        // Tentukan warna berdasarkan latar belakang
         if (in_array($style, ['white', 'silver', 'gold', 'transparent'])) {
             $amountColor = 'text-red-600';
             $cardTextColor = 'text-gray-800';
@@ -40,14 +40,14 @@
         }
     }
     
-    // Legacy support for image (if re-enabled or existing)
+    // Dukungan legacy untuk gambar (jika diaktifkan kembali atau sudah ada)
     if ($setting && $setting->card_background_type === 'image' && $setting->card_background_image) {
         $cardStyle = "background-image: url('" . asset('storage/' . $setting->card_background_image) . "'); background-size: cover; background-position: center;";
         $amountColor = 'text-yellow-300';
         $cardTextColor = 'text-white';
     }
     
-    // Get cash payment description
+    // Dapatkan deskripsi pembayaran tunai
     $cashDescription = $setting->cash_payment_description ?? 'Yani - Bendahara BUMDes';
 
     // Bank Logo Mapping
@@ -62,7 +62,7 @@
     ];
     $bankLogoPath = $bankLogos[$setting->bank_name ?? ''] ?? 'admin/img/banks/bsi.png';
     
-    // Determine available payment methods with better fallback
+    // Tentukan metode pembayaran yang tersedia dengan fallback yang lebih baik
     $methods = $setting?->payment_methods ?? ['transfer', 'tunai'];
     if (!is_array($methods) || empty($methods)) {
         $methods = ['transfer', 'tunai'];
@@ -70,13 +70,13 @@
     $hasTransfer = in_array('transfer', $methods);
     $hasTunai = in_array('tunai', $methods);
     
-    // Ensure at least one method is available
+    // Pastikan setidaknya satu metode tersedia
     if (!$hasTransfer && !$hasTunai) {
         $hasTransfer = true;
         $hasTunai = true;
     }
     
-    // Determine default active method
+    // Tentukan metode aktif default
     $defaultMethod = $hasTransfer ? 'transfer' : 'tunai';
 @endphp
 
@@ -88,7 +88,7 @@
         <!-- White Overlay (25% opacity / 75% transparent) to make background visible -->
         <div class="absolute inset-0 bg-white/25 pointer-events-none"></div>
 
-        <!-- Decorative Background Elements (Commented Out) -->
+        <!-- Elemen Dekoratif Latar Belakang (Dikomeli) -->
         {{-- 
         <div class="absolute inset-0 pointer-events-none overflow-hidden">
             <!-- Top Left Blue Wave -->
@@ -135,7 +135,7 @@
         --}}
 
         <div class="max-w-5xl mx-auto px-6 relative z-20">
-            <!-- Header with Gradient Text -->
+            <!-- Header dengan Teks Gradien -->
             <div class="text-center mb-12 mt-8">
                 <h1 class="text-3xl md:text-4xl font-bold mb-2">
                     <span class="text-gray-800">Metode </span>
@@ -149,8 +149,8 @@
                 <input type="hidden" name="quantity" id="hidden-quantity" value="{{ $quantity }}">
                 <input type="hidden" name="delivery_method" id="delivery-method-input" value="antar">
 
-                <!-- Delivery Method Selection -->
-                <div class="flex justify-center gap-6 mb-10">
+                <!-- Pilihan Metode Pengiriman -->
+                <div class="flex flex-col sm:flex-row justify-center gap-6 mb-10 items-center">
                     <!-- Antar Card -->
                     <div class="delivery-method-card active cursor-pointer bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent" data-method="antar">
                         <!-- Placeholder for Truck Icon -->

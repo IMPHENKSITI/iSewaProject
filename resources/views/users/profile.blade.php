@@ -2,13 +2,13 @@
 
 @section('page')
 <section class="relative z-10 min-h-screen pt-40 pb-16">
-    {{-- Background Image with Overlay --}}
+    {{-- Gambar Latar Belakang dengan Overlay --}}
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <img src="{{ asset('User/img/backgrounds/3.webp') }}" alt="Background" 
              class="absolute inset-0 w-full h-full object-cover opacity-60">
     </div>
 
-    {{-- Gradient Overlays --}}
+    {{-- Overlay Gradien --}}
     <div class="absolute top-0 left-0 w-[700px] h-[550px] pointer-events-none">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-400/50 via-blue-500/30 to-transparent rounded-br-[40%]"></div>
     </div>
@@ -18,14 +18,14 @@
     </div>
 
     <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
-        {{-- Header Title --}}
+        {{-- Judul Header --}}
         <div class="mb-8">
             <h1 class="text-3xl md:text-4xl font-bold text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
                 Profil Saya
             </h1>
         </div>
 
-        {{-- Success Alert --}}
+        {{-- Peringatan Sukses --}}
         @if(session('success'))
         <div id="success-alert" class="mb-6 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-xl transition-opacity duration-300">
             <div class="flex items-center gap-3">
@@ -42,18 +42,18 @@
             @method('PUT')
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                {{-- LEFT COLUMN: Avatar Card (span 4 kolom) --}}
+                {{-- KOLOM KIRI: Kartu Avatar (span 4 kolom) --}}
                 <div class="lg:col-span-4">
                     <div class="glass-card rounded-3xl p-6 border border-white/50 shadow-lg">
                         <div class="flex flex-col items-center">
-                            {{-- Avatar with Blue Border --}}
+                            {{-- Avatar dengan Border Biru --}}
                             <div class="relative group">
                                 <div class="w-44 h-44 rounded-full overflow-hidden border-[5px] border-blue-400 shadow-xl bg-[#D1D5DB]">
                                     @if($user->file)
                                         <img id="avatar-preview" src="{{ $user->file->file_stream }}" alt="Avatar" class="w-full h-full object-cover">
                                     @else
                                         <img id="avatar-preview" src="" alt="Avatar" class="w-full h-full object-cover hidden">
-                                        {{-- SVG User Icon Placeholder --}}
+                                        {{-- Placeholder Ikon Pengguna SVG --}}
                                         <div id="avatar-placeholder" class="w-full h-full flex items-center justify-center">
                                             <svg class="w-24 h-24 text-white" viewBox="0 0 24 24" fill="currentColor">
                                                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -62,7 +62,7 @@
                                     @endif
                                 </div>
 
-                                {{-- Upload Overlay --}}
+                                {{-- Overlay Unggah --}}
                                 <div class="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center cursor-pointer"
                                      onclick="document.getElementById('profile-input').click()">
                                     <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,8 +80,8 @@
                                 Pilih File
                             </button>
 
-                            {{-- Unduh Foto Link --}}
-                            {{-- Hapus Foto Button (Deferred) --}}
+                            {{-- Link Unduh Foto --}}
+                            {{-- Tombol Hapus Foto (Ditunda) --}}
                             @if($user->file)
                             <button type="button" id="delete-photo-btn"
                                class="mt-2.5 text-red-500 hover:text-red-700 font-medium text-sm transition-colors">
@@ -96,18 +96,18 @@
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                             
-                            {{-- Hidden flag for deferred deletion --}}
+                            {{-- Flag tersembunyi untuk penghapusan yang ditunda --}}
                             <input type="hidden" name="delete_avatar" id="delete_avatar" value="0">
                         </div>
                     </div>
                 </div>
 
-                {{-- RIGHT COLUMN: Form Cards (span 8 kolom) --}}
+                {{-- KOLOM KANAN: Kartu Form (span 8 kolom) --}}
                 <div class="lg:col-span-8 space-y-5">
-                    {{-- CARD 1: Basic Info (Username, Nama, Email, Phone) --}}
+                    {{-- KARTU 1: Info Dasar (Username, Nama, Email, Telepon) --}}
                     <div class="glass-card rounded-3xl p-6 border border-white/50 shadow-lg">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {{-- Username (editable) --}}
+                            {{-- Username (dapat diedit) --}}
                             <div>
                                 <label class="block text-sm font-bold text-gray-800 mb-2">Username</label>
                                 <input type="text" name="username" value="{{ old('username', $user->username) }}" 
@@ -127,7 +127,7 @@
                                 @enderror
                             </div>
 
-                            {{-- Email (disabled) --}}
+                            {{-- Email (dinonaktifkan) --}}
                             <div>
                                 <label class="block text-sm font-bold text-gray-800 mb-2">Email</label>
                                 <input type="email" value="{{ $user->email }}" disabled 
@@ -146,7 +146,7 @@
                         </div>
                     </div>
 
-                    {{-- CARD 2: Additional Details (Gender, Address, Password) --}}
+                    {{-- KARTU 2: Detail Tambahan (Jenis Kelamin, Alamat, Kata Sandi) --}}
                     <div class="glass-card rounded-3xl p-6 border border-white/50 shadow-lg">
                         <div class="space-y-5">
                             {{-- Jenis Kelamin --}}
@@ -180,7 +180,7 @@
                                        class="w-full px-4 py-2.5 bg-white/60 border border-white/40 rounded-xl text-gray-700 cursor-not-allowed glass-input text-sm">
                             </div>
 
-                            {{-- 3 Action Buttons - Horizontal Layout --}}
+                            {{-- 3 Tombol Aksi - Tata Letak Horizontal --}}
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3">
                                 {{-- Ubah Sandi - Button Border Putih --}}
                                 <button type="button" id="btn-open-change-password"
@@ -206,7 +206,7 @@
             </div>
         </form>
 
-        {{-- Logout Form (Hidden) --}}
+        {{-- Form Logout (Tersembunyi) --}}
         <form id="logout-form" action="{{ route('auth.logout') }}" method="POST" class="hidden">
             @csrf
         </form>
@@ -221,7 +221,7 @@
 @include('auth.profile-scripts')
 
 <script>
-    // Auto-hide success alert after 5 seconds
+    // Sembunyikan otomatis peringatan sukses setelah 5 detik
     document.addEventListener('DOMContentLoaded', function() {
         const alert = document.getElementById('success-alert');
         if (alert) {
@@ -231,7 +231,7 @@
             }, 5000);
         }
 
-        // Avatar Preview Functionality
+        // Fungsionalitas Pratinjau Avatar
         const profileInput = document.getElementById('profile-input');
         const avatarPreview = document.getElementById('avatar-preview');
         const avatarPlaceholder = document.getElementById('avatar-placeholder');
@@ -243,7 +243,7 @@
             profileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    // Reset delete flag (we are replacing, not just deleting)
+                    // Reset flag hapus (kita mengganti, bukan hanya menghapus)
                     if(deleteAvatarInput) deleteAvatarInput.value = '0';
 
                     const reader = new FileReader();
@@ -262,16 +262,16 @@
             });
         }
 
-        // Handle Delete Photo Button (Deferred)
+        // Tangani Tombol Hapus Foto (Ditunda)
         if (deletePhotoBtn) {
             deletePhotoBtn.addEventListener('click', function() {
-                // Set flag to delete on save
+                // Setel flag untuk menghapus saat disimpan
                  if(deleteAvatarInput) deleteAvatarInput.value = '1';
                 
-                // Clear input value so if they upload same file again it triggers change
+                // Bersihkan nilai input agar jika mereka mengunggah file yang sama lagi, itu memicu perubahan
                 if(profileInput) profileInput.value = '';
 
-                // Visually show placeholder
+                // Tampilkan placeholder secara visual
                 if (avatarPreview) {
                     avatarPreview.src = '';
                     avatarPreview.classList.add('hidden');
@@ -280,15 +280,15 @@
                     avatarPlaceholder.classList.remove('hidden');
                 }
                 
-                // Hide the delete button itself momentarily or just keep it? 
-                // Usually we can hide it or change it to "Undo". For now, let's just hide it.
+                // Sembunyikan tombol hapus itu sendiri sebentar atau biarkan saja? 
+                // Biasanya kita bisa menyembunyikannya atau mengubahnya menjadi "Batalkan". Untuk saat ini, mari kita sembunyikan saja.
                 deletePhotoBtn.style.display = 'none';
                 if(uploadHint) uploadHint.classList.remove('hidden');
             });
         }
 
 
-        // Button Ripple Effect
+        // Efek Ripple Tombol
         const interactiveButtons = document.querySelectorAll('.button-interactive');
         interactiveButtons.forEach(button => {
             button.addEventListener('click', function(e) {
@@ -322,7 +322,7 @@
         font-family: 'Inter', sans-serif;
     }
     
-    /* Glass morphism dengan webkit prefix */
+    /* Glass morphism dengan prefix webkit */
     .glass-card {
         background: rgba(255, 255, 255, 0.3);
         backdrop-filter: blur(12px);
@@ -334,7 +334,7 @@
         -webkit-backdrop-filter: blur(8px);
     }
     
-    /* Button Interactive Effects */
+    /* Efek Interaktif Tombol */
     .button-interactive {
         position: relative;
         overflow: hidden;
@@ -366,7 +366,7 @@
         transition: all 0.1s ease;
     }
     
-    /* Ripple Effect on Click */
+    /* Efek Ripple saat Klik */
     @keyframes ripple {
         0% {
             transform: scale(0);
@@ -378,7 +378,7 @@
         }
     }
     
-    /* Responsive adjustments */
+    /* Penyesuaian Responsif */
     @media (max-width: 1024px) {
         .lg\:col-span-4 {
             grid-column: span 12;
