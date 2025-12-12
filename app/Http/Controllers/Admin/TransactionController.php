@@ -23,7 +23,7 @@ class TransactionController extends Controller
         // Include transactions with proof OR system generated (active/completed statuses)
         $activeStatuses = ['confirmed', 'approved', 'being_prepared', 'in_delivery', 'arrived', 'completed', 'returned'];
         
-        $rentalQuery = RentalBooking::with('user')->where(function($q) use ($activeStatuses) {
+        $rentalQuery = RentalBooking::with(['user', 'barang'])->where(function($q) use ($activeStatuses) {
             $q->whereNotNull('payment_proof')
               ->orWhereIn('status', $activeStatuses);
         });

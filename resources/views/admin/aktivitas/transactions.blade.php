@@ -144,8 +144,8 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="fw-medium text-dark">{{ $payment->equipment_name ?? 'Alat' }}</div>
-                                            <small class="text-muted">ID: #{{ $payment->order_number ?? $payment->id }}</small>
+                                            <div class="fw-medium text-dark">{{ $payment->barang->nama_barang ?? 'Alat' }}</div>
+                                            <small class="text-muted">{{ $payment->quantity ?? 1 }} Unit</small>
                                         </td>
                                         <td>
                                             <span class="fw-bold text-dark">Rp {{ number_format($payment->total_amount ?? 0, 0, ',', '.') }}</span>
