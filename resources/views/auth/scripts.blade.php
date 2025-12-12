@@ -10,30 +10,54 @@
         // UTILITY FUNCTIONS
         // ========================================
         function openModal(modal) {
+            if (!modal) return;
+
+            // 1. Reset semua modal content lain agar hidden
             document.querySelectorAll('.modal-content').forEach(m => {
                 m.classList.add('hidden');
                 m.classList.remove('scale-100', 'opacity-100');
+                m.classList.add('scale-95', 'opacity-0');
             });
 
+            // 2. Tampilkan Overlay (Hapus opacity-0)
             overlay.classList.remove('hidden');
+            // Force reflow
+            void overlay.offsetWidth; 
+            
             setTimeout(() => {
-                overlay.classList.add('show');
+                overlay.classList.remove('opacity-0'); // Ganti .show dengan native Tailwind
+                
+                // 3. Tampilkan Modal Content
                 modal.classList.remove('hidden');
+                // Force reflow
+                void modal.offsetWidth;
+                
                 setTimeout(() => {
+                    modal.classList.remove('scale-95', 'opacity-0');
                     modal.classList.add('scale-100', 'opacity-100');
-                }, 50);
+                }, 50); // Delay dikit biar transisi jalan
             }, 10);
+            
+            document.body.style.overflow = 'hidden'; // Lock scroll
         }
 
         function closeModal() {
-            overlay.classList.remove('show');
+            // 1. Hide Overlay
+            overlay.classList.add('opacity-0');
+            
+            // 2. Hide All Modals (Scale down)
+            document.querySelectorAll('.modal-content').forEach(m => {
+                m.classList.remove('scale-100', 'opacity-100');
+                m.classList.add('scale-95', 'opacity-0');
+            });
+
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 document.querySelectorAll('.modal-content').forEach(m => {
                     m.classList.add('hidden');
-                    m.classList.remove('scale-100', 'opacity-100');
                 });
-            }, 300);
+                document.body.style.overflow = ''; // Restore scroll
+            }, 300); // Sesuaikan dengan duration-300
         }
 
         // ⭐ FIX: SMOOTH MODAL SWITCH (Tanpa Hilang)
@@ -134,13 +158,20 @@
         document.getElementById('btn-open-register')?.addEventListener('click', () => openModal(modalRegister));
 
         document.getElementById('btn-open-login-mobile')?.addEventListener('click', () => {
-            document.getElementById('mobile-sidebar')?.classList.add('-translate-x-full');
-            setTimeout(() => openModal(modalLogin), 300);
+             // 1. Open Modal Immediately (Overlay z-60 covers Sidebar z-51)
+            openModal(modalLogin);
+            
+            // 2. Close Sidebar in background (better UX)
+            if (typeof window.closeMobileSidebar === 'function') {
+                window.closeMobileSidebar();
+            }
         });
 
         document.getElementById('btn-open-register-mobile')?.addEventListener('click', () => {
-            document.getElementById('mobile-sidebar')?.classList.add('-translate-x-full');
-            setTimeout(() => openModal(modalRegister), 300);
+            openModal(modalRegister);
+            if (typeof window.closeMobileSidebar === 'function') {
+                 window.closeMobileSidebar();
+            }
         });
 
         document.querySelectorAll('.modal-close').forEach(btn => {
@@ -239,6 +270,22 @@
         formRegister?.addEventListener('submit', async function(e) {
             e.preventDefault();
             clearErrors(this);
+
+            // Get password values
+            const password = document.getElementById('register-password').value;
+            const passwordConfirm = document.getElementById('register-password-confirm').value;
+
+            // Validasi frontend: Password minimal 8 karakter
+            if (password.length < 8) {
+                showError(this, 'password', 'Password minimal 8 karakter');
+                return;
+            }
+
+            // Validasi frontend: Password dan konfirmasi harus sama
+            if (password !== passwordConfirm) {
+                showError(this, 'password_confirmation', 'Konfirmasi password tidak cocok');
+                return;
+            }
 
             const formData = new FormData(this);
             const submitBtn = this.querySelector('button[type="submit"]');
@@ -600,6 +647,22 @@
         formForgotNewPassword?.addEventListener('submit', async function(e) {
             e.preventDefault();
             clearErrors(this);
+
+            // Get password values
+            const newPassword = document.getElementById('forgot-new-password').value;
+            const confirmPassword = document.getElementById('forgot-new-password-confirm').value;
+
+            // Validasi frontend: Password minimal 8 karakter
+            if (newPassword.length < 8) {
+                showError(this, 'new_password', 'Password minimal 8 karakter');
+                return;
+            }
+
+            // Validasi frontend: Password dan konfirmasi harus sama
+            if (newPassword !== confirmPassword) {
+                showError(this, 'new_password_confirmation', 'Konfirmasi password tidak cocok');
+                return;
+            }
 
             const formData = new FormData(this);
             const submitBtn = this.querySelector('button[type="submit"]');

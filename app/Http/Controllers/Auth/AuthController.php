@@ -207,7 +207,9 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            Auth::login($user, $validated['remember'] ?? false);
+            // Convert remember value to boolean
+            $rememberMe = isset($validated['remember']) && $validated['remember'] === true;
+            Auth::login($user, $rememberMe);
 
             // Redirect based on user role
             $redirectUrl = $user->role === 'admin' ? route('admin.dashboard') : route('beranda');
@@ -217,11 +219,21 @@ class AuthController extends Controller
                 'message' => 'Login berhasil',
                 'redirect' => $redirectUrl,
             ], 200);
-        } catch (\Exception $e) {
-            Log::error('Login error: ' . $e->getMessage());
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat login'
+                'message' => 'Data tidak valid',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            // Log detail error untuk debugging
+            Log::error('Login error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat login',
+                'error_detail' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
