@@ -105,9 +105,9 @@
                 @endauth
             </div>
 
-
+            {{-- Hamburger Button - Mobile Only --}}
             <div class="md:hidden relative z-50">
-                <button id="mobile-menu-btn"
+                <button id="mobile-menu-btn" type="button"
                     class="p-2 text-gray-700 hover:text-blue-600 focus:outline-none transition-all duration-200 active:bg-gray-100 rounded-lg active:scale-95">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -119,18 +119,20 @@
     </div>
 </nav>
 
-        {{-- Overlay --}}
-        <div id="mobile-overlay" class="fixed inset-0 bg-black/40 hidden z-40 transition-opacity duration-300"></div>
+{{-- ================================================ --}}
+{{-- OVERLAY - z-[998] agar di bawah sidebar z-[999] --}}
+{{-- ================================================ --}}
+<div id="mobile-overlay" class="fixed inset-0 bg-black/50 hidden opacity-0 z-[998] transition-opacity duration-300"></div>
 
 {{-- ================================================ --}}
-{{-- SIDEBAR MOBILE - DI LUAR NAV TAG --}}
+{{-- SIDEBAR MOBILE --}}
 {{-- ================================================ --}}
 <div id="mobile-sidebar" class="fixed inset-y-0 left-0 w-72 bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 z-[999] overflow-y-auto">
     
     {{-- Header Sidebar --}}
     <div class="py-5 px-5 flex items-center justify-between border-b bg-white">
         <img src="{{ asset('User/img/logo/iSewa.png') }}" class="h-10" alt="iSewa">
-        <button id="sidebar-close" class="p-2 hover:bg-gray-100 rounded-lg transition">
+        <button id="sidebar-close" type="button" class="p-2 hover:bg-gray-100 rounded-lg transition">
             <svg class="w-6 h-6 text-gray-600" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -147,7 +149,7 @@
         </a>
 
         {{-- BUMDes Dropdown --}}
-        <button id="bumdes-toggle" class="w-full text-left px-6 py-3 flex items-center justify-between text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition">
+        <button id="bumdes-toggle" type="button" class="w-full text-left px-6 py-3 flex items-center justify-between text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition">
             BUMDes
             <svg id="bumdes-arrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -198,9 +200,7 @@
                 </form>
             </div>
         @else
-            {{-- ================================================ --}}
-            {{-- TOMBOL SAMA PERSIS DENGAN DESKTOP --}}
-            {{-- ================================================ --}}
+            {{-- Tombol Masuk/Daftar sama seperti desktop --}}
             <div class="space-y-3">
                 {{-- Tombol Masuk dengan Gradient Border --}}
                 <div class="relative group">

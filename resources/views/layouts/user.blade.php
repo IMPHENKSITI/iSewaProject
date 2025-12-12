@@ -102,7 +102,7 @@
                 const closeBtn = document.getElementById('sidebar-close');
 
                 if (!menuBtn || !sidebar || !overlay) {
-                    console.log('Sidebar elements not found');
+                    console.log('Sidebar elements not found:', {menuBtn, sidebar, overlay});
                     return;
                 }
 
@@ -205,12 +205,11 @@
                     });
                 }
             }
-            }
         };
 
-        // Initialize Navbar
-        document.addEventListener('DOMContentLoaded', () => {
-             Navbar.init();
+        // Initialize Navbar saat DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            Navbar.init();
         });
     </script>
 
