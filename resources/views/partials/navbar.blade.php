@@ -105,7 +105,7 @@
                 @endauth
             </div>
 
-<<<<<<< HEAD
+
             <div class="md:hidden relative z-50">
                 <button id="mobile-menu-btn"
                     class="p-2 text-gray-700 hover:text-blue-600 focus:outline-none transition-all duration-200 active:bg-gray-100 rounded-lg active:scale-95">
