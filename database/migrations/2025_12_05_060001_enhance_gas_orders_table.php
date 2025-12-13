@@ -17,19 +17,35 @@ return new class extends Migration
                 $table->foreignId('gas_id')->nullable()->after('user_id')->constrained('gas')->onDelete('cascade');
             }
             
-            // Timestamps for order tracking
-            $table->timestamp('delivery_time')->nullable()->after('order_date');
-            $table->timestamp('arrival_time')->nullable()->after('delivery_time');
-            $table->timestamp('completion_time')->nullable()->after('arrival_time');
+            // Timestamps for order tracking - cek dulu apakah sudah ada
+            if (!Schema::hasColumn('gas_orders', 'delivery_time')) {
+                $table->timestamp('delivery_time')->nullable()->after('order_date');
+            }
+            if (!Schema::hasColumn('gas_orders', 'arrival_time')) {
+                $table->timestamp('arrival_time')->nullable()->after('delivery_time');
+            }
+            if (!Schema::hasColumn('gas_orders', 'completion_time')) {
+                $table->timestamp('completion_time')->nullable()->after('arrival_time');
+            }
             
             // Delivery proof
-            $table->string('delivery_proof_image')->nullable()->after('proof_of_payment');
+            if (!Schema::hasColumn('gas_orders', 'delivery_proof_image')) {
+                $table->string('delivery_proof_image')->nullable()->after('proof_of_payment');
+            }
             
             // Cancellation request
-            $table->text('cancellation_reason_user')->nullable()->after('rejection_reason');
-            $table->timestamp('cancellation_requested_at')->nullable()->after('cancellation_reason_user');
-            $table->enum('cancellation_status', ['pending', 'approved', 'rejected'])->nullable()->after('cancellation_requested_at');
-            $table->text('admin_cancellation_response')->nullable()->after('cancellation_status');
+            if (!Schema::hasColumn('gas_orders', 'cancellation_reason_user')) {
+                $table->text('cancellation_reason_user')->nullable()->after('rejection_reason');
+            }
+            if (!Schema::hasColumn('gas_orders', 'cancellation_requested_at')) {
+                $table->timestamp('cancellation_requested_at')->nullable()->after('cancellation_reason_user');
+            }
+            if (!Schema::hasColumn('gas_orders', 'cancellation_status')) {
+                $table->enum('cancellation_status', ['pending', 'approved', 'rejected'])->nullable()->after('cancellation_requested_at');
+            }
+            if (!Schema::hasColumn('gas_orders', 'admin_cancellation_response')) {
+                $table->text('admin_cancellation_response')->nullable()->after('cancellation_status');
+            }
         });
         
         // Update existing status enum
