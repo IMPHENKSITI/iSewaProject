@@ -12,6 +12,7 @@ class CreateActivityLogsTable extends Migration
             $table->id();
             $table->string('action'); // contoh: "permintaan_diterima", "bukti_verifikasi"
             $table->text('description'); // detail aktivitas
+            $table->string('ip_address')->nullable(); // IP address user
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
