@@ -19,17 +19,25 @@
                 @endif
             </div>
 
-            <!-- Mark All as Read Button -->
-            @if($unreadCount > 0)
-            <div class="flex justify-end mb-6">
+            <!-- Action Buttons -->
+            <div class="flex justify-end mb-6 gap-4">
+                @if($unreadCount > 0)
                 <form action="{{ route('user.notifications.readAll') }}" method="POST">
                     @csrf
                     <button type="submit" class="px-6 py-2.5 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg">
                         <i class="fas fa-check-double mr-2"></i>Tandai Semua Sudah Dibaca
                     </button>
                 </form>
+                @endif
+
+                @if($notifications->count() > 0)
+                <button type="button" 
+                        id="delete-all-notifications-btn"
+                        class="px-6 py-2.5 bg-red-100 text-red-600 rounded-lg text-sm font-semibold hover:bg-red-200 transition-all duration-300 shadow-md hover:shadow-lg">
+                    <i class="fas fa-trash-alt mr-2"></i>Hapus Semua Notifikasi
+                </button>
+                @endif
             </div>
-            @endif
 
             <!-- Notifications List -->
             <div class="space-y-6">
@@ -168,4 +176,74 @@
         animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 </style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteBtn = document.getElementById('delete-all-notifications-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async function() {
+                const result = await Swal.fire({
+                    title: 'Hapus Semua Notifikasi?',
+                    text: "Semua notifikasi Anda akan dihapus secara permanen.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus Semua',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280'
+                });
+
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Sedang Menghapus...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    try {
+                        const response = await fetch('{{ route("user.notifications.deleteAll") }}', {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            await Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: data.message,
+                                confirmButtonColor: '#3b82f6'
+                            });
+                            location.reload();
+                        } else {
+                            await Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: data.message,
+                                confirmButtonColor: '#ef4444'
+                            });
+                        }
+                    } catch (error) {
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat menghapus notifikasi.',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                }
+            });
+        }
+    });
+</script>
 @endpush

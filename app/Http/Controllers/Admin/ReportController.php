@@ -378,6 +378,14 @@ class ReportController extends Controller
                 'proof_image' => $proofImagePath,
             ]);
 
+            // Log Activity
+            \App\Models\ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'Create Manual Report',
+                'description' => "Membuat laporan manual: {$request->name} ({$request->category})",
+                'ip_address' => $request->ip()
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Laporan transaksi berhasil ditambahkan',
@@ -440,6 +448,14 @@ class ReportController extends Controller
             }
 
             $manualReport->update($data);
+
+            // Log Activity
+            \App\Models\ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'Update Manual Report',
+                'description' => "Memperbarui laporan manual: {$request->name}",
+                'ip_address' => $request->ip()
+            ]);
 
             return response()->json([
                 'success' => true,

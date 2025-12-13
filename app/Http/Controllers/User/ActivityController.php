@@ -119,4 +119,28 @@ class ActivityController extends Controller
             'message' => 'Riwayat pesanan berhasil dihapus'
         ]);
     }
+    public function clearAll($type)
+    {
+        if ($type === 'rental') {
+            $count = RentalBooking::where('user_id', Auth::id())
+                ->whereIn('status', ['completed', 'cancelled', 'rejected'])
+                ->delete();
+        } else {
+            $count = GasOrder::where('user_id', Auth::id())
+                ->whereIn('status', ['completed', 'cancelled', 'rejected'])
+                ->delete();
+        }
+
+        if ($count > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Riwayat aktivitas berhasil dibersihkan'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Tidak ada riwayat yang dapat dibersihkan'
+        ], 404);
+    }
 }

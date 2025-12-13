@@ -215,6 +215,74 @@
                                         </td>
                                         <td class="text-end pe-4">
                                             <div class="d-flex gap-2 justify-content-end">
+                                                {{-- Logic Action Buttons --}}
+                                                @if($req->status != 'pending' && $req->cancellation_status != 'pending')
+                                                    @if($req->delivery_method == 'antar')
+                                                        {{-- Logic Antar --}}
+                                                        @if($req->status == 'confirmed')
+                                                            <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="being_prepared">
+                                                                <button type="submit" class="btn btn-sm btn-outline-warning shadow-sm rounded-pill px-3" onclick="return confirm('Mulai siapkan pesanan ini?')">
+                                                                    <i class="bx bx-package me-1"></i>Proses
+                                                                </button>
+                                                            </form>
+                                                        @elseif($req->status == 'being_prepared')
+                                                            <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="in_delivery">
+                                                                <button type="submit" class="btn btn-sm btn-outline-info shadow-sm rounded-pill px-3" onclick="return confirm('Mulai kirim pesanan ini?')">
+                                                                    <i class="bx bx-truck me-1"></i>Kirim
+                                                                </button>
+                                                            </form>
+                                                        @elseif($req->status == 'in_delivery')
+                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="arrived">
+                                                                <button type="submit" class="btn btn-sm btn-outline-primary shadow-sm rounded-pill px-3" onclick="return confirm('Pesanan sudah sampai?')">
+                                                                    <i class="bx bx-map-pin me-1"></i>Tiba
+                                                                </button>
+                                                            </form>
+                                                        @elseif($req->status == 'arrived')
+                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="completed">
+                                                                <button type="submit" class="btn btn-sm btn-outline-success shadow-sm rounded-pill px-3" onclick="return confirm('Selesaikan pesanan ini?')">
+                                                                    <i class="bx bx-check-circle me-1"></i>Selesai
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    @else
+                                                        {{-- Logic Jemput --}}
+                                                        @if($req->status == 'confirmed')
+                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="being_prepared">
+                                                                <button type="submit" class="btn btn-sm btn-outline-warning shadow-sm rounded-pill px-3" onclick="return confirm('Mulai siapkan pesanan ini?')">
+                                                                    <i class="bx bx-package me-1"></i>Siapkan
+                                                                </button>
+                                                            </form>
+                                                        @elseif($req->status == 'being_prepared')
+                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="approved">
+                                                                <button type="submit" class="btn btn-sm btn-outline-info shadow-sm rounded-pill px-3" onclick="return confirm('Barang sudah siap diambil?')">
+                                                                    <i class="bx bx-check me-1"></i>Siap Diambil
+                                                                </button>
+                                                            </form>
+                                                        @elseif($req->status == 'approved')
+                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                <input type="hidden" name="status" value="completed">
+                                                                <button type="submit" class="btn btn-sm btn-outline-success shadow-sm rounded-pill px-3" onclick="return confirm('Selesaikan pesanan ini? (Pastikan barang sudah diambil)')">
+                                                                    <i class="bx bx-check-circle me-1"></i>Selesai
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    @endif
+                                                @endif
+
+
                                                 <a href="{{ route('admin.aktivitas.permintaan-pengajuan.show', [$req->id, 'rental']) }}" 
                                                    class="btn btn-sm btn-icon btn-outline-primary" 
                                                    data-bs-toggle="tooltip" title="Lihat Detail">
@@ -305,6 +373,18 @@
                                         </td>
                                         <td class="text-end pe-4">
                                             <div class="d-flex gap-2 justify-content-end">
+                                                {{-- Action Buttons --}}
+                                                @if($order->status === 'confirmed' && $order->cancellation_status != 'pending')
+                                                    {{-- Confirmed -> Selesaikan --}}
+                                                     <form action="{{ route('admin.aktivitas.update-status', ['id' => $order->id, 'type' => 'gas']) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <input type="hidden" name="status" value="completed">
+                                                        <button type="submit" class="btn btn-sm btn-outline-success shadow-sm rounded-pill px-3" onclick="return confirm('Apakah Anda yakin ingin menyelesaikan pesanan ini?')">
+                                                            <i class="bx bx-check-circle me-1"></i>Selesaikan
+                                                        </button>
+                                                    </form>
+                                                @endif
+
                                                 <a href="{{ route('admin.aktivitas.permintaan-pengajuan.show', [$order->id, 'gas']) }}" 
                                                    class="btn btn-sm btn-icon btn-outline-primary" 
                                                    data-bs-toggle="tooltip" title="Lihat Detail">

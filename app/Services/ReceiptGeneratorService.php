@@ -116,8 +116,16 @@ class ReceiptGeneratorService
         // Status
         $y += $lineHeight;
         $this->addText($image, 'Status', $labelX, $y, $normalSize, $black, $fontPath, true);
-        $statusText = $this->getStatusLabel($booking->status);
-        $statusColor = in_array($booking->status, ['completed', 'confirmed']) ? $green : (in_array($booking->status, ['cancelled', 'rejected']) ? $red : $black);
+        $statusText = $this->determineStatusLabel($booking);
+        
+        // Tentukan warna status
+        $statusColor = $black;
+        if (in_array($booking->status, ['completed', 'approved', 'confirmed', 'paid', 'arrived', 'returned'])) {
+            $statusColor = $green;
+        } elseif (in_array($booking->status, ['cancelled', 'rejected']) || ($booking->cancellation_status ?? '') === 'pending') {
+            $statusColor = $red;
+        }
+
         $this->addText($image, ': ' . $statusText, $valueX, $y, $normalSize, $statusColor, $fontPath);
         
         // Pemisah
@@ -148,7 +156,7 @@ class ReceiptGeneratorService
         $y += 60;
         $itemName = $booking->barang->nama_barang;
         $quantity = (string)$booking->quantity;
-        $unitPrice = 'Rp. ' . number_format($booking->barang->harga, 0, ',', '.');
+        $unitPrice = 'Rp. ' . number_format($booking->barang->harga_sewa, 0, ',', '.');
         $total = 'Rp. ' . number_format($booking->total_amount, 0, ',', '.');
         
         $this->addText($image, $itemName, $col1, $y, $normalSize, $black, $fontPath);
@@ -300,8 +308,16 @@ class ReceiptGeneratorService
         // Status
         $y += $lineHeight;
         $this->addText($image, 'Status', $labelX, $y, $normalSize, $black, $fontPath, true);
-        $statusText = $this->getStatusLabel($order->status);
-        $statusColor = in_array($order->status, ['completed', 'confirmed']) ? $green : (in_array($order->status, ['cancelled', 'rejected']) ? $red : $black);
+        $statusText = $this->determineStatusLabel($order);
+        
+        // Tentukan warna status
+        $statusColor = $black;
+        if (in_array($order->status, ['completed', 'approved', 'confirmed', 'paid', 'arrived'])) {
+            $statusColor = $green;
+        } elseif (in_array($order->status, ['cancelled', 'rejected']) || ($order->cancellation_status ?? '') === 'pending') {
+            $statusColor = $red;
+        }
+
         $this->addText($image, ': ' . $statusText, $valueX, $y, $normalSize, $statusColor, $fontPath);
         
         // Pemisah
@@ -446,22 +462,32 @@ class ReceiptGeneratorService
         return $labels[$method] ?? ucfirst($method);
     }
 
-    protected function getStatusLabel($status)
+    /**
+     * Tentukan label status berdasarkan kondisi real-time
+     */
+    protected function determineStatusLabel($model)
     {
+        // 1. Cek Permintaan Pembatalan terlebih dahulu
+        if (isset($model->cancellation_status) && $model->cancellation_status === 'pending') {
+            return 'Permintaan Pembatalan';
+        }
+
+        // 2. Mapping Status Utama
         $labels = [
-            'pending' => 'Di Proses',
-            'confirmed' => 'Lunas / Selesai',
+            'pending' => 'Di Proses', // Atau 'Menunggu Konfirmasi'
+            'confirmed' => 'Dikonfirmasi', // REVISI: Bukan 'Lunas / Selesai'
+            'approved' => 'Disetujui',
             'in_progress' => 'Dalam Proses',
+            'being_prepared' => 'Sedang Dipersiapkan',
+            'in_delivery' => 'Dalam Pengiriman',
+            'arrived' => 'Tiba di Lokasi',
             'completed' => 'Selesai',
+            'returned' => 'Dikembalikan',
             'cancelled' => 'Dibatalkan',
             'rejected' => 'Ditolak',
             'paid' => 'Sudah Bayar',
-            'approved' => 'Disetujui',
-            'being_prepared' => 'Dipersiapkan',
-            'in_delivery' => 'Dalam Pengiriman',
-            'arrived' => 'Tiba',
-            'returned' => 'Dikembalikan',
         ];
-        return $labels[$status] ?? ucfirst($status);
+
+        return $labels[$model->status] ?? ucfirst($model->status);
     }
 }

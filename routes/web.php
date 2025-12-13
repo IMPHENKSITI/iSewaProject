@@ -91,6 +91,9 @@ Route::post('/aktivitas/{type}/{id}/cancel', [App\Http\Controllers\User\Activity
 Route::delete('/aktivitas/{type}/{id}', [App\Http\Controllers\User\ActivityController::class, 'destroy'])
     ->name('user.activity.destroy')
     ->middleware('role:user');
+Route::delete('/aktivitas/clear-all/{type}', [App\Http\Controllers\User\ActivityController::class, 'clearAll'])
+    ->name('user.activity.clearAll')
+    ->middleware('role:user');
 
 
 Route::get('/notifikasi', [App\Http\Controllers\User\NotificationController::class, 'index'])
@@ -101,6 +104,9 @@ Route::post('/notifikasi/{id}/read', [App\Http\Controllers\User\NotificationCont
     ->middleware('role:user');
 Route::post('/notifikasi/read-all', [App\Http\Controllers\User\NotificationController::class, 'markAllAsRead'])
     ->name('user.notifications.readAll')
+    ->middleware('role:user');
+Route::delete('/notifikasi/hapus-semua', [App\Http\Controllers\User\NotificationController::class, 'deleteAll'])
+    ->name('user.notifications.deleteAll')
     ->middleware('role:user');
 
 // Route Bukti Transaksi
@@ -249,6 +255,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/bukti-transaksi/{id}/{type}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.aktivitas.bukti-transaksi.show');
         Route::post('/bukti-transaksi/{id}/{type}/verify', [\App\Http\Controllers\Admin\TransactionController::class, 'verify'])->name('admin.aktivitas.bukti-transaksi.verify');
         Route::post('/bukti-transaksi/{id}/{type}/reject', [\App\Http\Controllers\Admin\TransactionController::class, 'reject'])->name('admin.aktivitas.bukti-transaksi.reject');
+        Route::post('/bukti-transaksi/{id}/{type}/update-status/{status}', [\App\Http\Controllers\Admin\TransactionController::class, 'updateStatus'])->name('admin.aktivitas.bukti-transaksi.update-status');
         Route::get('/bukti-transaksi/{id}/{type}/download', [\App\Http\Controllers\Admin\TransactionController::class, 'downloadProof'])->name('admin.aktivitas.bukti-transaksi.download');
     });
     

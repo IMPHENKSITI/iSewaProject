@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -24,6 +25,8 @@ public function index()
 {
     // Ambil pemesanan penyewaan yang tertunda atau minta batal
     $currentYear = date('Y');
+    Log::info('DashboardController: Starting index. Current Year: ' . $currentYear);
+    
     $rentalRequests = RentalBooking::with(['user', 'barang'])
         ->where(function($q) {
             $q->where('status', 'pending')
@@ -35,6 +38,7 @@ public function index()
             $item->item_name = $item->barang->nama_barang ?? 'Unknown Item';
             return $item;
         });
+    Log::info('DashboardController: Rental requests fetched. Count: ' . $rentalRequests->count());
 
     // Ambil pesanan gas yang tertunda atau minta batal
     $gasRequests = GasOrder::with('user')
@@ -179,6 +183,7 @@ public function index()
     // Ambil Produk Populer
     $data['popularProducts'] = $this->getPopularProducts();
 
+    Log::info('DashboardController: All data prepared. Rendering view.');
     return view('admin.dashboard.index', $data);
 }
 

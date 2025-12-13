@@ -39,7 +39,24 @@
                 </div>
             </div>
 
-                <!-- Bagian Pesanan Sewa -->
+            <!-- Clear History Buttons (Moved to Top) -->
+            <div class="flex justify-center mt-4 mb-8">
+                <button type="button" 
+                        class="clear-history-btn bg-red-100 text-red-600 px-6 py-2 rounded-full font-semibold hover:bg-red-200 transition-colors"
+                        id="clear-rental-btn"
+                        data-type="rental"
+                        style="display: block;">
+                    <i class="fas fa-trash-alt mr-2"></i>Bersihkan Riwayat Penyewaan
+                </button>
+                <button type="button" 
+                        class="clear-history-btn bg-red-100 text-red-600 px-6 py-2 rounded-full font-semibold hover:bg-red-200 transition-colors hidden"
+                        id="clear-gas-btn"
+                        data-type="gas">
+                    <i class="fas fa-trash-alt mr-2"></i>Bersihkan Riwayat Pesanan Gas
+                </button>
+            </div>
+
+            <!-- Bagian Pesanan Sewa -->
             <div id="rental-section" class="activity-section space-y-6">
                 @forelse($rentalBookings as $booking)
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -76,7 +93,7 @@
                                     <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
                                     </svg>
-                                    <a href="https://www.google.com/maps?q={{ $setting->latitude }},{{ $setting->longitude }}" 
+                                    <a href="https://maps.app.goo.gl/LE5JRcccSP6EjpZ37" 
                                        target="_blank" 
                                        class="text-sm text-red-600 hover:underline">
                                         {{ $setting->location_name }}
@@ -395,7 +412,7 @@
                                     <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
                                     </svg>
-                                    <a href="https://www.google.com/maps?q={{ $setting->latitude }},{{ $setting->longitude }}" 
+                                    <a href="https://maps.app.goo.gl/LE5JRcccSP6EjpZ37" 
                                        target="_blank" 
                                        class="text-sm text-red-600 hover:underline">
                                         {{ $setting->location_name }}
@@ -602,8 +619,7 @@
                 </div>
                 @endforelse
             </div>
-        </div>
-    </section>
+
 </main>
 @endsection
 
@@ -643,6 +659,23 @@
         const menuCards = document.querySelectorAll('.activity-menu-card');
         const rentalSection = document.getElementById('rental-section');
         const gasSection = document.getElementById('gas-section');
+        const clearRentalBtn = document.getElementById('clear-rental-btn');
+        const clearGasBtn = document.getElementById('clear-gas-btn');
+
+        // Initial State
+        const activeCard = document.querySelector('.activity-menu-card.active');
+        // No complex logic needed here because HTML sets default state correctly (Rental visible, Gas hidden)
+        // Just verify if we are on Gas tab (edge case)
+        if (activeCard && activeCard.dataset.type === 'gas') {
+             if(clearRentalBtn) {
+                 clearRentalBtn.classList.add('hidden');
+                 clearRentalBtn.style.display = 'none'; // Override inline style
+             }
+             if(clearGasBtn) {
+                 clearGasBtn.classList.remove('hidden');
+                 clearGasBtn.style.display = 'block';
+             }
+        }
 
         menuCards.forEach(card => {
             card.addEventListener('click', () => {
@@ -652,13 +685,29 @@
                 menuCards.forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 
-                // Toggle sections
+                // Toggle sections & buttons
                 if (type === 'rental') {
                     rentalSection.classList.remove('hidden');
                     gasSection.classList.add('hidden');
+                    if(clearRentalBtn) {
+                        clearRentalBtn.classList.remove('hidden');
+                        clearRentalBtn.style.display = 'block';
+                    }
+                    if(clearGasBtn) {
+                        clearGasBtn.classList.add('hidden');
+                        clearGasBtn.style.display = 'none';
+                    }
                 } else {
                     rentalSection.classList.add('hidden');
                     gasSection.classList.remove('hidden');
+                    if(clearRentalBtn) {
+                        clearRentalBtn.classList.add('hidden');
+                        clearRentalBtn.style.display = 'none';
+                    }
+                    if(clearGasBtn) {
+                        clearGasBtn.classList.remove('hidden');
+                        clearGasBtn.style.display = 'block';
+                    }
                 }
             });
         });
@@ -772,17 +821,16 @@
             });
         });
 
-        // Delete Order
+        // Delete Single Order History (Existing)
         const deleteButtons = document.querySelectorAll('.delete-order-btn');
-        
         deleteButtons.forEach(button => {
-            button.addEventListener('click', async () => {
+             button.addEventListener('click', async () => {
                 const type = button.dataset.type;
                 const id = button.dataset.id;
                 
                 const result = await Swal.fire({
                     title: 'Hapus Riwayat?',
-                    text: "Riwayat pesanan akan dihapus dari daftar.",
+                    text: "Riwayat pesanan ini akan dihapus dari daftar.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, Hapus',
@@ -798,7 +846,7 @@
                         allowOutsideClick: false,
                         showConfirmButton: false,
                         didOpen: () => {
-                             Swal.showLoading();
+                            Swal.showLoading();
                         }
                     });
 
@@ -822,13 +870,85 @@
                             });
                             location.reload();
                         } else {
-                            throw new Error(data.message);
+                            await Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: data.message,
+                                confirmButtonColor: '#ef4444'
+                            });
+                        }
+                    } catch (error) {
+                         await Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat menghapus.',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Clear All History (New Feature)
+        const clearHistoryButtons = document.querySelectorAll('.clear-history-btn');
+        clearHistoryButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const type = button.dataset.type;
+                const typeText = type === 'rental' ? 'Penyewaan' : 'Gas';
+
+                const result = await Swal.fire({
+                    title: `Bersihkan Riwayat ${typeText}?`,
+                    text: "Semua riwayat dengan status Selesai, Dibatalkan, atau Ditolak akan dihapus.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Bersihkan',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280'
+                });
+
+                if (result.isConfirmed) {
+                     Swal.fire({
+                        title: 'Sedang Membersihkan...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    try {
+                        const response = await fetch(`/aktivitas/clear-all/${type}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            await Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: data.message,
+                                confirmButtonColor: '#3b82f6'
+                            });
+                            location.reload();
+                        } else {
+                             await Swal.fire({
+                                icon: 'info',
+                                title: 'Info',
+                                text: data.message,
+                                confirmButtonColor: '#3b82f6'
+                            });
                         }
                     } catch (error) {
                         await Swal.fire({
                             icon: 'error',
-                            title: 'Gagal!',
-                            text: error.message || 'Terjadi kesalahan.',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat membersihkan riwayat.',
                             confirmButtonColor: '#ef4444'
                         });
                     }

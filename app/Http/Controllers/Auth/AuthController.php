@@ -214,6 +214,14 @@ class AuthController extends Controller
             // Redirect based on user role
             $redirectUrl = $user->role === 'admin' ? route('admin.dashboard') : route('beranda');
 
+            // Log Activity
+            \App\Models\ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'Login',
+                'description' => 'Login Berhasil sebagai ' . $user->role,
+                'ip_address' => $request->ip()
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Login berhasil',
@@ -240,6 +248,15 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        if (Auth::check()) {
+            \App\Models\ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'Logout',
+                'description' => 'Logout Berhasil',
+                'ip_address' => $request->ip()
+            ]);
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

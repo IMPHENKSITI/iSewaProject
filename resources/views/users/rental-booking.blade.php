@@ -375,6 +375,12 @@
                                 </svg>
                             </div>
                             <h3 class="text-lg font-bold text-gray-800">Alamat Bumdes</h3>
+                            <a href="https://maps.app.goo.gl/LE5JRcccSP6EjpZ37" target="_blank" class="ml-auto flex items-center gap-2 text-blue-500 hover:text-blue-600 transition-colors group">
+                                <span class="text-sm font-medium group-hover:underline">Lihat lokasi</span>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                            </a>
                         </div>
                         
                         <!-- Location Name -->
@@ -597,17 +603,16 @@
     </div>
 
     <!-- Success Modal -->
-    <div id="success-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
-        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
-            <button type="button" id="close-success-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    <div id="success-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm transition-all duration-300" style="display: none;">
+        <div class="bg-white rounded-[2rem] p-10 max-w-lg w-full mx-4 shadow-2xl transform transition-all scale-100 relative">
+            <button type="button" id="close-success-modal" class="absolute top-6 right-6 text-gray-400 hover:text-gray-800 transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
             
             <div class="text-center">
-                <div class="mb-6">
-                    <!-- Animated Checkmark -->
+                <div class="mb-8 mt-4">
                     <div class="checkmark-circle mx-auto">
                         <svg class="checkmark" viewBox="0 0 52 52">
                             <circle class="checkmark-circle-path" cx="26" cy="26" r="25" fill="none"/>
@@ -616,26 +621,29 @@
                     </div>
                 </div>
                 
-                <h2 class="text-2xl font-bold text-gray-800 mb-3">Pesanan Berhasil Dibuat</h2>
-                <p class="text-gray-700 font-medium mb-2">Pesanan Anda sedang Diproses</p>
-                <p class="text-gray-500 text-sm mb-8">Silahkan klik untuk menuju halaman selanjutnya</p>
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Pesanan Berhasil Dibuat</h2>
+                
+                <div class="mb-8">
+                    <p class="text-gray-800 font-bold text-lg mb-1">Pesanan Anda sedang Diproses</p>
+                    <p class="text-gray-500 text-sm">Silahkan klik untuk menuju halaman selanjutnya</p>
+                </div>
                 
                 <div class="space-y-4">
-                    <div class="flex gap-4">
+                    <div class="grid grid-cols-2 gap-4">
                         <button type="button" 
                                 id="view-receipt-btn"
-                                class="flex-1 px-5 py-3 border-2 border-blue-500 text-blue-500 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                                class="px-4 py-3 bg-gray-50 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:-translate-y-0.5 shadow-sm hover:shadow-md text-sm">
                             Lihat Bukti Transaksi
                         </button>
                         <button type="button" 
                                 id="download-receipt-btn"
-                                class="flex-1 px-5 py-3 border-2 border-blue-500 text-blue-500 font-semibold rounded-xl hover:bg-blue-50 transition-all">
+                                class="px-4 py-3 bg-gray-50 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:-translate-y-0.5 shadow-sm hover:shadow-md text-sm">
                             Unduh Bukti Transaksi
                         </button>
                     </div>
                     <button type="button" 
                             id="view-activity-btn"
-                            class="w-full px-6 py-3.5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all">
+                            class="w-full px-6 py-4 bg-[#2395FF] hover:bg-blue-600 text-white font-extrabold rounded-2xl shadow-lg hover:shadow-blue-200/50 transition-all duration-300 transform hover:scale-[1.02] text-lg">
                         Lihat Aktivitas
                     </button>
                 </div>

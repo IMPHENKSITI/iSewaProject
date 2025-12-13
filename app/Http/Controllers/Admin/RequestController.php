@@ -312,7 +312,7 @@ class RequestController extends Controller
     public function updateStatus(Request $request, $type, $id)
     {
         $request->validate([
-            'status' => 'required|string|in:confirmed,being_prepared,in_delivery,arrived,completed',
+            'status' => 'required|string|in:confirmed,being_prepared,in_delivery,arrived,completed,approved',
         ]);
 
         $notificationService = new NotificationService();
@@ -339,6 +339,9 @@ class RequestController extends Controller
                         : GasOrder::generateOrderNumber();
                 }
                 break;
+            case 'being_prepared':
+                // Tidak ada kolom khusus, hanya pembaruan status
+                break;
             case 'in_delivery':
                 if (!$order->delivery_time) {
                     $order->delivery_time = now();
@@ -354,8 +357,22 @@ class RequestController extends Controller
                     $order->completion_time = now();
                 }
 
-                // Logika pengembalian stok dipindahkan ke metode returnRental
-                // untuk mendukung input tanggal pengembalian eksplisit
+                // FIX: Return stock when admin marks rental as completed
+                if ($type === 'rental') {
+                    // Ensure barang is loaded
+                    if (!$order->relationLoaded('barang')) {
+                        $order->load('barang');
+                    }
+                    
+                    if ($order->barang) {
+                        $order->barang->increaseStock($order->quantity);
+                        
+                        // Check if stock is still low even after return (rare but possible)
+                        if ($order->barang->stok < 5 && $order->barang->stok > 0) {
+                            $notificationService->notifyLowStock($order->barang, 'barang', $order->barang->stok);
+                        }
+                    }
+                }
                 break;
         }
 
@@ -369,11 +386,23 @@ class RequestController extends Controller
         
         $notificationService->notifyOrderStatusUpdate($order, $newStatus);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Status berhasil diperbarui',
-            'order' => $order
+        // Log Activity
+        \App\Models\ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Update Status',
+            'description' => "Mengubah status pesanan #{$order->order_number} dari {$oldStatus} menjadi {$newStatus}",
+            'ip_address' => $request->ip()
         ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diperbarui',
+                'order' => $order
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status berhasil diperbarui');
     }
 
     public function uploadDeliveryProof(Request $request, $type, $id)
@@ -452,26 +481,34 @@ class RequestController extends Controller
             ], 400);
         }
 
+        $order->cancellation_status = $action === 'approve' ? 'approved' : 'rejected';
+        $order->admin_cancellation_response = $request->admin_response;
+
+        $message = '';
         if ($action === 'approve') {
-            $order->cancellation_status = 'approved';
-            $order->status = 'cancelled';
+            $order->status = 'cancelled'; // Update status utama jadi cancelled
             $message = 'Permintaan pembatalan disetujui';
+            
+            // Logika pengembalian dana atau stok jika perlu (biasanya stok dikembalikan jika dibatalkan)
+             if ($type === 'rental') {
+                $order->load('barang');
+                if ($order->barang) {
+                    $order->barang->increaseStock($order->quantity);
+                }
+            }
             
             // Kirim notifikasi ke pengguna
             Notification::create([
                 'title' => 'Pembatalan Disetujui',
-                'message' => "Permintaan pembatalan pesanan #{$order->order_number} telah disetujui.",
+                'message' => "Permintaan pembatalan pesanan #{$order->order_number} Anda telah disetujui.",
                 'type' => 'cancellation_approved',
                 'user_id' => $order->user_id,
                 'admin_id' => auth()->id(),
             ]);
-        } else {
-            $request->validate([
-                'admin_response' => 'required|string|max:500',
-            ]);
 
-            $order->cancellation_status = 'rejected';
-            $order->admin_cancellation_response = $request->admin_response;
+        } else {
+            // Jika ditolak, status utama tetap seperti sebelumnya (misal: pending atau confirmed)
+            // Tidak perlu ubah $order->status
             $message = 'Permintaan pembatalan ditolak';
             
             // Kirim notifikasi ke pengguna
@@ -483,6 +520,14 @@ class RequestController extends Controller
                 'admin_id' => auth()->id(),
             ]);
         }
+
+        // Log Activity
+        \App\Models\ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Cancellation Review',
+            'description' => ucfirst($action) . " permintaan pembatalan pesanan #{$order->order_number}",
+            'ip_address' => $request->ip()
+        ]);
 
         $order->save();
 
@@ -530,6 +575,14 @@ class RequestController extends Controller
             if ($barang->stok < 5 && $barang->stok > 0) {
                 $notificationService->notifyLowStock($barang, 'barang', $barang->stok);
             }
+
+            // Log Activity
+            \App\Models\ActivityLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'Return Rental',
+                'description' => "Memproses pengembalian alat pesanan #{$order->order_number}",
+                'ip_address' => $request->ip()
+            ]);
 
             DB::commit();
 

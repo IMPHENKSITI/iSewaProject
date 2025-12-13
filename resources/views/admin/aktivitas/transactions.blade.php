@@ -164,6 +164,10 @@
                                         </td>
                                         <td class="text-end pe-4">
                                             <div class="d-flex justify-content-end gap-2">
+                                                {{-- Action Buttons --}}
+                                                {{-- Action Buttons Removed --}}
+
+
                                                 @if($payment->payment_proof)
                                                     <a href="{{ route('admin.aktivitas.bukti-transaksi.download', [$payment->id, 'rental']) }}" 
                                                        class="btn btn-sm btn-light border shadow-sm rounded-circle p-2 text-primary hover-primary" 
@@ -249,6 +253,9 @@
                                         </td>
                                         <td class="text-end pe-4">
                                             <div class="d-flex justify-content-end gap-2">
+                                                {{-- Action Buttons --}}
+                                                {{-- Action Buttons Removed --}}
+
                                                  @if($payment->proof_of_payment)
                                                     <a href="{{ route('admin.aktivitas.bukti-transaksi.download', [$payment->id, 'gas']) }}" 
                                                        class="btn btn-sm btn-light border shadow-sm rounded-circle p-2 text-primary hover-primary" 

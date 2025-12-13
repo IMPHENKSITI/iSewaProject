@@ -66,4 +66,19 @@ class NotificationController extends Controller
 
         return redirect()->back()->with('success', 'Semua notifikasi ditandai sebagai sudah dibaca');
     }
+    public function deleteAll()
+    {
+        $count = Notification::where('user_id', auth()->id())
+            ->orWhereNull('user_id')
+            ->delete();
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Semua notifikasi berhasil dihapus'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Semua notifikasi berhasil dihapus');
+    }
 }

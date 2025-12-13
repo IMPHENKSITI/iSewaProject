@@ -145,6 +145,68 @@ class TransactionController extends Controller
         return redirect()->back();
     }
 
+    public function updateStatus(Request $request, $id, $type, $status)
+    {
+        // Validasi status yang diperbolehkan
+        $allowedStatuses = ['being_prepared', 'in_delivery', 'arrived', 'completed', 'approved'];
+        
+        if (!in_array($status, $allowedStatuses)) {
+             return redirect()->back()->with('error', 'Status tidak valid.');
+        }
+
+        if ($type === 'rental') {
+            $model = RentalBooking::findOrFail($id); // Model RentalBooking
+        } elseif ($type === 'gas') {
+            $model = GasOrder::findOrFail($id); // Model GasOrder
+        } else {
+             return redirect()->back()->with('error', 'Tipe transaksi tidak valid.');
+        }
+
+        // Update status
+        $model->status = $status;
+        $model->save();
+
+        // Buat pesan notifikasi yang deskriptif
+        $title = "Status Pesanan Diperbarui";
+        $message = "Status pesanan {$type} Anda telah diperbarui menjadi: " . $this->getStatusLabel($status);
+
+        // Kustomisasi pesan berdasarkan status spesifik
+        if ($status === 'being_prepared') {
+            $message = "Pesanan Anda sedang dipersiapkan oleh petugas.";
+        } elseif ($status === 'in_delivery') {
+            $message = "Pesanan Anda sedang dalam pengiriman ke lokasi tujuan.";
+        } elseif ($status === 'arrived') {
+             $message = "Pesanan Anda telah tiba di lokasi pengiriman.";
+        } elseif ($status === 'completed') {
+             $title = "Pesanan Selesai";
+             $message = "Terima kasih! Pesanan Anda telah selesai.";
+        }
+
+        // Simpan notifikasi
+        $notification = new Notification();
+        $notification->title = $title;
+        $notification->message = $message;
+        $notification->type = 'status_berubah';
+        $notification->user_id = $model->user_id;
+        $notification->admin_id = auth()->id();
+        $notification->save();
+
+        return redirect()->back()->with('success', 'Status berhasil diperbarui menjadi ' . $this->getStatusLabel($status));
+    }
+
+    private function getStatusLabel($status)
+    {
+        $labels = [
+            'being_prepared' => 'Sedang Dipersiapkan',
+            'in_delivery' => 'Dalam Pengiriman',
+            'arrived' => 'Tiba di Lokasi',
+            'completed' => 'Selesai',
+            'approved' => 'Siap Diambil',
+        ];
+
+        return $labels[$status] ?? $status;
+    }
+
     public function downloadProof($id, $type)
     {
         if ($type === 'rental') {

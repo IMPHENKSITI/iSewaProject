@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
@@ -58,11 +59,13 @@ class CheckRole
             }
             
             // Handle web request - redirect to beranda with login modal trigger
+            Log::info('CheckRole: User not logged in, redirecting to beranda from ' . $request->path());
             return redirect()->route('beranda')->with('open_login_modal', true)->with('error', 'Anda harus login terlebih dahulu.');
         }
 
         // User is authenticated
         $user = Auth::user();
+        Log::info('CheckRole: User ' . $user->email . ' (Role: ' . $user->role . ') accessing ' . $request->path());
         
         // If no roles specified (only 'auth'), just check authentication (already passed above)
         if (empty($roles)) {

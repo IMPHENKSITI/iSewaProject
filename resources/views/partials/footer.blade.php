@@ -36,7 +36,8 @@
             {{-- Column 3: Contact --}}
             <div class="flex flex-col space-y-4 sm:space-y-6 items-center md:items-end md:pt-2">
                 {{-- Location --}}
-                <div class="flex items-start gap-3 md:flex-row-reverse text-center md:text-right group cursor-default">
+                {{-- Location --}}
+                <a href="https://maps.app.goo.gl/77Vy8U9MWY8rJpys6" target="_blank" class="flex items-start gap-3 md:flex-row-reverse text-center md:text-right group hover:text-blue-300 transition-colors">
                     <div class="bg-white/10 p-2 rounded-full group-hover:bg-white/20 transition-colors">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -45,8 +46,8 @@
                                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
-                    <span class="text-sm sm:text-[15px] leading-relaxed mt-1">Bengkalis, Riau, Indonesia</span>
-                </div>
+                    <span class="text-sm sm:text-[15px] leading-relaxed mt-1 group-hover:underline">Bengkalis, Riau, Indonesia</span>
+                </a>
 
                 {{-- Email --}}
                 <div class="flex items-center gap-3 md:flex-row-reverse text-center md:text-right group">
@@ -88,7 +89,7 @@
                                 d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                         </svg>
                     </a>
-                    <a href="#"
+                    <a href="https://www.instagram.com/isewa_id?igsh=Zng0b2VqZnFhYzd6" target="_blank"
                         class="bg-white text-[#115789] rounded-md p-2 hover:bg-blue-100 transition-all hover:-translate-y-1">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path
