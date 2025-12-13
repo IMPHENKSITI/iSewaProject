@@ -20,7 +20,7 @@ DB_DATABASE=isewaproject
 ```
 - Buka terminal lalu jalankan 
 ```bash
-  php artisan key::generate
+  php artisan key:generate
 ```
 - Jika langkah di atas udah terpenuhi, tetapi masih kendala. Maka, hubungi secara personal di RL.
 ## Keuntungan memakai Github
