@@ -23,12 +23,12 @@ class TransactionController extends Controller
         // Include transactions with proof OR system generated (active/completed statuses)
         $activeStatuses = ['confirmed', 'approved', 'being_prepared', 'in_delivery', 'arrived', 'completed', 'returned'];
         
-        $rentalQuery = RentalBooking::with(['user', 'barang'])->where(function($q) use ($activeStatuses) {
+        $rentalQuery = RentalBooking::withTrashed()->with(['user', 'barang'])->where(function($q) use ($activeStatuses) {
             $q->whereNotNull('payment_proof')
               ->orWhereIn('status', $activeStatuses);
         });
 
-        $gasQuery = GasOrder::with('user')->where(function($q) use ($activeStatuses) {
+        $gasQuery = GasOrder::withTrashed()->with('user')->where(function($q) use ($activeStatuses) {
             $q->whereNotNull('proof_of_payment')
               ->orWhereIn('status', $activeStatuses);
         });
@@ -69,12 +69,12 @@ class TransactionController extends Controller
         }
 
         // Count statistics
-        $rentalCount = RentalBooking::where(function($q) use ($activeStatuses) {
+        $rentalCount = RentalBooking::withTrashed()->where(function($q) use ($activeStatuses) {
             $q->whereNotNull('payment_proof')
               ->orWhereIn('status', $activeStatuses);
         })->count();
         
-        $gasCount = GasOrder::where(function($q) use ($activeStatuses) {
+        $gasCount = GasOrder::withTrashed()->where(function($q) use ($activeStatuses) {
             $q->whereNotNull('proof_of_payment')
               ->orWhereIn('status', $activeStatuses);
         })->count();
@@ -93,9 +93,9 @@ class TransactionController extends Controller
     public function verify(Request $request, $id, $type)
     {
         if ($type === 'rental') {
-            $model = RentalBooking::findOrFail($id);
+            $model = RentalBooking::withTrashed()->findOrFail($id);
         } else {
-            $model = GasOrder::findOrFail($id);
+            $model = GasOrder::withTrashed()->findOrFail($id);
         }
 
         $model->update(['status' => 'completed']);
@@ -121,9 +121,9 @@ class TransactionController extends Controller
         ]);
 
         if ($type === 'rental') {
-            $model = RentalBooking::findOrFail($id);
+            $model = RentalBooking::withTrashed()->findOrFail($id);
         } else {
-            $model = GasOrder::findOrFail($id);
+            $model = GasOrder::withTrashed()->findOrFail($id);
         }
 
         $model->update([
@@ -155,9 +155,9 @@ class TransactionController extends Controller
         }
 
         if ($type === 'rental') {
-            $model = RentalBooking::findOrFail($id); // Model RentalBooking
+            $model = RentalBooking::withTrashed()->findOrFail($id); // Model RentalBooking
         } elseif ($type === 'gas') {
-            $model = GasOrder::findOrFail($id); // Model GasOrder
+            $model = GasOrder::withTrashed()->findOrFail($id); // Model GasOrder
         } else {
              return redirect()->back()->with('error', 'Tipe transaksi tidak valid.');
         }
@@ -210,9 +210,9 @@ class TransactionController extends Controller
     public function downloadProof($id, $type)
     {
         if ($type === 'rental') {
-            $model = RentalBooking::findOrFail($id);
+            $model = RentalBooking::withTrashed()->findOrFail($id);
         } else {
-            $model = GasOrder::findOrFail($id);
+            $model = GasOrder::withTrashed()->findOrFail($id);
         }
 
         // Determine proof column

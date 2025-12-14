@@ -26,7 +26,14 @@ class UserManagementController extends Controller
 
     public function show($id)
     {
-        $user = User::with(['rentalTransactions', 'gasTransactions'])->findOrFail($id);
+        $user = User::with([
+            'rentalTransactions' => function ($query) {
+                $query->withTrashed()->with('barang')->latest()->take(10);
+            },
+            'gasTransactions' => function ($query) {
+                $query->withTrashed()->with('gas')->latest()->take(10);
+            }
+        ])->findOrFail($id);
 
         return view('admin.user_management.show', compact('user'));
     }

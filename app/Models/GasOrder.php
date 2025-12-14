@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GasOrder extends Model
 {
+    use SoftDeletes;
     
     protected $fillable = [
         'order_number',
@@ -96,5 +98,20 @@ class GasOrder extends Model
     public function canBeCancelled()
     {
         return !in_array($this->status, ['completed', 'cancelled']) && !$this->hasCancellationRequest();
+    }
+    /**
+     * Get the badge class for the status.
+     */
+    public function getStatusBadgeClassAttribute()
+    {
+        return match ($this->status) {
+            'pending' => 'warning',
+            'confirmed' => 'info',
+            'in_delivery' => 'primary',
+            'completed' => 'success',
+            'cancelled' => 'danger',
+            'rejected' => 'danger',
+            default => 'secondary',
+        };
     }
 }

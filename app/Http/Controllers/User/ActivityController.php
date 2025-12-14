@@ -104,11 +104,11 @@ class ActivityController extends Controller
                 ->firstOrFail();
         }
 
-        // Only allow deleting if status is cancelled or rejected
-        if (!in_array($order->status, ['cancelled', 'rejected'])) {
+        // Only allow deleting if status is completed, cancelled or rejected (Independent status)
+        if (!in_array($order->status, ['completed', 'cancelled', 'rejected'])) {
              return response()->json([
                 'success' => false,
-                'message' => 'Pesanan tidak dapat dihapus kecuali dibatalkan atau ditolak'
+                'message' => 'Pesanan tidak dapat dihapus kecuali selesai, dibatalkan atau ditolak'
             ], 400);
         }
 
@@ -121,26 +121,41 @@ class ActivityController extends Controller
     }
     public function clearAll($type)
     {
-        if ($type === 'rental') {
-            $count = RentalBooking::where('user_id', Auth::id())
-                ->whereIn('status', ['completed', 'cancelled', 'rejected'])
-                ->delete();
-        } else {
-            $count = GasOrder::where('user_id', Auth::id())
-                ->whereIn('status', ['completed', 'cancelled', 'rejected'])
-                ->delete();
-        }
+        try {
+            \Illuminate\Support\Facades\Log::info("Attempting to clear history for type: {$type}, User ID: " . Auth::id());
 
-        if ($count > 0) {
+            $query = ($type === 'rental') 
+                ? RentalBooking::where('user_id', Auth::id())
+                : GasOrder::where('user_id', Auth::id());
+
+            $orders = $query->whereIn('status', ['completed', 'cancelled', 'rejected'])->get();
+            $count = $orders->count();
+
+            \Illuminate\Support\Facades\Log::info("Found {$count} records to delete.");
+
+            if ($count === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada riwayat yang dapat dibersihkan'
+                ], 404);
+            }
+
+            foreach ($orders as $order) {
+                $order->delete();
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Riwayat aktivitas berhasil dibersihkan'
+                'message' => "Berhasil menghapus {$count} riwayat aktivitas."
             ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Failed to clear history: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error($e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus riwayat: ' . $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Tidak ada riwayat yang dapat dibersihkan'
-        ], 404);
     }
 }

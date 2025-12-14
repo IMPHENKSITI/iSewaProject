@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RentalBooking extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -154,5 +155,23 @@ class RentalBooking extends Model
     public function canBeCancelled()
     {
         return !in_array($this->status, ['completed', 'cancelled']) && !$this->hasCancellationRequest();
+    }
+    /**
+     * Get the badge class for the status.
+     */
+    public function getStatusBadgeClassAttribute()
+    {
+        return match ($this->status) {
+            'pending' => 'warning',
+            'confirmed' => 'info',
+            'approved' => 'primary',
+            'being_prepared' => 'info',
+            'in_delivery' => 'info',
+            'arrived' => 'primary',
+            'completed' => 'success',
+            'cancelled' => 'danger',
+            'rejected' => 'danger',
+            default => 'secondary',
+        };
     }
 }

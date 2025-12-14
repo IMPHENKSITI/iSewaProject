@@ -70,8 +70,8 @@
                                 <tr>
                                     <td>{{ $trans->id }}</td>
                                     <td>{{ $trans->created_at->format('d M Y H:i') }}</td>
-                                    <td>{{ $trans->item_name ?? $trans->item->name ?? 'N/A' }}</td>
-                                    <td><span class="badge badge-{{ $trans->status_badge_class ?? 'secondary' }}">{{ $trans->status ?? 'N/A' }}</span></td>
+                                    <td>{{ $trans->item_name ?? $trans->barang->nama_barang ?? 'N/A' }}</td>
+                                    <td><span class="badge bg-label-secondary">{{ $trans->status ?: 'N/A' }}</span></td>
                                     <td>Rp {{ number_format($trans->total_amount ?? 0, 0, ',', '.') }}</td>
                                 </tr>
                                 @endforeach
@@ -102,10 +102,10 @@
                                 <tr>
                                     <td>{{ $trans->id }}</td>
                                     <td>{{ $trans->created_at->format('d M Y H:i') }}</td>
-                                    <td>{{ $trans->gas_type ?? $trans->product->name ?? 'N/A' }}</td>
+                                    <td>{{ $trans->item_name ?? $trans->gas->jenis_gas ?? 'N/A' }}</td>
                                     <td>{{ $trans->quantity ?? 0 }} Tabung</td>
-                                    <td><span class="badge badge-{{ $trans->status_badge_class ?? 'secondary' }}">{{ $trans->status ?? 'N/A' }}</span></td>
-                                    <td>Rp {{ number_format($trans->total_amount ?? 0, 0, ',', '.') }}</td>
+                                    <td><span class="badge bg-label-secondary">{{ $trans->status ?: 'N/A' }}</span></td>
+                                    <td>Rp {{ number_format(($trans->price * $trans->quantity) ?? 0, 0, ',', '.') }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

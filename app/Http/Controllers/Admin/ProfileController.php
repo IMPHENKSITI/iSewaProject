@@ -30,6 +30,7 @@ class ProfileController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
+            'position' => 'nullable|string|max:255',
             'gender' => 'nullable|in:laki-laki,perempuan',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -68,6 +69,7 @@ class ProfileController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
+            'position' => $request->position,
             'gender' => $request->gender,
         ]);
 

@@ -155,7 +155,8 @@ class BerandaController extends Controller
     private function getPopularProducts()
     {
         // 1. Get Rental Scores
-        $rentalPopularity = RentalBooking::select('barang_id', DB::raw('SUM(quantity) as total_sold'))
+        $rentalPopularity = RentalBooking::withTrashed()
+            ->select('barang_id', DB::raw('SUM(quantity) as total_sold'))
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->whereNotNull('barang_id')
             ->groupBy('barang_id')
@@ -181,7 +182,8 @@ class BerandaController extends Controller
         })->filter();
 
         // 3. Get Gas Scores
-        $gasPopularity = GasOrder::select('gas_id', DB::raw('SUM(quantity) as total_sold'))
+        $gasPopularity = GasOrder::withTrashed()
+            ->select('gas_id', DB::raw('SUM(quantity) as total_sold'))
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->whereNotNull('gas_id')
             ->groupBy('gas_id')
@@ -206,8 +208,8 @@ class BerandaController extends Controller
             ];
         })->filter();
 
-        // 5. Merge, Sort, Take 4
-        return $products->concat($gasProducts)->sortByDesc('sold')->take(4);
+        // 5. Merge, Sort, Take 2 (Only Hot)
+        return $products->concat($gasProducts)->sortByDesc('sold')->take(2);
     }
     
     /**
@@ -220,13 +222,15 @@ class BerandaController extends Controller
         
         for ($month = 1; $month <= 12; $month++) {
             // Get rental revenue for this month (excluding cancelled)
-            $rentalRevenue = RentalBooking::whereYear('created_at', $year)
+            $rentalRevenue = RentalBooking::withTrashed()
+                ->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->sum('total_amount');
             
             // Get gas revenue for this month (excluding cancelled)
-            $gasRevenue = GasOrder::whereYear('created_at', $year)
+            $gasRevenue = GasOrder::withTrashed()
+                ->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->sum(DB::raw('price * quantity'));
@@ -259,13 +263,15 @@ class BerandaController extends Controller
         
         for ($month = 1; $month <= 12; $month++) {
             // Count rental orders
-            $rentalCount = RentalBooking::whereYear('created_at', $year)
+            $rentalCount = RentalBooking::withTrashed()
+                ->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->count();
             
             // Count gas orders
-            $gasCount = GasOrder::whereYear('created_at', $year)
+            $gasCount = GasOrder::withTrashed()
+                ->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->count();

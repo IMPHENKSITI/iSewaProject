@@ -236,48 +236,32 @@
                                                                 </button>
                                                             </form>
                                                         @elseif($req->status == 'in_delivery')
-                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <input type="hidden" name="status" value="arrived">
-                                                                <button type="submit" class="btn btn-sm btn-outline-primary shadow-sm rounded-pill px-3" onclick="return confirm('Pesanan sudah sampai?')">
-                                                                    <i class="bx bx-map-pin me-1"></i>Tiba
-                                                                </button>
-                                                            </form>
+                                                             <button type="button" class="btn btn-sm btn-outline-primary shadow-sm rounded-pill px-3" 
+                                                                     onclick="prepareUpload({{ $req->id }}, 'rental', 'antar')"
+                                                                     data-bs-toggle="modal" data-bs-target="#uploadProofModal">
+                                                                 <i class="bx bx-camera me-1"></i>Tiba
+                                                             </button>
                                                         @elseif($req->status == 'arrived')
-                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <input type="hidden" name="status" value="completed">
-                                                                <button type="submit" class="btn btn-sm btn-outline-success shadow-sm rounded-pill px-3" onclick="return confirm('Selesaikan pesanan ini?')">
-                                                                    <i class="bx bx-check-circle me-1"></i>Selesai
-                                                                </button>
-                                                            </form>
+                                                             <button type="button" class="btn btn-sm btn-outline-success shadow-sm rounded-pill px-3" 
+                                                                     onclick="prepareReturn({{ $req->id }})"
+                                                                     data-bs-toggle="modal" data-bs-target="#returnModal">
+                                                                 <i class="bx bx-check-circle me-1"></i>Selesai
+                                                             </button>
                                                         @endif
                                                     @else
                                                         {{-- Logic Jemput --}}
                                                         @if($req->status == 'confirmed')
-                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <input type="hidden" name="status" value="being_prepared">
-                                                                <button type="submit" class="btn btn-sm btn-outline-warning shadow-sm rounded-pill px-3" onclick="return confirm('Mulai siapkan pesanan ini?')">
-                                                                    <i class="bx bx-package me-1"></i>Siapkan
-                                                                </button>
-                                                            </form>
-                                                        @elseif($req->status == 'being_prepared')
-                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <input type="hidden" name="status" value="approved">
-                                                                <button type="submit" class="btn btn-sm btn-outline-info shadow-sm rounded-pill px-3" onclick="return confirm('Barang sudah siap diambil?')">
-                                                                    <i class="bx bx-check me-1"></i>Siap Diambil
-                                                                </button>
-                                                            </form>
-                                                        @elseif($req->status == 'approved')
-                                                             <form action="{{ route('admin.aktivitas.update-status', ['type' => 'rental', 'id' => $req->id]) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <input type="hidden" name="status" value="completed">
-                                                                <button type="submit" class="btn btn-sm btn-outline-success shadow-sm rounded-pill px-3" onclick="return confirm('Selesaikan pesanan ini? (Pastikan barang sudah diambil)')">
-                                                                    <i class="bx bx-check-circle me-1"></i>Selesai
-                                                                </button>
-                                                            </form>
+                                                             <button type="button" class="btn btn-sm btn-outline-warning shadow-sm rounded-pill px-3" 
+                                                                     onclick="prepareUpload({{ $req->id }}, 'rental', 'jemput')"
+                                                                     data-bs-toggle="modal" data-bs-target="#uploadProofModal">
+                                                                 <i class="bx bx-package me-1"></i>Siapkan
+                                                             </button>
+                                                        @elseif($req->status == 'being_prepared' || $req->status == 'approved')
+                                                             <button type="button" class="btn btn-sm btn-outline-success shadow-sm rounded-pill px-3" 
+                                                                     onclick="prepareReturn({{ $req->id }})"
+                                                                     data-bs-toggle="modal" data-bs-target="#returnModal">
+                                                                 <i class="bx bx-check-circle me-1"></i>Selesai
+                                                             </button>
                                                         @endif
                                                     @endif
                                                 @endif
@@ -458,6 +442,64 @@
     </div>
 </div>
 
+<!-- Upload Proof Modal -->
+<div class="modal fade" id="uploadProofModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="uploadProofTitle">Upload Bukti Pengiriman</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="uploadProofForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" id="uploadId" name="id">
+                    <input type="hidden" id="uploadType" name="type">
+                    <div class="mb-3">
+                        <label class="form-label text-muted" id="uploadLabel">Foto Bukti Penerimaan Barang</label>
+                        <input type="file" name="delivery_proof" class="form-control" accept="image/*" required>
+                        <div class="form-text" id="uploadHelp">Upload foto saat barang diterima oleh pelanggan</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Upload & Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Return Modal -->
+<div class="modal fade" id="returnModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Pengembalian Alat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="returnForm">
+                <input type="hidden" id="returnId" name="id">
+                <div class="modal-body">
+                    <div class="alert alert-info border-0 d-flex align-items-center mb-3">
+                        <i class="bx bx-info-circle fs-4 me-2"></i>
+                        <div>
+                            Stok akan otomatis <strong>bertambah</strong> setelah dikonfirmasi.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Waktu Pengembalian</label>
+                        <input type="datetime-local" name="return_time" class="form-control" required value="{{ now()->format('Y-m-d\TH:i') }}">
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-link text-secondary text-decoration-none" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4">Konfirmasi Pengembalian</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <style>
     /* Custom Tab Styling */
     .nav-pills .nav-link {
@@ -600,6 +642,130 @@
         document.getElementById('rejectForm').action = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${id}/${type}/reject`;
         modal.show();
     }
+
+    // Upload Proof Logic
+    function prepareUpload(id, type, deliveryMethod) {
+        document.getElementById('uploadId').value = id;
+        document.getElementById('uploadType').value = type;
+        
+        const titleEl = document.getElementById('uploadProofTitle');
+        const labelEl = document.getElementById('uploadLabel');
+        const helpEl = document.getElementById('uploadHelp');
+
+        if (deliveryMethod === 'jemput') {
+            titleEl.innerText = 'Upload Bukti Penjemputan';
+            labelEl.innerText = 'Foto Bukti Pengambilan Barang';
+            helpEl.innerText = 'Upload foto saat barang diambil oleh pelanggan';
+        } else {
+            titleEl.innerText = 'Upload Bukti Pengiriman';
+            labelEl.innerText = 'Foto Bukti Penerimaan Barang';
+            helpEl.innerText = 'Upload foto saat barang diterima oleh pelanggan';
+        }
+    }
+
+    document.getElementById('uploadProofForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const id = document.getElementById('uploadId').value;
+        const type = document.getElementById('uploadType').value;
+        
+        const url = `{{ url('admin/aktivitas/permintaan-pengajuan') }}/${type}/${id}/delivery-proof`;
+        
+        // Show loading
+        Swal.fire({
+            title: 'Mengupload...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                 Swal.showLoading();
+            }
+        });
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                Swal.fire('Berhasil', data.message, 'success')
+                .then(() => location.reload());
+            } else {
+                Swal.fire('Error', data.message || 'Gagal upload bukti', 'error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire('Error', 'Terjadi kesalahan sistem: ' + err.message, 'error');
+        });
+    });
+
+    // Return Logic
+    function prepareReturn(id) {
+        document.getElementById('returnId').value = id;
+    }
+
+    document.getElementById('returnForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const id = document.getElementById('returnId').value;
+        const url = `{{ url('admin/aktivitas/permintaan-pengajuan/rental') }}/${id}/return`;
+        
+        // Show confirmation
+        Swal.fire({
+            title: 'Konfirmasi Pengembalian?',
+            text: "Pastikan alat sudah diterima dengan baik. Stok akan ditambahkan.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Konfirmasi'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show Loading
+                Swal.fire({
+                    title: 'Memproses...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                         Swal.showLoading();
+                    }
+                });
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        return_time: formData.get('return_time')
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        Swal.fire('Berhasil', data.message, 'success')
+                        .then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.message || 'Gagal memproses pengembalian', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+                });
+            }
+        });
+    });
+
+    // Force reload on back button (bfcache)
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    };
 
     document.addEventListener('DOMContentLoaded', function() {
         // Function to update filter links

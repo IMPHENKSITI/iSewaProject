@@ -22,7 +22,7 @@ class ReceiptController extends Controller
      */
     public function viewRentalReceipt($id)
     {
-        $booking = RentalBooking::findOrFail($id);
+        $booking = RentalBooking::withTrashed()->findOrFail($id);
         
         // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
         if ($booking->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
@@ -51,7 +51,7 @@ class ReceiptController extends Controller
      */
     public function downloadRentalReceipt($id)
     {
-        $booking = RentalBooking::findOrFail($id);
+        $booking = RentalBooking::withTrashed()->findOrFail($id);
         
         // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
         if ($booking->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
@@ -78,7 +78,7 @@ class ReceiptController extends Controller
      */
     public function viewGasReceipt($id)
     {
-        $order = GasOrder::findOrFail($id);
+        $order = GasOrder::withTrashed()->findOrFail($id);
         
         // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
         if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
@@ -107,7 +107,7 @@ class ReceiptController extends Controller
      */
     public function downloadGasReceipt($id)
     {
-        $order = GasOrder::findOrFail($id);
+        $order = GasOrder::withTrashed()->findOrFail($id);
         
         // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
         if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {

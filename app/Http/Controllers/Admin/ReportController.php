@@ -20,10 +20,10 @@ class ReportController extends Controller
         $endDate = $request->get('end_date');
 
         // Query Penyewaan
-        $rentalQuery = RentalBooking::with('user')->orderByDesc('created_at');
+        $rentalQuery = RentalBooking::withTrashed()->with('user')->orderByDesc('created_at');
         
         // Query Gas
-        $gasQuery = GasOrder::with('user')->orderByDesc('created_at');
+        $gasQuery = GasOrder::withTrashed()->with('user')->orderByDesc('created_at');
 
         // Terapkan Filter
         if ($status && $status !== 'all') {
@@ -52,11 +52,11 @@ class ReportController extends Controller
         $year = $request->input('year', date('Y'));
 
         // Hitung total pendapatan per unit dari sistem (Filter Tahunan)
-        $totalPenyewaan = RentalBooking::whereYear('created_at', $year)
+        $totalPenyewaan = RentalBooking::withTrashed()->whereYear('created_at', $year)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->sum('total_amount');
             
-        $totalGas = GasOrder::whereYear('created_at', $year)
+        $totalGas = GasOrder::withTrashed()->whereYear('created_at', $year)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->selectRaw('SUM(price * quantity) as total')
             ->value('total') ?? 0;
@@ -84,7 +84,7 @@ class ReportController extends Controller
         $monthlyIncome = array_fill_keys($months, 0);
 
         // Pendapatan dari sistem (RentalBooking)
-        $rentalMonthly = RentalBooking::selectRaw('SUM(total_amount) as total, MONTH(created_at) as month')
+        $rentalMonthly = RentalBooking::withTrashed()->selectRaw('SUM(total_amount) as total, MONTH(created_at) as month')
             ->whereYear('created_at', $year)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->groupBy('month')
@@ -95,7 +95,7 @@ class ReportController extends Controller
         }
 
         // Pendapatan dari sistem (GasOrder)
-        $gasMonthly = GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
+        $gasMonthly = GasOrder::withTrashed()->selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
             ->whereYear('created_at', $year)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->groupBy('month')
@@ -122,8 +122,8 @@ class ReportController extends Controller
         }
 
         // Ambil data untuk detail per unit (Difilter Berdasarkan Tahun)
-        $rentalRequests = RentalBooking::whereYear('created_at', $year)->get(); // For count & stats
-        $gasOrders = GasOrder::whereYear('created_at', $year)->get();
+        $rentalRequests = RentalBooking::withTrashed()->whereYear('created_at', $year)->get(); // For count & stats
+        $gasOrders = GasOrder::withTrashed()->whereYear('created_at', $year)->get();
         
         // Ambil laporan manual (Difilter Berdasarkan Tahun)
         $manualReports = ManualReport::with('creator')
@@ -132,11 +132,11 @@ class ReportController extends Controller
             ->get();
 
         // Hitung total transaksi untuk Donut Chart (Filter Tahunan)
-        $rentalCount = RentalBooking::whereYear('created_at', $year)
+        $rentalCount = RentalBooking::withTrashed()->whereYear('created_at', $year)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
             
-        $gasCount = GasOrder::whereYear('created_at', $year)
+        $gasCount = GasOrder::withTrashed()->whereYear('created_at', $year)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
             
@@ -206,13 +206,13 @@ class ReportController extends Controller
         
         for ($month = 1; $month <= 12; $month++) {
             // Hitung pesanan penyewaan
-            $rentalCount = RentalBooking::whereYear('created_at', $year)
+            $rentalCount = RentalBooking::withTrashed()->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->count();
             
             // Hitung pesanan gas
-            $gasCount = GasOrder::whereYear('created_at', $year)
+            $gasCount = GasOrder::withTrashed()->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
                 ->count();
@@ -234,23 +234,23 @@ class ReportController extends Controller
     private function getTotalPendapatanData($month, $year)
     {   
         // Pendapatan Penyewaan Alat
-        $rentalRevenue = RentalBooking::whereYear('created_at', $year)
+        $rentalRevenue = RentalBooking::withTrashed()->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->sum('total_amount');
         
-        $rentalTransactions = RentalBooking::whereYear('created_at', $year)
+        $rentalTransactions = RentalBooking::withTrashed()->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
         
         // Pendapatan Penjualan Gas
-        $gasRevenue = GasOrder::whereYear('created_at', $year)
+        $gasRevenue = GasOrder::withTrashed()->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->sum(\DB::raw('price * quantity'));
         
-        $gasTransactions = GasOrder::whereYear('created_at', $year)
+        $gasTransactions = GasOrder::withTrashed()->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
@@ -318,6 +318,24 @@ class ReportController extends Controller
         $logs = $query->paginate(10)->withQueryString();
 
         return view('admin.laporan.logs', compact('logs'));
+    }
+
+    /**
+     * Bersihkan semua log aktivitas (Soft Delete)
+     */
+    public function clearLogs()
+    {
+        try {
+            // Menggunakan query builder delete() pada model dengan SoftDeletes trait
+            // ini otomatis melakukan soft delete (update column deleted_at)
+            ActivityLog::query()->delete();
+
+            // Log creation removed as per user request to have a completely empty log list.
+
+            return redirect()->back()->with('success', 'Riwayat aktivitas berhasil dibersihkan.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membersihkan log: ' . $e->getMessage());
+        }
     }
     
     /**

@@ -68,17 +68,39 @@ class NotificationController extends Controller
     }
     public function deleteAll()
     {
-        $count = Notification::where('user_id', auth()->id())
-            ->orWhereNull('user_id')
-            ->delete();
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
 
-        if (request()->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Semua notifikasi berhasil dihapus'
-            ]);
+            $count = Notification::where(function($query) {
+                    $query->where('user_id', auth()->id())
+                        ->orWhereNull('user_id');
+                })
+                ->where('type', '!=', 'pesan_admin') // Kecuali pesan dari admin
+                ->delete();
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Semua notifikasi berhasil dihapus'
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Semua notifikasi berhasil dihapus');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Error deleting notifications: ' . $e->getMessage());
+
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with('success', 'Semua notifikasi berhasil dihapus');
     }
 }

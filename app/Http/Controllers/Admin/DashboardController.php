@@ -27,7 +27,7 @@ public function index()
     $currentYear = date('Y');
     Log::info('DashboardController: Starting index. Current Year: ' . $currentYear);
     
-    $rentalRequests = RentalBooking::with(['user', 'barang'])
+    $rentalRequests = RentalBooking::withTrashed()->with(['user', 'barang'])
         ->where(function($q) {
             $q->where('status', 'pending')
               ->orWhere('cancellation_status', 'pending');
@@ -41,7 +41,7 @@ public function index()
     Log::info('DashboardController: Rental requests fetched. Count: ' . $rentalRequests->count());
 
     // Ambil pesanan gas yang tertunda atau minta batal
-    $gasRequests = GasOrder::with('user')
+    $gasRequests = GasOrder::withTrashed()->with('user')
         ->where(function($q) {
              $q->where('status', 'pending')
                ->orWhere('cancellation_status', 'pending');
@@ -57,20 +57,20 @@ public function index()
     $latestRequests = $rentalRequests->concat($gasRequests)->sortByDesc('created_at')->take(5);
 
     // Hitung statistik nyata
-    $totalOrders = RentalBooking::count() + GasOrder::count();
+    $totalOrders = RentalBooking::withTrashed()->count() + GasOrder::withTrashed()->count();
     
     // Hitung total order selesai/sukses
-    $completedRentals = RentalBooking::where('status', 'resolved')->count();
-    $completedGas = GasOrder::where('status', 'completed')->count();
+    $completedRentals = RentalBooking::withTrashed()->where('status', 'resolved')->count();
+    $completedGas = GasOrder::withTrashed()->where('status', 'completed')->count();
     $completedOrders = $completedRentals + $completedGas;
 
     // Hitung statistik untuk Donut Chart (Total Transaksi per Kategori) - Filter Tahun Ini & Tidak Cancel
     // Hitung statistik untuk Donut Chart (Total Transaksi per Kategori)
-    $rentalCount = RentalBooking::whereYear('created_at', $currentYear)
+    $rentalCount = RentalBooking::withTrashed()->whereYear('created_at', $currentYear)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->count();
 
-    $gasCount = GasOrder::whereYear('created_at', $currentYear)
+    $gasCount = GasOrder::withTrashed()->whereYear('created_at', $currentYear)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->count();
 
@@ -84,12 +84,12 @@ public function index()
     $monthlyPerformance = [];
     
     for ($month = 1; $month <= 12; $month++) {
-        $rentalMonthCount = RentalBooking::whereMonth('created_at', $month)
+        $rentalMonthCount = RentalBooking::withTrashed()->whereMonth('created_at', $month)
             ->whereYear('created_at', $currentYear)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
         
-        $gasMonthCount = GasOrder::whereMonth('created_at', $month)
+        $gasMonthCount = GasOrder::withTrashed()->whereMonth('created_at', $month)
             ->whereYear('created_at', $currentYear)
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->count();
@@ -114,7 +114,7 @@ public function index()
     ];
     
     // Pendapatan dari sistem (RentalBooking)
-    foreach (RentalBooking::selectRaw('SUM(total_amount) as total, MONTH(created_at) as month')
+    foreach (RentalBooking::withTrashed()->selectRaw('SUM(total_amount) as total, MONTH(created_at) as month')
         ->whereYear('created_at', $currentYear)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->groupBy('month')
@@ -123,7 +123,7 @@ public function index()
     }
 
     // Pendapatan dari pesanan gas
-    foreach (GasOrder::selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
+    foreach (GasOrder::withTrashed()->selectRaw('SUM(price * quantity) as total, MONTH(created_at) as month')
         ->whereYear('created_at', $currentYear)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->groupBy('month')
@@ -144,14 +144,14 @@ public function index()
     
     // Hitung statistik item populer (data nyata dari database)
     $popularItems = [
-        'gas_lpg_3kg' => GasOrder::where('item_name', 'LIKE', '%3%')->count(),
-        'sound_system' => RentalBooking::whereHas('barang', function($q) {
+        'gas_lpg_3kg' => GasOrder::withTrashed()->where('item_name', 'LIKE', '%3%')->count(),
+        'sound_system' => RentalBooking::withTrashed()->whereHas('barang', function($q) {
                 $q->where('nama_barang', 'LIKE', '%Sound%');
             })->count(),
-        'tenda_komplit' => RentalBooking::whereHas('barang', function($q) {
+        'tenda_komplit' => RentalBooking::withTrashed()->whereHas('barang', function($q) {
                 $q->where('nama_barang', 'LIKE', '%Tenda%');
             })->count(),
-        'meja_kursi' => RentalBooking::whereHas('barang', function($q) {
+        'meja_kursi' => RentalBooking::withTrashed()->whereHas('barang', function($q) {
                 $q->where('nama_barang', 'LIKE', '%Meja%')
                   ->orWhere('nama_barang', 'LIKE', '%Kursi%');
             })->count(),
@@ -197,23 +197,23 @@ private function getTotalPendapatanData()
     $year = request('year', date('Y'));
     
     // Pendapatan Penyewaan Alat
-    $rentalRevenue = RentalBooking::whereYear('created_at', $year)
+    $rentalRevenue = RentalBooking::withTrashed()->whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->sum('total_amount');
     
-    $rentalTransactions = RentalBooking::whereYear('created_at', $year)
+    $rentalTransactions = RentalBooking::withTrashed()->whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->count();
     
     // Pendapatan Penjualan Gas
-    $gasRevenue = GasOrder::whereYear('created_at', $year)
+    $gasRevenue = GasOrder::withTrashed()->whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->sum(\DB::raw('price * quantity'));
     
-    $gasTransactions = GasOrder::whereYear('created_at', $year)
+    $gasTransactions = GasOrder::withTrashed()->whereYear('created_at', $year)
         ->whereMonth('created_at', $month)
         ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
         ->count();
@@ -608,7 +608,7 @@ private function getTotalPendapatanData()
     private function getPopularProducts()
     {
         // 1. Ambil Skor Penyewaan
-        $rentalPopularity = RentalBooking::select('barang_id', DB::raw('SUM(quantity) as total_sold'))
+        $rentalPopularity = RentalBooking::withTrashed()->select('barang_id', DB::raw('SUM(quantity) as total_sold'))
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->whereNotNull('barang_id')
             ->groupBy('barang_id')
@@ -634,7 +634,7 @@ private function getTotalPendapatanData()
         })->filter();
 
         // 3. Ambil Skor Gas
-        $gasPopularity = GasOrder::select('gas_id', DB::raw('SUM(quantity) as total_sold'))
+        $gasPopularity = GasOrder::withTrashed()->select('gas_id', DB::raw('SUM(quantity) as total_sold'))
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->whereNotNull('gas_id')
             ->groupBy('gas_id')

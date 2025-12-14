@@ -13,9 +13,13 @@
         </div>
         <div class="d-flex gap-2">
             <!-- Feature to be implemented -->
-            <button class="btn btn-outline-danger shadow-sm rounded-pill px-4" disabled title="Fitur belum tersedia">
+            <!-- Feature to be implemented -->
+            <button class="btn btn-outline-danger shadow-sm rounded-pill px-4" onclick="confirmClearLogs()">
                 <i class="bx bx-trash me-2"></i>Bersihkan Log
             </button>
+            <form id="clear-logs-form" action="{{ route('admin.laporan.log.clear') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
             <button class="btn btn-white border shadow-sm rounded-pill px-4" onclick="location.reload()">
                 <i class="bx bx-refresh me-2"></i>Refresh
             </button>
@@ -37,10 +41,20 @@
                     <label class="form-label fw-semibold text-muted small text-uppercase">Tipe Aksi</label>
                     <select name="action" class="form-select border-0 bg-light">
                         <option value="">Semua Aksi</option>
-                        <option value="create" {{ request('action') == 'create' ? 'selected' : '' }}>Create (Tambah)</option>
-                        <option value="update" {{ request('action') == 'update' ? 'selected' : '' }}>Update (Ubah)</option>
-                        <option value="delete" {{ request('action') == 'delete' ? 'selected' : '' }}>Delete (Hapus)</option>
-                        <option value="login" {{ request('action') == 'login' ? 'selected' : '' }}>Login</option>
+                        <optgroup label="Otentikasi">
+                            <option value="Login" {{ request('action') == 'Login' ? 'selected' : '' }}>Login</option>
+                            <option value="Logout" {{ request('action') == 'Logout' ? 'selected' : '' }}>Logout</option>
+                        </optgroup>
+                        <optgroup label="Pesanan & Transaksi">
+                            <option value="Update Status" {{ request('action') == 'Update Status' ? 'selected' : '' }}>Update Status Pesanan</option>
+                            <option value="Cancellation Review" {{ request('action') == 'Cancellation Review' ? 'selected' : '' }}>Review Pembatalan</option>
+                            <option value="Return Rental" {{ request('action') == 'Return Rental' ? 'selected' : '' }}>Pengembalian Alat</option>
+                        </optgroup>
+                        <optgroup label="Laporan Manual">
+                            <option value="Create Manual Report" {{ request('action') == 'Create Manual Report' ? 'selected' : '' }}>Buat Laporan Manual</option>
+                            <option value="Update Manual Report" {{ request('action') == 'Update Manual Report' ? 'selected' : '' }}>Update Laporan Manual</option>
+                        </optgroup>
+
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -131,7 +145,7 @@
                                 </td>
                                 <td>
                                     <span class="font-monospace small text-muted bg-light px-2 py-1 rounded">
-                                        {{ $log->ip_address ?? '127.0.0.1' }}
+                                        {{ $log->ip_address ?? '-' }}
                                     </span>
                                 </td>
                             </tr>
@@ -158,17 +172,16 @@
     function confirmClearLogs() {
         Swal.fire({
             title: 'Bersihkan Log?',
-            text: "Seluruh riwayat aktivitas akan dihapus permanen.",
+            text: "Seluruh riwayat akan dibersihkan.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, Hapus Semua',
+            confirmButtonText: 'Ya, Bersihkan',
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Feature currently disabled
-                Swal.fire('Info', 'Fitur ini belum tersedia', 'info');
+                document.getElementById('clear-logs-form').submit();
             }
         });
     }

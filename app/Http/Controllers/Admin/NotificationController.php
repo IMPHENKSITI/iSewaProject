@@ -14,7 +14,9 @@ class NotificationController extends Controller
         $search = $request->get('search');
         
         // Ambil semua notifikasi untuk admin, diurutkan dari yang terbaru
+        // Ambil semua notifikasi untuk admin, diurutkan dari yang terbaru (termasuk yang dihapus user)
         $notifications = Notification::with(['user', 'admin'])
+            ->withTrashed() // Tampilkan juga yang di-soft delete oleh user
             ->when($search, function ($query, $search) {
                 return $query->where('title', 'LIKE', "%{$search}%")
                            ->orWhere('message', 'LIKE', "%{$search}%")
@@ -67,7 +69,7 @@ class NotificationController extends Controller
 
     public function markAsRead($id)
     {
-        $notification = Notification::findOrFail($id);
+        $notification = Notification::withTrashed()->findOrFail($id);
         $notification->is_read = true;
         $notification->read_at = now();
         $notification->save();
@@ -86,5 +88,30 @@ class NotificationController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Semua notifikasi ditandai sebagai sudah dibaca.');
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $notification = Notification::withTrashed()->findOrFail($id);
+            $notification->forceDelete(); // Hard Delete
+
+            return redirect()->back()->with('success', 'Notifikasi berhasil dihapus permanen.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus notifikasi: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteAll()
+    {
+        try {
+            // Hard delete semua notifikasi
+            // Perhatikan: Ini akan menghapus semua notifikasi dari database
+            Notification::withTrashed()->forceDelete();
+
+            return redirect()->back()->with('success', 'Semua notifikasi berhasil dihapus permanen.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus semua notifikasi: ' . $e->getMessage());
+        }
     }
 }

@@ -88,11 +88,12 @@ Route::get('/aktivitas', [App\Http\Controllers\User\ActivityController::class, '
 Route::post('/aktivitas/{type}/{id}/cancel', [App\Http\Controllers\User\ActivityController::class, 'requestCancellation'])
     ->name('user.activity.cancel')
     ->middleware('role:user');
-Route::delete('/aktivitas/{type}/{id}', [App\Http\Controllers\User\ActivityController::class, 'destroy'])
-    ->name('user.activity.destroy')
-    ->middleware('role:user');
 Route::delete('/aktivitas/clear-all/{type}', [App\Http\Controllers\User\ActivityController::class, 'clearAll'])
     ->name('user.activity.clearAll')
+    ->middleware('role:user');
+
+Route::delete('/aktivitas/{type}/{id}', [App\Http\Controllers\User\ActivityController::class, 'destroy'])
+    ->name('user.activity.destroy')
     ->middleware('role:user');
 
 
@@ -173,6 +174,7 @@ Route::get('/maintenance', [DashboardController::class, 'maintenance'])->name('m
 Route::prefix('admin')->middleware('role:admin')->group(function () {
     // Dashboard (Papan Kontrol)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
     Route::get('/search', [DashboardController::class, 'globalSearch'])->name('admin.search');
     
     // Pengaturan
@@ -201,6 +203,8 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::post('/notifications', [NotificationController::class, 'store'])->name('admin.notifications.store');
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('admin.notifications.mark-as-read');
     Route::put('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('admin.notifications.mark-all-read');
+    Route::delete('/notifications/hapus-semua', [NotificationController::class, 'deleteAll'])->name('admin.notifications.deleteAll');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('admin.notifications.destroy');
 
     // Route untuk Pengaturan Sistem
     Route::get('/pengaturan-sistem', [SystemSettingController::class, 'index'])->name('admin.system-settings.index');
@@ -263,6 +267,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::prefix('laporan')->group(function () {
         Route::get('/transaksi', [\App\Http\Controllers\Admin\ReportController::class, 'transactions'])->name('admin.laporan.transaksi');
         Route::get('/pendapatan', [\App\Http\Controllers\Admin\ReportController::class, 'income'])->name('admin.laporan.pendapatan');
+        Route::post('/log/clear', [\App\Http\Controllers\Admin\ReportController::class, 'clearLogs'])->name('admin.laporan.log.clear');
         Route::get('/log', [\App\Http\Controllers\Admin\ReportController::class, 'logs'])->name('admin.laporan.log');
         
         // Route Transaksi Manual

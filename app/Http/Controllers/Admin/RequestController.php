@@ -21,8 +21,8 @@ class RequestController extends Controller
         $status = $request->get('status', 'all');
         $category = $request->get('category', 'all');
 
-        // Buat query untuk pemesanan penyewaan
-        $rentalQuery = RentalBooking::with(['user', 'barang']);
+        // Buat query untuk pemesanan penyewaan (Include deleted for history)
+        $rentalQuery = RentalBooking::withTrashed()->with(['user', 'barang']);
         if ($status !== 'all') {
             if ($status === 'cancellation_pending') {
                 $rentalQuery->where('cancellation_status', 'pending');
@@ -37,8 +37,8 @@ class RequestController extends Controller
             }
         }
 
-        // Buat query untuk pesanan gas
-        $gasQuery = GasOrder::with('user');
+        // Buat query untuk pesanan gas (Include deleted for history)
+        $gasQuery = GasOrder::withTrashed()->with('user');
         if ($status !== 'all') {
             if ($status === 'cancellation_pending') {
                 $gasQuery->where('cancellation_status', 'pending');
@@ -70,14 +70,15 @@ class RequestController extends Controller
         }
 
         // Hitung statistik
+        // Hitung statistik (Include deleted for history functionality)
         $stats = [
-            'total' => RentalBooking::count() + GasOrder::count(),
+            'total' => RentalBooking::withTrashed()->count() + GasOrder::withTrashed()->count(),
             'pending' => RentalBooking::where('status', 'pending')->count() + GasOrder::where('status', 'pending')->count(),
             'approved' => RentalBooking::where('status', 'approved')->count() + GasOrder::where('status', 'approved')->count(),
-            'rejected' => RentalBooking::whereIn('status', ['cancelled', 'rejected'])->count() + GasOrder::whereIn('status', ['cancelled', 'rejected'])->count(),
+            'rejected' => RentalBooking::withTrashed()->whereIn('status', ['cancelled', 'rejected'])->count() + GasOrder::withTrashed()->whereIn('status', ['cancelled', 'rejected'])->count(),
             'cancellation_pending' => RentalBooking::where('cancellation_status', 'pending')->count() + GasOrder::where('cancellation_status', 'pending')->count(),
-            'rental_total' => RentalBooking::count(),
-            'gas_total' => GasOrder::count(),
+            'rental_total' => RentalBooking::withTrashed()->count(),
+            'gas_total' => GasOrder::withTrashed()->count(),
             'active_rental_count' => RentalBooking::whereIn('status', ['confirmed', 'being_prepared', 'in_delivery', 'arrived'])->sum('quantity'),
         ];
 
@@ -95,7 +96,13 @@ class RequestController extends Controller
             ],
         ];
 
-        return view('admin.aktivitas.requests', compact('rentalRequests', 'gasOrders', 'stats', 'status', 'category', 'notificationCounts'));
+        return response()
+            ->view('admin.aktivitas.requests', compact('rentalRequests', 'gasOrders', 'stats', 'status', 'category', 'notificationCounts'))
+            ->withHeaders([
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]);
     }
 
     public function getCounts()
@@ -119,9 +126,9 @@ class RequestController extends Controller
     public function show($id, $type)
     {
         if ($type === 'rental') {
-            $request = RentalBooking::with(['user', 'barang'])->findOrFail($id);
+            $request = RentalBooking::withTrashed()->with(['user', 'barang'])->findOrFail($id);
         } else {
-            $request = GasOrder::with('user')->findOrFail($id);
+            $request = GasOrder::withTrashed()->with('user')->findOrFail($id);
         }
 
         return view('admin.aktivitas.request-detail', compact('request', 'type'));
@@ -326,137 +333,202 @@ class RequestController extends Controller
         $oldStatus = $order->status;
         $newStatus = $request->status;
 
-        // Buat stempel waktu otomatis berdasarkan status
-        switch ($newStatus) {
-            case 'confirmed':
-                if (!$order->confirmed_at) {
-                    $order->confirmed_at = now();
-                }
-                // Buat nomor pesanan jika belum ada
-                if (!$order->order_number) {
-                    $order->order_number = $type === 'rental' 
-                        ? \App\Models\RentalBooking::generateOrderNumber()
-                        : GasOrder::generateOrderNumber();
-                }
-                break;
-            case 'being_prepared':
-                // Tidak ada kolom khusus, hanya pembaruan status
-                break;
-            case 'in_delivery':
-                if (!$order->delivery_time) {
-                    $order->delivery_time = now();
-                }
-                break;
-            case 'arrived':
-                if (!$order->arrival_time) {
-                    $order->arrival_time = now();
-                }
-                break;
-            case 'completed':
-                if (!$order->completion_time) {
-                    $order->completion_time = now();
-                }
+        try {
+            DB::beginTransaction();
 
-                // FIX: Return stock when admin marks rental as completed
-                if ($type === 'rental') {
-                    // Ensure barang is loaded
-                    if (!$order->relationLoaded('barang')) {
-                        $order->load('barang');
+            // Buat stempel waktu otomatis berdasarkan status
+            switch ($newStatus) {
+                case 'confirmed':
+                    if (!$order->confirmed_at) {
+                        $order->confirmed_at = now();
                     }
+                    // Buat nomor pesanan jika belum ada
+                    if (!$order->order_number) {
+                        $order->order_number = $type === 'rental' 
+                            ? \App\Models\RentalBooking::generateOrderNumber()
+                            : GasOrder::generateOrderNumber();
+                    }
+                    break;
+                case 'being_prepared':
+                    // Tidak ada kolom khusus, hanya pembaruan status
+                    break;
+                case 'in_delivery':
+                    if (!$order->delivery_time) {
+                        $order->delivery_time = now();
+                    }
+                    break;
+                case 'arrived':
+                    // Validasi bukti pengiriman harus ada jika status diubah ke arrived
+                    // Kecuali jika metode pengiriman adalah jemput sendiri/diambil
                     
-                    if ($order->barang) {
-                        $order->barang->increaseStock($order->quantity);
-                        
-                        // Check if stock is still low even after return (rare but possible)
-                        if ($order->barang->stok < 5 && $order->barang->stok > 0) {
-                            $notificationService->notifyLowStock($order->barang, 'barang', $order->barang->stok);
+                    // Kita cek metode pengiriman
+                    $isDelivery = false;
+                    if ($type === 'rental') {
+                        $isDelivery = $order->delivery_method == 'antar';
+                    } else {
+                        // Untuk gas, biasanya diantar, tapi check logic
+                        $isDelivery = true; // Asumsi default gas diantar, sesuaikan jika ada field delivery_method di GasOrder
+                        if (isset($order->delivery_method) && $order->delivery_method == 'jemput') {
+                            $isDelivery = false;
                         }
                     }
-                }
-                break;
-        }
 
-        // Perbarui status
-        $order->status = $newStatus;
-        $order->save();
+                    if ($isDelivery && !$order->delivery_proof_image && !$request->hasFile('delivery_proof') && $oldStatus != 'arrived') {
+                         // Jika ingin strict, uncomment baris ini. 
+                         // Tapi karena kita handled upload terpisah, kita biarkan saja, tapi idealnya update ke arrived dilakukan via upload.
+                         // throw new \Exception("Bukti pengiriman wajib diupload sebelum mengubah status ke Tiba.");
+                    }
 
-        // Hanya kirim notifikasi pembaruan status tertentu jika bukan 'completed'
-        // (untuk completed kita mungkin ingin menanganinya secara berbeda atau mengizinkan switch case di service untuk menanganinya)
-        // Berdasarkan permintaan pengguna completed juga memiliki pesan khusus
-        
-        $notificationService->notifyOrderStatusUpdate($order, $newStatus);
+                    if (!$order->arrival_time) {
+                        $order->arrival_time = now();
+                    }
+                    break;
+                case 'completed':
+                    if (!$order->completion_time) {
+                        $order->completion_time = now();
+                    }
 
-        // Log Activity
-        \App\Models\ActivityLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'Update Status',
-            'description' => "Mengubah status pesanan #{$order->order_number} dari {$oldStatus} menjadi {$newStatus}",
-            'ip_address' => $request->ip()
-        ]);
+                    // FIX: Return stock when admin marks rental as completed
+                    if ($type === 'rental') {
+                        // Ensure barang is loaded
+                        if (!$order->relationLoaded('barang')) {
+                            $order->load('barang');
+                        }
+                        
+                        if ($order->barang) {
+                            $order->barang->increaseStock($order->quantity);
+                            
+                            // Check if stock is still low even after return (rare but possible)
+                            if ($order->barang->stok < 5 && $order->barang->stok > 0) {
+                                $notificationService->notifyLowStock($order->barang, 'barang', $order->barang->stok);
+                            }
+                        }
+                    }
+                    break;
+            }
 
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Status berhasil diperbarui',
-                'order' => $order
+            // Perbarui status
+            $order->status = $newStatus;
+            $order->save();
+
+            // Hanya kirim notifikasi pembaruan status tertentu jika bukan 'completed'
+            // (untuk completed kita mungkin ingin menanganinya secara berbeda atau mengizinkan switch case di service untuk menanganinya)
+            // Berdasarkan permintaan pengguna completed juga memiliki pesan khusus
+            
+            $notificationService->notifyOrderStatusUpdate($order, $newStatus);
+
+            // Log Activity
+            \App\Models\ActivityLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'Update Status',
+                'description' => "Mengubah status pesanan #{$order->order_number} dari {$oldStatus} menjadi {$newStatus}",
+                'ip_address' => $request->ip()
             ]);
-        }
 
-        return redirect()->back()->with('success', 'Status berhasil diperbarui');
+            DB::commit();
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Status berhasil diperbarui',
+                    'order' => $order
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Status berhasil diperbarui');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Error updating status: ' . $e->getMessage());
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 
     public function uploadDeliveryProof(Request $request, $type, $id)
     {
         $request->validate([
-            'delivery_proof' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'delivery_proof' => 'required|image|mimes:jpeg,png,jpg',
         ]);
 
-        if ($type === 'rental') {
-            $order = \App\Models\RentalBooking::findOrFail($id);
-        } else {
-            $order = GasOrder::findOrFail($id);
-        }
+        try {
+            DB::beginTransaction();
 
-        // Simpan gambar
-        if ($request->hasFile('delivery_proof')) {
-            // Hapus bukti lama jika ada
-            if ($order->delivery_proof_image) {
-                Storage::delete($order->delivery_proof_image);
+            if ($type === 'rental') {
+                $order = \App\Models\RentalBooking::findOrFail($id);
+            } else {
+                $order = GasOrder::findOrFail($id);
             }
 
-            $path = $request->file('delivery_proof')->store('delivery_proofs', 'public');
-            $order->delivery_proof_image = $path;
-            
-            // Perbarui status otomatis ke arrived jika belum
-            if ($order->status !== 'arrived' && $order->status !== 'completed') {
-                $order->status = 'arrived';
-                if (!$order->arrival_time) {
-                    $order->arrival_time = now();
+            // Simpan gambar
+            if ($request->hasFile('delivery_proof')) {
+                // Hapus bukti lama jika ada
+                if ($order->delivery_proof_image) {
+                    Storage::disk('public')->delete($order->delivery_proof_image);
                 }
+
+                $path = $request->file('delivery_proof')->store('delivery_proofs', 'public');
+                
+                if (!$path) {
+                    throw new \Exception("Gagal menyimpan file gambar.");
+                }
+
+                $order->delivery_proof_image = $path;
+                
+                // Perbarui status otomatis ke arrived jika belum
+                if ($order->status !== 'arrived' && $order->status !== 'completed') {
+                    $order->status = 'arrived';
+                    if (!$order->arrival_time) {
+                        $order->arrival_time = now();
+                    }
+                }
+                
+                $order->save();
+
+                // Kirim notifikasi ke pengguna
+                Notification::create([
+                    'title' => 'Bukti Pengiriman Tersedia',
+                    'message' => "Bukti pengiriman untuk pesanan #{$order->order_number} telah tersedia.",
+                    'type' => 'delivery_proof',
+                    'user_id' => $order->user_id,
+                    'admin_id' => auth()->id(),
+                ]);
+                
+                // Log Activity
+                \App\Models\ActivityLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'Upload Proof',
+                    'description' => "Upload bukti pengiriman untuk pesanan #{$order->order_number}",
+                    'ip_address' => $request->ip()
+                ]);
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Bukti pengiriman berhasil diunggah',
+                    'path' => $path
+                ]);
             }
+
+            throw new \Exception("Tidak ada file yang diunggah.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Upload Proof Error: ' . $e->getMessage());
             
-            $order->save();
-
-            // Kirim notifikasi ke pengguna
-            Notification::create([
-                'title' => 'Bukti Pengiriman Tersedia',
-                'message' => "Bukti pengiriman untuk pesanan #{$order->order_number} telah tersedia.",
-                'type' => 'delivery_proof',
-                'user_id' => $order->user_id,
-                'admin_id' => auth()->id(),
-            ]);
-
             return response()->json([
-                'success' => true,
-                'message' => 'Bukti pengiriman berhasil diunggah',
-                'path' => $path
-            ]);
+                'success' => false,
+                'message' => 'Gagal: ' . $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Gagal mengunggah bukti pengiriman'
-        ], 400);
     }
 
     public function handleCancellation(Request $request, $type, $id, $action)

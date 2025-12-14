@@ -47,7 +47,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-label-info">User</span>
+                                    @if($user->role === 'admin')
+                                        <span class="badge bg-label-danger">Admin</span>
+                                    @else
+                                        <span class="badge bg-label-info">User</span>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($user->status === 'aktif')

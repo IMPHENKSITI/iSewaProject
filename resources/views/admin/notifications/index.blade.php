@@ -122,8 +122,16 @@
                                             </button>
                                         </form>
                                     @else
-                                        <i class="bx bx-check-double text-success fs-4" title="Sudah Dibaca"></i>
+                                        <i class="bx bx-check-double text-success fs-4 me-2" title="Sudah Dibaca"></i>
                                     @endif
+                                    
+                                    <form action="{{ route('admin.notifications.destroy', $notification->id) }}" method="POST" class="d-inline delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-sm btn-icon btn-light text-danger rounded-circle border shadow-sm hover-danger delete-btn" title="Hapus Notifikasi">
+                                            <i class="bx bx-trash fs-5"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             @endforeach
@@ -137,6 +145,17 @@
                             Menampilkan {{ $notifications->firstItem() }} - {{ $notifications->lastItem() }} dari {{ $notifications->total() }} notifikasi
                         </div>
                         <div class="d-flex gap-2">
+                            <!-- Hapus Semua Button -->
+                            @if($notifications->count() > 0)
+                                <form action="{{ route('admin.notifications.deleteAll') }}" method="POST" class="delete-all-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-4 delete-all-btn">
+                                        <i class="bx bx-trash me-1"></i> Hapus Semua
+                                    </button>
+                                </form>
+                            @endif
+
                             @if($notifications->onFirstPage())
                                 <button class="btn btn-sm btn-outline-secondary rounded-pill px-4" disabled>
                                     <i class="bx bx-chevron-left me-1"></i> Sebelumnya
@@ -175,5 +194,62 @@
         color: white !important; 
         border-color: #198754 !important; 
     }
+    .hover-danger:hover {
+        background-color: #dc3545 !important;
+        color: white !important;
+        border-color: #dc3545 !important;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault(); // Mencegah submit form langsung
+                const form = this.closest('form');
+                
+                Swal.fire({
+                    title: 'Hapus Notifikasi?',
+                    text: "Notifikasi ini akan dihapus permanen untuk semua user!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // Handler untuk Hapus Semua Notifikasi
+        const deleteAllBtn = document.querySelector('.delete-all-btn');
+        if (deleteAllBtn) {
+            deleteAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Hapus SEMUA Notifikasi?',
+                    text: "Tindakan ini akan menghapus SELURUH notifikasi di sistem secara PERMANEN. Tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus Semua!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        }
+    });
+</script>
 @endsection

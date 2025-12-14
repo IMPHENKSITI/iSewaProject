@@ -570,16 +570,58 @@ function confirmApprove(id, type) {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `{{ route('admin.aktivitas.permintaan-pengajuan.approve', ['id' => ':id', 'type' => ':type']) }}`.replace(':id', id).replace(':type', type);
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-            document.body.appendChild(form);
-            form.submit();
+            // Show Loading
+            Swal.fire({
+                title: 'Memproses...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                     Swal.showLoading();
+                }
+            });
+
+            // Note: We use the blade variables directly for the URL as this is a detail page
+            const url = `{{ route('admin.aktivitas.permintaan-pengajuan.approve', ['id' => $request->id, 'type' => $type]) }}`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({})
+            })
+            .then(async response => {
+                const isJson = response.headers.get('content-type')?.includes('application/json');
+                const data = isJson ? await response.json() : null;
+
+                if (!response.ok) {
+                    const errorMessage = (data && data.message) || response.statusText || 'Terjadi kesalahan sistem';
+                    throw new Error(errorMessage);
+                }
+                
+                return data;
+            })
+            .then(data => {
+                if(data.success) {
+                    Swal.fire({
+                        title: 'Berhasil',
+                        text: data.message || 'Permintaan berhasil disetujui',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Gagal', data.message || 'Gagal menyetujui permintaan', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Gagal', error.message, 'error');
+            });
         }
     });
 }
@@ -598,8 +640,6 @@ document.getElementById('rejectForm').addEventListener('submit', function(e) {
         .replace(':id', formData.get('id'))
         .replace(':type', formData.get('type'));
 
-
-    
     // Show Loading
     Swal.fire({
         title: 'Memproses...',
@@ -613,18 +653,43 @@ document.getElementById('rejectForm').addEventListener('submit', function(e) {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({
             reason: formData.get('reason')
         })
     })
-    .then(response => response.json())
+    .then(async response => {
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = isJson ? await response.json() : null;
+
+        if (!response.ok) {
+            const errorMessage = (data && data.message) || response.statusText || 'Terjadi kesalahan sistem';
+            throw new Error(errorMessage);
+        }
+        
+        return data;
+    })
     .then(data => {
-        location.reload();
+        if (data.success) {
+            Swal.fire({
+                title: 'Berhasil',
+                text: data.message || 'Permintaan berhasil ditolak',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire('Gagal', data.message || 'Gagal menolak permintaan', 'error');
+        }
     })
     .catch(error => {
-        Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+        console.error('Error:', error);
+        Swal.fire('Gagal', error.message, 'error');
     });
 });
 
@@ -730,20 +795,34 @@ function updateStatus(newStatus) {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({ status: newStatus })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if(data.success) {
-                    Swal.fire('Berhasil', 'Status berhasil diperbarui', 'success')
+                    Swal.fire({
+                        title: 'Berhasil',
+                        text: 'Status berhasil diperbarui',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    })
                     .then(() => location.reload());
                 } else {
                     Swal.fire('Error', data.message || 'Gagal update status', 'error');
                 }
             })
             .catch(err => {
+                console.error(err);
                 Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
             });
         }
