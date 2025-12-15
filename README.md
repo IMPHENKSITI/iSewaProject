@@ -94,3 +94,4 @@ php artisan migrate
 
 ## Version 0.8.0
 - Unlock Feature Login With Google + Seamless Integration Between User & Admin
+- Fix Transaksi to Stable Version
