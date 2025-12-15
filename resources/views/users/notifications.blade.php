@@ -3,7 +3,7 @@
 @section('page')
 <main class="flex-grow relative w-full">
     <section class="relative z-10 min-h-screen pt-32 pb-16 bg-cover bg-center bg-no-repeat bg-fixed" 
-             style="background-image: url('{{ asset('admin/img/elements/background1.png') }}');">
+             style="background-image: url('{{ asset('Admin/img/elements/background1.png') }}');">
         
         <!-- White Overlay -->
         <div class="absolute inset-0 bg-white/25 pointer-events-none"></div>

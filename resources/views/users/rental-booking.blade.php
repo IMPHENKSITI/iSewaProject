@@ -83,7 +83,7 @@
 @section('page')
 <main class="flex-grow relative w-full">
     <section class="relative z-10 min-h-screen pt-32 pb-16 bg-cover bg-center bg-no-repeat bg-fixed" 
-             style="background-image: url('{{ asset('admin/img/elements/background1.png') }}');">
+             style="background-image: url('{{ asset('Admin/img/elements/background1.png') }}');">
         
         <!-- White Overlay (25% opacity / 75% transparent) to make background visible -->
         <div class="absolute inset-0 bg-white/25 pointer-events-none"></div>
@@ -155,7 +155,7 @@
                     <div class="delivery-method-card active cursor-pointer bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent" data-method="antar">
                         <!-- Placeholder for Truck Icon -->
                         <div class="mb-4 flex justify-center">
-                            <img src="{{ asset('admin/img/elements/antar.png') }}" alt="Antar" class="w-20 h-20 object-contain">
+                            <img src="{{ asset('Admin/img/elements/antar.png') }}" alt="Antar" class="w-20 h-20 object-contain">
                         </div>
                         <p class="font-bold text-lg text-gray-800">Antar</p>
                     </div>
@@ -164,7 +164,7 @@
                     <div class="delivery-method-card cursor-pointer bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 w-48 text-center border-4 border-transparent" data-method="jemput">
                         <!-- Placeholder for Warehouse Icon -->
                         <div class="mb-4 flex justify-center">
-                            <img src="{{ asset('admin/img/elements/jemput.png') }}" alt="Jemput" class="w-20 h-20 object-contain">
+                            <img src="{{ asset('Admin/img/elements/jemput.png') }}" alt="Jemput" class="w-20 h-20 object-contain">
                         </div>
                         <p class="font-bold text-lg text-gray-800">Jemput</p>
                     </div>
@@ -615,7 +615,7 @@
     <div id="confirmation-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50" style="display: none;">
         <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all">
             <div class="text-center">
-                <img src="{{ asset('admin/img/illustrations/isewalogo.png') }}" alt="iSewa Logo" class="w-40 mx-auto mb-6">
+                <img src="{{ asset('Admin/img/illustrations/isewalogo.png') }}" alt="iSewa Logo" class="w-40 mx-auto mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Anda akan Melakukan Penyewaan</h2>
                 <p class="text-gray-600 mb-2">Pesanan Anda Akan Diproses</p>
                 <p class="text-gray-500 text-sm mb-6">Apakah anda yakin?</p>
