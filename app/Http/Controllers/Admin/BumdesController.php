@@ -37,7 +37,7 @@ class BumdesController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:8192',
         ]);
 
         $member = new BumdesMember();
@@ -66,7 +66,7 @@ class BumdesController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:8192',
         ]);
 
         $member = BumdesMember::findOrFail($id);

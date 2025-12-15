@@ -27,14 +27,14 @@
 
                         <div class="row">
                             <!-- Left Column - Photo Preview -->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="text-center">
                                     <label class="form-label fw-semibold mb-3">Foto Profil</label>
                                     
                                     <!-- Photo Preview Circle -->
                                     <div class="position-relative d-inline-block mb-3">
                                         <div id="preview-container" class="rounded-circle overflow-hidden border border-3 border-light shadow-lg" 
-                                             style="width: 200px; height: 200px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                             style="width: 180px; height: 180px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
                                             <img id="preview-image" 
                                                  src="{{ asset('Admin/img/avatars/default.png') }}" 
                                                  alt="Preview" 
@@ -43,7 +43,7 @@
                                         </div>
                                         <!-- Camera Icon Overlay -->
                                         <div class="position-absolute bottom-0 end-0 mb-2 me-2">
-                                            <label for="photo-input" class="btn btn-primary btn-sm rounded-circle p-2" style="width: 40px; height: 40px; cursor: pointer;">
+                                            <label for="photo-input" class="btn btn-primary btn-sm rounded-circle p-2" style="width: 36px; height: 36px; cursor: pointer;">
                                                 <i class="bx bx-camera fs-5"></i>
                                             </label>
                                         </div>
@@ -60,7 +60,7 @@
                                     <!-- Info Text -->
                                     <div class="text-muted small mb-3">
                                         <i class="bx bx-info-circle me-1"></i>
-                                        Ukuran maks: 2MB<br>
+                                        Ukuran maks: 8MB<br>
                                         Format: JPG, PNG, GIF
                                     </div>
 
@@ -76,7 +76,7 @@
                             </div>
 
                             <!-- Right Column - Form Fields -->
-                            <div class="col-md-8">
+                            <div class="col-md-9">
                                 <div class="row g-3">
                                     <!-- Nama Lengkap -->
                                     <div class="col-12">
@@ -240,8 +240,8 @@ function previewImage(event) {
 
     if (input.files && input.files[0]) {
         // Validate file size (2MB)
-        if (input.files[0].size > 2 * 1024 * 1024) {
-            alert('Ukuran file terlalu besar! Maksimal 2MB.');
+        if (input.files[0].size > 8 * 1024 * 1024) {
+            alert('Ukuran file terlalu besar! Maksimal 8MB.');
             input.value = '';
             return;
         }
