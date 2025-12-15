@@ -3,7 +3,7 @@
 @section('page')
 <main class="flex-grow relative w-full">
     <section class="relative z-10 min-h-screen pt-40 pb-16 bg-cover bg-center bg-no-repeat" 
-             style="background-image: url('{{ asset('admin/img/elements/background1.png') }}');">
+             style="background-image: url('{{ asset('Admin/img/elements/background1.png') }}');">
         
         <!-- White Overlay -->
         <div class="absolute inset-0 bg-white/25 pointer-events-none"></div>
@@ -31,7 +31,7 @@
                     <!-- Logo with Shadow Overlay -->
                     <div class="relative flex-shrink-0 hidden md:block">
                         <div class="relative">
-                            <img src="{{ asset('admin/img/avatars/sewais.png') }}" 
+                            <img src="{{ asset('Admin/img/avatars/sewais.png') }}" 
                                  alt="iSewa Logo" 
                                  class="w-48 h-48 object-contain">
                             <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/60"></div>
