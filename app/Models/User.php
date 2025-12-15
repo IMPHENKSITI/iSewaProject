@@ -32,6 +32,7 @@ class User extends Authenticatable
         'otp_expires_at',          // ✅ TAMBAH INI
         'reset_token',            // ✅ TAMBAH INI
         'reset_token_expires_at',  // ✅ TAMBAH INI
+        'google_id',              // ✅ Socialite
     ];
 
     /**

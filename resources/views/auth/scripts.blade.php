@@ -143,6 +143,84 @@
             showToast("{{ session('error') }}", 'error');
         @endif
 
+        // ========================================
+        // GOOGLE REGISTER HANDLING
+        // ========================================
+        const modalGoogleRegister = document.getElementById('modal-google-register');
+        
+        @if(session('open_google_register_modal'))
+            setTimeout(() => {
+                openModal(modalGoogleRegister);
+            }, 500);
+        @endif
+
+        // Avatar Preview Handling
+        document.getElementById('google-avatar-input')?.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('google-avatar-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // Google Register Form Submit
+        const formGoogleRegister = document.getElementById('form-google-register');
+        formGoogleRegister?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearErrors(this);
+
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            
+            // Password Validation (if filled)
+            const password = document.getElementById('google-password').value;
+            const passwordConfirm = document.getElementById('google-password-confirm').value;
+
+            if (password && password !== passwordConfirm) {
+                showError(this, 'password', 'Konfirmasi password tidak cocok');
+                return;
+            }
+
+            setButtonLoading(submitBtn, true);
+
+            try {
+                const response = await fetch('{{ route('register.google.complete') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast(data.message, 'success');
+                    closeModal();
+                    setTimeout(() => window.location.href = data.redirect, 1000);
+                } else {
+                    if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            showError(this, field, data.errors[field][0]);
+                        });
+                    } else {
+                        showToast(data.message || 'Registrasi gagal', 'error');
+                        if(response.status === 419) {
+                             setTimeout(() => window.location.reload(), 2000);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Google register error:', error);
+                showToast('Terjadi kesalahan sistem', 'error');
+            } finally {
+                setButtonLoading(submitBtn, false);
+            }
+        });
+
         @if(session('info'))
             showToast("{{ session('info') }}", 'info');
         @endif

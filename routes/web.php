@@ -136,6 +136,12 @@ Route::post('/auth/forgot-password/verify-otp', [AuthController::class, 'verifyF
 Route::post('/auth/forgot-password/reset', [AuthController::class, 'resetForgotPassword'])->name('auth.forgot-password.reset');
 Route::post('/auth/forgot-password/resend-otp', [AuthController::class, 'resendForgotPasswordOtp'])->name('auth.forgot-password.resend-otp');
 
+// Google Auth Routes
+Route::get('/auth/google', [App\Http\Controllers\Auth\GoogleController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [App\Http\Controllers\Auth\GoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('/auth/register-google', [App\Http\Controllers\Auth\GoogleController::class, 'showRegistrationForm'])->name('register.google');
+Route::post('/auth/register-google', [App\Http\Controllers\Auth\GoogleController::class, 'completeRegistration'])->name('register.google.complete');
+
 
 Route::get('/profile', [App\Http\Controllers\User\ProfileController::class, 'index'])
     ->name('profile')
