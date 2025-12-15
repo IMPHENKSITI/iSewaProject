@@ -42,13 +42,13 @@ class ProfileController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'gender' => 'nullable|in:laki-laki,perempuan',
-            'profile' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'profile' => 'nullable|image|mimes:jpg,jpeg,png|max:8192',
         ], [
             'username.required' => 'Username harus diisi',
             'name.required' => 'Nama harus diisi',
             'profile.image' => 'File harus berupa gambar',
             'profile.mimes' => 'Format file harus JPG, JPEG, atau PNG',
-            'profile.max' => 'Ukuran file maksimal 2MB',
+            'profile.max' => 'Ukuran file maksimal 8MB',
         ]);
 
         $user->update([

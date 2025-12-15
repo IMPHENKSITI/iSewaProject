@@ -32,7 +32,7 @@ class ProfileController extends Controller
             'address' => 'nullable|string',
             'position' => 'nullable|string|max:255',
             'gender' => 'nullable|in:laki-laki,perempuan',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:8192',
         ]);
 
         // Handle avatar upload or deletion

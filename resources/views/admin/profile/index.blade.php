@@ -56,7 +56,7 @@
                                     </button>
 
                                     <p class="text-muted mb-0 mt-2">
-                                        <small><i class="bx bx-info-circle me-1"></i>Diizinkan JPG, PNG, atau GIF. Ukuran maksimal 2MB</small>
+                                        <small><i class="bx bx-info-circle me-1"></i>Diizinkan JPG, PNG, atau GIF. Ukuran maksimal 8MB</small>
                                     </p>
                                 </div>
                             </div>
@@ -78,7 +78,8 @@
                                     </label>
                                     <input class="form-control form-control-lg" type="email" id="email" name="email"
                                         value="{{ old('email', $user->email ?? 'admin@example.com') }}"
-                                        placeholder="admin@example.com" />
+                                        placeholder="admin@example.com" readonly style="background-color: #e9ecef;" />
+                                    <small class="text-muted">Email tidak dapat diubah</small>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="firstName" class="form-label fw-semibold">

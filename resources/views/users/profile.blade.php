@@ -89,7 +89,7 @@
                             </button>
                             @endif
                             <p id="upload-hint" class="mt-2.5 text-gray-600 text-xs text-center {{ $user->file ? 'hidden' : '' }}">
-                                JPG, PNG (Max 2MB)
+                                JPG, PNG (Max 8MB)
                             </p>
 
                             @error('profile')
