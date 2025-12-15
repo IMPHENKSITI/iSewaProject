@@ -91,3 +91,7 @@ php artisan migrate
 - Ubah Kata Sandi di profile Admin udah Bekerja
 - Fix Bug yang terjadi pada Admin/Penyewaan Alat dan Admin/Penjualan Gas
 - NEW! Transaksi Unlocked (Beta)
+
+## Version 0.8.0
+- Unlock Feature Login With Google + Seamless Integration Between User & Admin
+- Fix Transaksi to Stable Version
