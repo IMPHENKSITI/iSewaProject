@@ -70,14 +70,21 @@
                         <div class="card-body p-4">
     <div class="d-flex align-items-start gap-4 mb-4">
                                 @php
-                                    $imgSrc = asset('admin/img/no-image.png');
+                                    $imgSrc = null;
                                     if($type === 'rental' && $request->barang && $request->barang->foto) {
                                         $imgSrc = asset('storage/' . $request->barang->foto);
                                     } elseif($type === 'gas' && $request->gas && $request->gas->foto) {
                                         $imgSrc = asset('storage/' . $request->gas->foto);
                                     }
                                 @endphp
-                                <img src="{{ $imgSrc }}" alt="Product" class="rounded-3 object-fit-cover shadow-sm" style="width: 100px; height: 100px;">
+                                
+                                @if($imgSrc)
+                                    <img src="{{ $imgSrc }}" alt="Product" class="rounded-3 object-fit-cover shadow-sm" style="width: 100px; height: 100px;">
+                                @else
+                                    <div class="rounded-3 shadow-sm bg-light border d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                        <i class="bx bx-image text-muted fs-1"></i>
+                                    </div>
+                                @endif
                                 <div>
                                     <h4 class="fw-bold mb-1">{{ $type === 'rental' ? ($request->barang->nama_barang ?? 'Alat') : ($request->item_name ?? 'Gas') }}</h4>
                                     <p class="text-muted mb-2">{{ $type === 'rental' ? 'Penyewaan Alat' : 'Pembelian Gas' }}</p>

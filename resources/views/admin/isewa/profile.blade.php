@@ -98,7 +98,7 @@
             <!-- RIGHT LOGO -->
             <div class="hero-right">
                 <div class="logo-wrap">
-                    <img src="{{ asset('http://isewaproject.test/Admin/img/avatars/sewais.png') }}" alt="Logo iSewa">
+                    <img src="{{ asset('Admin/img/avatars/sewais.png') }}" alt="Logo iSewa">
                 </div>
             </div>
         </div>
@@ -249,7 +249,7 @@
             <div class="dev-card">
                 <div class="dev-card-bg"></div>
                 <div class="avatar">
-                    <img src="{{ asset('http://isewaproject.test/Admin/img/avatars/wahid1.jpg') }}" alt="M.Wahid Riono">
+                    <img src="{{ asset('Admin/img/avatars/wahid1.jpg') }}" alt="M.Wahid Riono">
                 </div>
                 <h5>M.Wahid Riono</h5>
                 <p style="color: #4b5563; font-size: 0.875rem; font-weight: 500; margin-top: 0.25rem;">Frontend Developer</p>
@@ -259,7 +259,7 @@
             <div class="dev-card">
                 <div class="dev-card-bg"></div>
                 <div class="avatar">
-                    <img src="{{ asset('http://isewaproject.test/Admin/img/avatars/ayep12.jpg') }}" alt="Mushlihul Arif">
+                    <img src="{{ asset('Admin/img/avatars/ayep12.jpg') }}" alt="Mushlihul Arif">
                 </div>
                 <h5>Mushlihul Arif</h5>
                 <p style="color: #4b5563; font-size: 0.875rem; font-weight: 500; margin-top: 0.25rem;">UI/UX Designer</p>
@@ -269,7 +269,7 @@
             <div class="dev-card">
                 <div class="dev-card-bg"></div>
                 <div class="avatar">
-                    <img src="{{ asset('http://isewaproject.test/Admin/img/avatars/safika1.png') }}" alt="Safika">
+                    <img src="{{ asset('Admin/img/avatars/safika1.png') }}" alt="Safika">
                 </div>
                 <h5>Safika</h5>
                 <p style="color: #4b5563; font-size: 0.875rem; font-weight: 500; margin-top: 0.25rem;">Project Manager</p>

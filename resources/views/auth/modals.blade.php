@@ -122,7 +122,7 @@
                 {{-- Avatar Preview --}}
                 <div class="relative inline-block mb-4 group">
                     <img id="google-avatar-preview" 
-                         src="{{ session('google_register_data.avatar') ?? asset('assets/Logo iSewa.png') }}" 
+                         src="{{ session('google_register_data.avatar') }}" 
                          class="w-24 h-24 rounded-full object-cover border-4 border-blue-50 shadow-md" 
                          alt="Avatar">
                     <label for="google-avatar-input" 
