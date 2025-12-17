@@ -304,6 +304,16 @@
 
             const formData = new FormData(this);
             const submitBtn = this.querySelector('button[type="submit"]');
+            
+            // ✅ FIX: Pastikan checkbox "remember" terkirim dengan benar
+            const rememberCheckbox = document.getElementById('remember-me');
+            if (rememberCheckbox) {
+                // Hapus entry lama jika ada
+                formData.delete('remember');
+                // Set dengan nilai boolean yang benar
+                formData.append('remember', rememberCheckbox.checked ? '1' : '0');
+            }
+            
             setButtonLoading(submitBtn, true);
 
             try {

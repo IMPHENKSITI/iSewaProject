@@ -208,7 +208,7 @@ class AuthController extends Controller
             }
 
             // Convert remember value to boolean
-            $rememberMe = isset($validated['remember']) && $validated['remember'] === true;
+            $rememberMe = isset($validated['remember']) && ($validated['remember'] === true || $validated['remember'] === '1' || $validated['remember'] === 1);
             Auth::login($user, $rememberMe);
 
             // Redirect based on user role
