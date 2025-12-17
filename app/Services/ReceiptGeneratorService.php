@@ -14,7 +14,7 @@ class ReceiptGeneratorService
     public function generateRentalReceipt(RentalBooking $booking)
     {
         // Muat template latar belakang
-        $backgroundPath = public_path('admin/img/transaksi/bukti-penyewaan-alat.png');
+        $backgroundPath = public_path('Admin/img/transaksi/bukti-penyewaan-alat.png');
         
         if (!file_exists($backgroundPath)) {
             throw new \Exception('Background template not found: ' . $backgroundPath);
