@@ -619,8 +619,11 @@
 @endpush
 
 @push('scripts')
-    {{-- ApexCharts Library - Required Dependency --}}
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts" defer></script>
+    {{-- ApexCharts Library - Modern ESM Bundle --}}
+    <script type="module">
+        import ApexCharts from 'https://cdn.jsdelivr.net/npm/apexcharts/+esm';
+        window.ApexCharts = ApexCharts;
+    </script>
     <script>
         const BerandaPage = {
             // Initialize all components

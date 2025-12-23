@@ -212,8 +212,11 @@
 @endpush
 
 @push('scripts')
-{{-- ApexCharts Library --}}
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+{{-- ApexCharts Library - Modern ESM Bundle --}}
+<script type="module">
+    import ApexCharts from 'https://cdn.jsdelivr.net/npm/apexcharts/+esm';
+    window.ApexCharts = ApexCharts;
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Animate sections on load
