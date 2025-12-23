@@ -214,7 +214,7 @@ class ReceiptGeneratorService
     public function generateGasReceipt(GasOrder $order)
     {
         // Muat template latar belakang
-        $backgroundPath = public_path('admin/img/transaksi/bukti-gas.png');
+        $backgroundPath = public_path('Admin/img/transaksi/bukti-gas.png');
         
         if (!file_exists($backgroundPath)) {
             throw new \Exception('Background template not found: ' . $backgroundPath);
