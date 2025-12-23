@@ -66,6 +66,7 @@
                             <div class="product-image-wrapper mb-6 relative aspect-[4/3] overflow-hidden rounded-2xl">
                                 <img src="{{ asset('storage/' . $item->foto) }}" 
                                      alt="{{ $item->jenis_gas }}"
+                                     loading="lazy"
                                      class="product-image w-full h-full object-cover">
                             </div>
 

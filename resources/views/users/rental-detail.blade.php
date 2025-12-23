@@ -73,6 +73,7 @@
                                 <div class="w-full h-full flex-shrink-0 flex-grow-0">
                                     <img src="{{ asset('storage/' . $image) }}" 
                                          alt="{{ $item->nama_barang }} - Image {{ $index + 1 }}"
+                                         {{ $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"' }}
                                          class="w-full h-full object-cover product-image">
                                 </div>
                                 @endforeach
