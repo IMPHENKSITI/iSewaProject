@@ -1,7 +1,23 @@
 {{-- ================================================ --}}
 {{-- NAVBAR UTAMA --}}
 {{-- ================================================ --}}
-<nav class="absolute top-0 left-0 w-full z-50 bg-white/10 backdrop-blur-sm shadow-sm">
+@push('styles')
+    <style>
+        /* Mobile & Tablet: Fixed (Follows scroll) */
+        .navbar-responsive-pos {
+            position: fixed;
+        }
+
+        /* Desktop (>= 1024px): Absolute (Does not follow) */
+        @media (min-width: 1024px) {
+            .navbar-responsive-pos {
+                position: absolute !important;
+            }
+        }
+    </style>
+@endpush
+
+<nav class="navbar-responsive-pos top-0 left-0 w-full z-50 bg-white/10 backdrop-blur-sm shadow-sm">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-5 py-0">
         <div class="flex items-center justify-between">
             <div class="flex-shrink-0">
