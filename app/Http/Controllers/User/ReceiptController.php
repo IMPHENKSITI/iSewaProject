@@ -25,7 +25,7 @@ class ReceiptController extends Controller
         $booking = RentalBooking::withTrashed()->findOrFail($id);
         
         // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
-        if ($booking->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
+        if ((int)$booking->user_id !== (int)auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
@@ -54,7 +54,7 @@ class ReceiptController extends Controller
         $booking = RentalBooking::withTrashed()->findOrFail($id);
         
         // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
-        if ($booking->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
+        if ((int)$booking->user_id !== (int)auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
@@ -81,7 +81,7 @@ class ReceiptController extends Controller
         $order = GasOrder::withTrashed()->findOrFail($id);
         
         // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
-        if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
+        if ((int)$order->user_id !== (int)auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
@@ -110,7 +110,7 @@ class ReceiptController extends Controller
         $order = GasOrder::withTrashed()->findOrFail($id);
         
         // Periksa apakah pengguna memiliki pesanan ini atau adalah admin
-        if ($order->user_id !== auth()->id() && auth()->user()->role !== 'admin') {
+        if ((int)$order->user_id !== (int)auth()->id() && auth()->user()->role !== 'admin') {
             abort(403, 'Unauthorized access');
         }
         
