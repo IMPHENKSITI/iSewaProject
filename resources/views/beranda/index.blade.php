@@ -16,16 +16,19 @@
                         <!-- Slide 1 -->
                         <div class="carousel-slide min-w-full flex-shrink-0">
                             <img src="{{ asset('User/img/elemen/entrance.png') }}" alt="Slide 1"
+                                fetchpriority="high"
                                 class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-cover">
                         </div>
                         <!-- Slide 2 -->
                         <div class="carousel-slide min-w-full flex-shrink-0">
                             <img src="{{ asset('User/img/elemen/biru.png') }}" alt="Slide 2"
+                                loading="lazy"
                                 class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-cover">
                         </div>
                         <!--Slide 3-->
                         <div class="carousel-slide min-w-full flex-shrink-0">
                             <img src="{{ asset('User/img/elemen/ppq.png') }}" alt="Slide 3"
+                                loading="lazy"
                                 class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-fill">
                         </div>
                     </div>
@@ -107,6 +110,7 @@
                                 <div class="product-image-wrapper mb-6 relative aspect-[4/3] overflow-hidden rounded-2xl">
                                     <img src="{{ Str::startsWith($item->image, ['http', 'https', 'User', 'Admin']) ? asset($item->image) : asset('storage/' . $item->image) }}" 
                                          alt="{{ $item->name }}"
+                                         loading="lazy"
                                          class="product-image w-full h-full object-cover">
                                 </div>
     
@@ -159,6 +163,7 @@
                                 <div
                                     class="aspect-square p-4 flex items-center justify-center bg-gradient-to-br from-white/50 to-blue-50/30 relative">
                                     <img src="{{ Str::startsWith($item->image, ['http', 'https', 'User', 'Admin']) ? asset($item->image) : asset('storage/' . $item->image) }}" alt="{{ $item->name }}"
+                                        loading="lazy"
                                         class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
                                     @if($loop->iteration <= 2)
                                     <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
@@ -198,19 +203,19 @@
                         <div class="relative w-full max-w-6xl mx-auto h-full">
 
                             <div class="unit-card" data-index="0" data-name="Unit Penyewaan Alat">
-                                <img src="{{ asset('User/img/elemen/F1.png') }}" alt="Alat">
+                                <img src="{{ asset('User/img/elemen/F1.png') }}" alt="Alat" loading="lazy">
                             </div>
 
                             <div class="unit-card" data-index="1" data-name="Unit Penjualan Gas">
-                                <img src="{{ asset('User/img/elemen/F2.png') }}" alt="Gas">
+                                <img src="{{ asset('User/img/elemen/F2.png') }}" alt="Gas" loading="lazy">
                             </div>
 
                             <div class="unit-card" data-index="2" data-name="Unit Penyewaan Alat">
-                                <img src="{{ asset('User/img/elemen/F1.png') }}" alt="Alat">
+                                <img src="{{ asset('User/img/elemen/F1.png') }}" alt="Alat" loading="lazy">
                             </div>
 
                             <div class="unit-card" data-index="3" data-name="Unit Penjualan Gas">
-                                <img src="{{ asset('User/img/elemen/F2.png') }}" alt="Gas">
+                                <img src="{{ asset('User/img/elemen/F2.png') }}" alt="Gas" loading="lazy">
                             </div>
                         </div>
 
@@ -380,31 +385,31 @@
         <!-- AREA POPULER - Pakai 4.webp (BLUR) Kiri & Kanan -->
         <!-- ============================================ -->
         <svg class="bg-element bg-blur-left-populer">
-            <image href="{{ asset('User/img/backgrounds/4.webp') }}" width="100%" height="100%" />
+            <image href="{{ asset('User/img/backgrounds/4.webp') }}" width="100%" height="100%" loading="lazy" />
         </svg>
 
         <svg class="bg-element bg-blur-right-populer">
-            <image href="{{ asset('User/img/backgrounds/4.webp') }}" width="100%" height="100%" />
+            <image href="{{ asset('User/img/backgrounds/4.webp') }}" width="100%" height="100%" loading="lazy" />
         </svg>
 
         <!-- ============================================ -->
         <!-- BAWAH POPULER - Pakai 2.webp (WAVE) Kiri -->
         <!-- ============================================ -->
-        <img src="{{ asset('User/img/backgrounds/2.webp') }}" class="bg-element bg-wave-left-lower-populer" />
+        <img src="{{ asset('User/img/backgrounds/2.webp') }}" class="bg-element bg-wave-left-lower-populer" loading="lazy" />
 
         <!-- ============================================ -->
         <!-- AREA UNIT PELAYANAN - Pakai 2.webp (WAVE) Kanan + 5.webp (GEOMETRIS ROTASI) -->
         <!-- ============================================ -->
-        <img src="{{ asset('User/img/backgrounds/2.webp') }}" class="bg-element bg-wave-right-unit" />
+        <img src="{{ asset('User/img/backgrounds/2.webp') }}" class="bg-element bg-wave-right-unit" loading="lazy" />
 
         <svg class="bg-element bg-squares-right-unit">
-            <image href="{{ asset('User/img/backgrounds/5.webp') }}" width="100%" height="100%" />
+            <image href="{{ asset('User/img/backgrounds/5.webp') }}" width="100%" height="100%" loading="lazy" />
         </svg>
 
         <!-- ============================================ -->
         <!-- AREA GRAFIK UMUM - Pakai 3.webp (WAVE BESAR TENGAH) -->
         <!-- ============================================ -->
-        <img src="{{ asset('User/img/backgrounds/3.webp') }}" class="bg-element bg-wave-center-grafik" />
+        <img src="{{ asset('User/img/backgrounds/3.webp') }}" class="bg-element bg-wave-center-grafik" loading="lazy" />
 
     </main>
 
@@ -615,7 +620,7 @@
 
 @push('scripts')
     {{-- ApexCharts Library - Required Dependency --}}
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts" defer></script>
     <script>
         const BerandaPage = {
             // Initialize all components
