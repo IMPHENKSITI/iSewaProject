@@ -240,30 +240,44 @@
         display: block;
     }
 
-    /* Responsive Mobile */
+    /* Responsive Mobile - 3 Column Layout (Center Focus) */
     @media (max-width: 768px) {
         .unit-card {
-            width: 160px;
-            height: 160px;
+            width: 150px;
+            height: 150px;
         }
 
+        /* Slot Kiri (Background) */
         .state-0 {
             left: 10% !important;
-            scale: 0.5 !important;
+            transform: translate(-50%, -50%) scale(0.6) !important;
+            opacity: 0.6 !important;
+            z-index: 20;
+            filter: grayscale(20%);
         }
 
+        /* Slot Tengah (Focus) */
         .state-1 {
             left: 50% !important;
-            scale: 1.2 !important;
+            transform: translate(-50%, -50%) scale(1.8) !important;
+            opacity: 1 !important;
+            z-index: 50;
+            filter: grayscale(0%) drop-shadow(0 10px 15px rgba(0,0,0,0.2));
         }
 
+        /* Slot Kanan (Background) */
         .state-2 {
             left: 90% !important;
-            scale: 0.5 !important;
+            transform: translate(-50%, -50%) scale(0.6) !important;
+            opacity: 0.6 !important;
+            z-index: 20;
+            filter: grayscale(20%);
         }
 
+        /* Antrian (Hidden) */
         .state-3 {
-            left: 110% !important;
+            left: 150% !important;
+            transform: translate(-50%, -50%) scale(0.5) !important;
             opacity: 0;
         }
     }
