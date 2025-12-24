@@ -15,21 +15,36 @@
                     <div id="carousel-slides" class="flex transition-transform duration-500 ease-out">
                         <!-- Slide 1 -->
                         <div class="carousel-slide min-w-full flex-shrink-0">
+                            <!-- Mobile Image -->
+                            <img src="{{ asset('User/img/elemen/entrance-mobile.png') }}" alt="Slide 1 Mobile"
+                                fetchpriority="high"
+                                class="block md:hidden w-full h-[400px] object-cover">
+                            <!-- Desktop Image -->
                             <img src="{{ asset('User/img/elemen/entrance.png') }}" alt="Slide 1"
                                 fetchpriority="high"
-                                class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-cover">
+                                class="hidden md:block w-full md:h-[40vw] lg:h-[45vw] object-cover">
                         </div>
                         <!-- Slide 2 -->
                         <div class="carousel-slide min-w-full flex-shrink-0">
+                            <!-- Mobile Image -->
+                            <img src="{{ asset('User/img/elemen/biru-mobile.png') }}" alt="Slide 2 Mobile"
+                                loading="lazy"
+                                class="block md:hidden w-full h-[400px] object-cover">
+                            <!-- Desktop Image -->
                             <img src="{{ asset('User/img/elemen/biru.png') }}" alt="Slide 2"
                                 loading="lazy"
-                                class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-cover">
+                                class="hidden md:block w-full md:h-[40vw] lg:h-[45vw] object-cover">
                         </div>
                         <!--Slide 3-->
                         <div class="carousel-slide min-w-full flex-shrink-0">
+                            <!-- Mobile Image -->
+                            <img src="{{ asset('User/img/elemen/ppq-mobile.png') }}" alt="Slide 3 Mobile"
+                                loading="lazy"
+                                class="block md:hidden w-full h-[400px] object-cover">
+                            <!-- Desktop Image -->
                             <img src="{{ asset('User/img/elemen/ppq.png') }}" alt="Slide 3"
                                 loading="lazy"
-                                class="w-full h-[400px] md:h-[40vw] lg:h-[45vw] object-fill">
+                                class="hidden md:block w-full md:h-[40vw] lg:h-[45vw] object-fill">
                         </div>
                     </div>
 
