@@ -39,7 +39,9 @@
                             <span class="bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">BUMDes</span>
                         </h3>
                         <select id="kinerja-year" class="px-4 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                            <option value="2025">2025</option>
+                            @foreach($availableYears as $optYear)
+                                <option value="{{ $optYear }}" {{ $optYear == $year ? 'selected' : '' }}>{{ $optYear }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-5 border border-gray-100">
@@ -60,7 +62,9 @@
                             <span class="bg-gradient-to-r from-[#1a1a1a] via-[#0099ff] to-[#33b5ff] bg-clip-text text-transparent">Populer</span>
                         </h3>
                         <select id="unit-year" class="px-4 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                            <option value="2025">2025</option>
+                            @foreach($availableYears as $optYear)
+                                <option value="{{ $optYear }}" {{ $optYear == $year ? 'selected' : '' }}>{{ $optYear }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-5 mb-5 border border-gray-100">
@@ -229,14 +233,39 @@
         initUnitChart();
         initPendapatanPieChart();
 
+        // Helper function for URL updates
+        const updateUrlParam = (key, value) => {
+            const url = new URL(window.location.href);
+            url.searchParams.set(key, value);
+            window.location.href = url.toString();
+        };
+
+        // Handle Year Change for Kinerja
+        const kinerjaYearSelect = document.getElementById('kinerja-year');
+        if (kinerjaYearSelect) {
+            kinerjaYearSelect.addEventListener('change', function() {
+                updateUrlParam('year', this.value);
+            });
+        }
+
+        // Handle Year Change for Unit
+        const unitYearSelect = document.getElementById('unit-year');
+        if (unitYearSelect) {
+            unitYearSelect.addEventListener('change', function() {
+                updateUrlParam('year', this.value);
+            });
+        }
+
         // Handle Month Change for Total Pendapatan
         const monthSelect = document.getElementById('pendapatan-month');
         if (monthSelect) {
             monthSelect.addEventListener('change', function() {
-                const selectedMonth = this.value;
                 const url = new URL(window.location.href);
-                url.searchParams.set('month', selectedMonth);
-                url.searchParams.set('year', '2025'); // Ensure year is 2025
+                url.searchParams.set('month', this.value);
+                // Preserve current year if exists, otherwise dont force 2025
+                if (!url.searchParams.has('year')) {
+                     url.searchParams.set('year', '{{ $year }}');
+                }
                 window.location.href = url.toString();
             });
         }

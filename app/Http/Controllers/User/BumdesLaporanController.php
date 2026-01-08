@@ -14,8 +14,30 @@ class BumdesLaporanController extends Controller
 {
     public function index()
     {
-        $year = request('year', date('Y'));
+        // Dapatkan tahun yang dipilih (default ke tahun sekarang)
+        $yearRequest = request('year', now()->year);
+        $year = (int)$yearRequest; // Strict integer cast
+
+        // Ambil daftar tahun yang tersedia dari database (Strict Integer)
+        $rentalYears = RentalBooking::withTrashed()
+            ->selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year')
+            ->map(fn($y) => (int)$y)
+            ->toArray();
+            
+        $gasYears = GasOrder::withTrashed()
+            ->selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year')
+            ->map(fn($y) => (int)$y)
+            ->toArray();
         
+        // Gabungkan dengan tahun sekarang secara eksplisit (Hard Merge)
+        $allYears = array_unique(array_merge($rentalYears, $gasYears, [(int)now()->year]));
+        $availableYears = array_values($allYears);
+        rsort($availableYears);
+
         // Get Kinerja BUMDes data (monthly revenue)
         $kinerjaData = $this->getKinerjaData($year);
         
@@ -23,13 +45,14 @@ class BumdesLaporanController extends Controller
         $unitPopulerData = $this->getUnitPopulerData($year);
         
         // Get Total Pendapatan data
-        $totalPendapatanData = $this->getTotalPendapatanData();
+        $totalPendapatanData = $this->getTotalPendapatanData($year);
         
         return view('users.bumdes-laporan', compact(
             'kinerjaData',
             'unitPopulerData',
             'totalPendapatanData',
-            'year'
+            'year',
+            'availableYears' // Pass available years
         ));
     }
     
@@ -111,11 +134,11 @@ class BumdesLaporanController extends Controller
     /**
      * Get Total Pendapatan data - Revenue breakdown by unit
      */
-    private function getTotalPendapatanData()
+    private function getTotalPendapatanData($selectedYear = null)
     {
         // Get current month/year or from request
         $month = request('month', date('m'));
-        $year = request('year', date('Y'));
+        $year = $selectedYear ?? (int)request('year', date('Y'));
         
         // Rental Equipment Revenue
         $rentalRevenue = RentalBooking::withTrashed()
