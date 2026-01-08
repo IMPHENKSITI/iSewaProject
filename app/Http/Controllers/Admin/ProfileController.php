@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class ProfileController extends Controller
 {
@@ -108,13 +110,12 @@ class ProfileController extends Controller
         // Store new password in session only (temp)
         session(['new_password' => $request->new_password]);
 
-        // Log OTP
-        Log::info("OTP Ganti Password Admin ({$user->email}): {$otp}");
+        // Send OTP via Email
+        Mail::to($user->email)->send(new OtpMail($otp));
 
         return response()->json([
             'success' => true, 
-            'message' => 'OTP telah dikirim.',
-            'debug_otp' => $otp
+            'message' => 'OTP telah dikirim ke email Anda.',
         ]);
     }
 
@@ -168,13 +169,12 @@ class ProfileController extends Controller
         $user->otp_expires_at = now()->addMinutes(5);
         $user->save();
 
-        // Log OTP
-        Log::info("Resend OTP Ganti Password Admin ({$user->email}): {$otp}");
+        // Send OTP via Email
+        Mail::to($user->email)->send(new OtpMail($otp));
 
         return response()->json([
             'success' => true, 
-            'message' => 'Kode OTP baru telah dikirim.',
-            'debug_otp' => $otp
+            'message' => 'Kode OTP baru telah dikirim ke email Anda.',
         ]);
     }
 

@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class ProfileController extends Controller
 {
@@ -137,12 +139,12 @@ class ProfileController extends Controller
                 ]
             ]);
 
-            Log::info("OTP Ganti Password untuk {$user->email}: {$otpCode}");
+            // Send OTP via Email
+            Mail::to($user->email)->send(new OtpMail($otpCode));
 
             return response()->json([
                 'success' => true,
-                'message' => 'Kode OTP telah dikirim',
-                'data' => ['otp' => $otpCode] // Development only
+                'message' => 'Kode OTP telah dikirim ke email Anda',
             ], 200);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -253,12 +255,12 @@ class ProfileController extends Controller
             session(['profile_password_change' => $sessionData]);
 
             $user = auth()->user();
-            Log::info("OTP baru untuk {$user->email}: {$newOtpCode}");
+            // Send OTP via Email
+            Mail::to($user->email)->send(new OtpMail($newOtpCode));
 
             return response()->json([
                 'success' => true,
-                'message' => 'Kode OTP baru telah dikirim',
-                'data' => ['otp' => $newOtpCode] // Development only
+                'message' => 'Kode OTP baru telah dikirim ke email Anda',
             ], 200);
 
         } catch (\Exception $e) {

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class AuthController extends Controller
 {
@@ -47,15 +49,15 @@ class AuthController extends Controller
                 ]
             ]);
 
-            Log::info("OTP untuk {$validated['email']}: {$otpCode}");
+            // Send OTP via Email
+            Mail::to($validated['email'])->send(new OtpMail($otpCode));
 
             return response()->json([
                 'success' => true,
-                'message' => 'Kode OTP telah dikirim',
+                'message' => 'Kode OTP telah dikirim ke email Anda',
                 'data' => [
                     'temp_user_id' => $tempUserId,
                     'email' => $validated['email'],
-                    'otp' => $otpCode,
                 ]
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -155,14 +157,12 @@ class AuthController extends Controller
             $tempData['otp_expires_at'] = now()->addMinutes(5);
             session(['temp_registration' => $tempData]);
 
-            Log::info("OTP baru untuk {$tempData['email']}: {$newOtpCode}");
+            // Send OTP via Email
+            Mail::to($tempData['email'])->send(new OtpMail($newOtpCode));
 
             return response()->json([
                 'success' => true,
-                'message' => 'Kode OTP baru telah dikirim',
-                'data' => [
-                    'otp' => $newOtpCode,
-                ]
+                'message' => 'Kode OTP baru telah dikirim ke email Anda',
             ], 200);
         } catch (\Exception $e) {
             Log::error('Resend OTP error: ' . $e->getMessage());
@@ -290,15 +290,12 @@ class AuthController extends Controller
                 ]
             ]);
 
-            // Log OTP (di production nanti kirim email)
-            \Log::info("OTP Forgot Password untuk {$user->email}: {$otpCode}");
+            // Send OTP via Email
+            Mail::to($user->email)->send(new OtpMail($otpCode));
 
             return response()->json([
                 'success' => true,
                 'message' => 'Kode OTP telah dikirim ke email Anda',
-                'data' => [
-                    'otp' => $otpCode, // ✅ Untuk development, tampilkan OTP
-                ]
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -440,14 +437,12 @@ class AuthController extends Controller
             $sessionData['otp_expires_at'] = now()->addMinutes(5);
             session(['forgot_password_data' => $sessionData]);
 
-            \Log::info("OTP baru untuk {$sessionData['email']}: {$newOtpCode}");
+            // Send OTP via Email
+            Mail::to($sessionData['email'])->send(new OtpMail($newOtpCode));
 
             return response()->json([
                 'success' => true,
-                'message' => 'Kode OTP baru telah dikirim',
-                'data' => [
-                    'otp' => $newOtpCode,
-                ]
+                'message' => 'Kode OTP baru telah dikirim ke email Anda',
             ], 200);
         } catch (\Exception $e) {
             \Log::error('Resend OTP error: ' . $e->getMessage());

@@ -190,11 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
 
             if (response.ok) {
-                // Tampilkan OTP di alert (development only)
-                if (data.data && data.data.otp) {
-                    alert('🔑 OTP Anda: ' + data.data.otp);
-                }
-                
                 showToast(data.message, 'success');
                 
                 // Pindah ke modal OTP
@@ -319,9 +314,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok) {
                 showToast(data.message, 'success');
-                if (data.data && data.data.otp) {
-                    alert('🔑 OTP Baru: ' + data.data.otp);
-                }
                 profileOtpInputs.forEach(input => input.value = '');
                 profileOtpInputs[0].focus();
             } else {

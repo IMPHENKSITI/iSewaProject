@@ -98,12 +98,6 @@
                     const otpModal = new bootstrap.Modal(document.getElementById('otpVerificationModal'));
                     otpModal.show();
                     
-                    // Display debug OTP if available
-                    if (data.debug_otp) {
-                        document.getElementById('otpDebugCode').textContent = data.debug_otp;
-                        document.getElementById('otpDebugDisplay').style.display = 'block';
-                    }
-                    
                     // Reset form
                     form.reset();
                 } else {
@@ -260,12 +254,6 @@
             .then(data => {
                 if (data.success) {
                     alert(data.message || 'Kode OTP baru telah dikirim');
-                    
-                    // Update debug OTP if available
-                    if (data.debug_otp) {
-                        document.getElementById('otpDebugCode').textContent = data.debug_otp;
-                        document.getElementById('otpDebugDisplay').style.display = 'block';
-                    }
                     
                     // Clear and focus first input
                     otpInputs.forEach(input => {

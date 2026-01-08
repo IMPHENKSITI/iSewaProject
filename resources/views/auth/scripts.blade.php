@@ -395,7 +395,6 @@
                     registeredUserId = data.data.temp_user_id;
                     document.getElementById('otp-user-id').value = registeredUserId;
 
-                    alert('🔑 OTP Anda: ' + data.data.otp);
                     showToast(data.message, 'success');
 
                     setTimeout(() => {
@@ -527,9 +526,6 @@
 
                 if (response.ok) {
                     showToast(data.message, 'success');
-                    if (data.data && data.data.otp) {
-                        alert('🔑 OTP Baru: ' + data.data.otp);
-                    }
                     otpInputs.forEach(input => input.value = '');
                     otpInputs[0].focus();
                 } else {
@@ -588,10 +584,6 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Show OTP in alert for development
-                    if (data.data && data.data.otp) {
-                        alert('🔑 OTP Anda: ' + data.data.otp);
-                    }
                     showToast(data.message, 'success');
 
                     setTimeout(() => {
@@ -714,9 +706,6 @@
 
                 if (response.ok) {
                     showToast(data.message, 'success');
-                    if (data.data && data.data.otp) {
-                        alert('🔑 OTP Baru: ' + data.data.otp);
-                    }
                     forgotOtpInputs.forEach(input => input.value = '');
                     forgotOtpInputs[0].focus();
                 } else {
