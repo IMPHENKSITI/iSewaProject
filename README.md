@@ -95,3 +95,11 @@ php artisan migrate
 ## Version 0.8.0
 - Unlock Feature Login With Google + Seamless Integration Between User & Admin
 - Fix Transaksi to Stable Version
+
+## Version 0.9.0
+- New! Unlock Fitur OTP via E-Mail
+- Penyempurnaan beberapa fitur yang sudah ada
+- Prequisites untuk mencoba versi ini
+```bash
+php artisan optimize:clear
+```
