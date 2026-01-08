@@ -40,13 +40,8 @@ public function index(Request $request)
         ->pluck('year')
         ->toArray();
         
-    $availableYears = array_unique(array_merge($rentalYears, $gasYears));
+    $availableYears = array_unique(array_merge($rentalYears, $gasYears, [now()->year]));
     rsort($availableYears);
-    
-    // Pastikan tahun saat ini ada dalam daftar
-    if (!in_array(now()->year, $availableYears)) {
-        array_unshift($availableYears, now()->year);
-    }
 
     $rentalRequests = RentalBooking::withTrashed()->with(['user', 'barang'])
         ->where(function($q) {
