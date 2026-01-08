@@ -198,7 +198,7 @@ public function index(Request $request)
     // Ambil data Total Pendapatan untuk grafik baru (Pastikan pass selectedYear)
     // Override request year jika diperlukan agar konsisten
     $request->merge(['year' => $selectedYear]);
-    $data['totalPendapatanData'] = $this->getTotalPendapatanData();
+    $data['totalPendapatanData'] = $this->getTotalPendapatanData($selectedYear);
     
     // Ambil Produk Populer (pass selectedYear)
     $data['popularProducts'] = $this->getPopularProducts($selectedYear);
@@ -210,65 +210,67 @@ public function index(Request $request)
 /**
  * Ambil data Total Pendapatan - Rincian pendapatan berdasarkan unit
  */
-private function getTotalPendapatanData()
-{
-    // Ambil bulan/tahun saat ini atau dari permintaan
-    $month = request('month', date('m'));
-    $year = request('year', date('Y'));
+    private function getTotalPendapatanData($selectedYear = null)
+    {
+        // Ambil bulan/tahun saat ini atau dari permintaan
+        $month = request('month', date('m'));
+        
+        // Gunakan tahun yang dipilih jika ada, jika tidak ambil dari request, jika tidak tahun ini
+        $year = $selectedYear ?? request('year', date('Y'));
+        
+        // Pendapatan Penyewaan Alat
+        $rentalRevenue = RentalBooking::withTrashed()->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->sum('total_amount');
+        
+        $rentalTransactions = RentalBooking::withTrashed()->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->count();
+        
+        // Pendapatan Penjualan Gas
+        $gasRevenue = GasOrder::withTrashed()->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->sum(\DB::raw('price * quantity'));
+        
+        $gasTransactions = GasOrder::withTrashed()->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
+            ->count();
     
-    // Pendapatan Penyewaan Alat
-    $rentalRevenue = RentalBooking::withTrashed()->whereYear('created_at', $year)
-        ->whereMonth('created_at', $month)
-        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
-        ->sum('total_amount');
-    
-    $rentalTransactions = RentalBooking::withTrashed()->whereYear('created_at', $year)
-        ->whereMonth('created_at', $month)
-        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
-        ->count();
-    
-    // Pendapatan Penjualan Gas
-    $gasRevenue = GasOrder::withTrashed()->whereYear('created_at', $year)
-        ->whereMonth('created_at', $month)
-        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
-        ->sum(\DB::raw('price * quantity'));
-    
-    $gasTransactions = GasOrder::withTrashed()->whereYear('created_at', $year)
-        ->whereMonth('created_at', $month)
-        ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
-        ->count();
-
-    // Pendapatan Laporan Manual
-    $manualRevenue = ManualReport::whereYear('transaction_date', $year)
-        ->whereMonth('transaction_date', $month)
-        ->sum(\DB::raw('amount * quantity'));
-    
-    $manualTransactions = ManualReport::whereYear('transaction_date', $year)
-        ->whereMonth('transaction_date', $month)
-        ->count();
-    
-    $totalRevenue = $rentalRevenue + $gasRevenue + $manualRevenue;
-    $totalTransactions = $rentalTransactions + $gasTransactions + $manualTransactions;
-    
-    return [
-        'rental' => [
-            'revenue' => $rentalRevenue,
-            'transactions' => $rentalTransactions,
-            'percentage' => $totalRevenue > 0 ? round(($rentalRevenue / $totalRevenue) * 100, 1) : 0
-        ],
-        'gas' => [
-            'revenue' => $gasRevenue,
-            'transactions' => $gasTransactions,
-            'percentage' => $totalRevenue > 0 ? round(($gasRevenue / $totalRevenue) * 100, 1) : 0
-        ],
-        'total' => [
-            'revenue' => $totalRevenue,
-            'transactions' => $totalTransactions
-        ],
-        'month' => $month,
-        'year' => $year
-    ];
-}
+        // Pendapatan Laporan Manual
+        $manualRevenue = ManualReport::whereYear('transaction_date', $year)
+            ->whereMonth('transaction_date', $month)
+            ->sum(\DB::raw('amount * quantity'));
+        
+        $manualTransactions = ManualReport::whereYear('transaction_date', $year)
+            ->whereMonth('transaction_date', $month)
+            ->count();
+        
+        $totalRevenue = $rentalRevenue + $gasRevenue + $manualRevenue;
+        $totalTransactions = $rentalTransactions + $gasTransactions + $manualTransactions;
+        
+        return [
+            'rental' => [
+                'revenue' => $rentalRevenue,
+                'transactions' => $rentalTransactions,
+                'percentage' => $totalRevenue > 0 ? round(($rentalRevenue / $totalRevenue) * 100, 1) : 0
+            ],
+            'gas' => [
+                'revenue' => $gasRevenue,
+                'transactions' => $gasTransactions,
+                'percentage' => $totalRevenue > 0 ? round(($gasRevenue / $totalRevenue) * 100, 1) : 0
+            ],
+            'total' => [
+                'revenue' => $totalRevenue,
+                'transactions' => $totalTransactions
+            ],
+            'month' => $month,
+            'year' => $year
+        ];
+    }
 
     /**
      * Pencarian Global - Cari di semua tabel
