@@ -34,17 +34,22 @@
                                 class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
                                 <div>
                                     <h5 class="card-title fw-bold mb-2">Kinerja BUMDES</h5>
-                                    <span class="badge bg-label-warning rounded-pill">Tahun 2025</span>
+                                    <span class="badge bg-label-warning rounded-pill">Tahun {{ $selectedYear }}</span>
                                 </div>
                                 <div class="d-flex flex-column flex-sm-row gap-2 mt-3 mt-sm-0">
                                     <select class="form-select form-select-sm" id="desaSelect" style="min-width: 200px;">
                                         <option selected>Desa Pematang Duku Timur</option>
                                     </select>
                                     <select class="form-select form-select-sm" id="tahunSelect" style="min-width: 100px;">
-                                        <option selected>2025</option>
-                                        <option>2024</option>
-                                        <option>2023</option>
+                                        @foreach($availableYears as $year)
+                                            <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                        @endforeach
                                     </select>
+                                    <script>
+                                        document.getElementById('tahunSelect').addEventListener('change', function() {
+                                            window.location.href = "{{ route('admin.dashboard') }}?year=" + this.value;
+                                        });
+                                    </script>
                                 </div>
                             </div>
                             <div id="kinerjaChart" style="min-height: 300px;"></div>
@@ -856,7 +861,7 @@
                                         },
                                         total: {
                                             show: true,
-                                            label: "2025",
+                                            label: "{{ $selectedYear }}",
                                             fontSize: "16px",
                                             color: "#6e6b7b",
                                             offsetY: 25,
