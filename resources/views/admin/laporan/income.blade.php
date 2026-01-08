@@ -16,7 +16,9 @@
                 <i class="bx bx-calendar me-2"></i>Tahun {{ $year }}
             </button>
             <ul class="dropdown-menu shadow border-0 rounded-4">
-                <li><a class="dropdown-item" href="{{ route('admin.laporan.pendapatan', ['year' => 2025]) }}">2025</a></li>
+                @foreach($availableYears as $optYear)
+                    <li><a class="dropdown-item {{ $optYear == $year ? 'active' : '' }}" href="{{ route('admin.laporan.pendapatan', ['year' => $optYear]) }}">{{ $optYear }}</a></li>
+                @endforeach
             </ul>
              <button class="btn btn-success shadow-sm rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#manualTransactionModal">
                 <i class="bx bx-plus me-2"></i>Catat Transaksi Manual

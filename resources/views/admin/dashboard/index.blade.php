@@ -34,7 +34,7 @@
                                 class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-4">
                                 <div>
                                     <h5 class="card-title fw-bold mb-2">Kinerja BUMDES</h5>
-                                    <span class="badge bg-label-warning rounded-pill">Tahun {{ $selectedYear }} &bull;</span>
+                                    <span class="badge bg-label-warning rounded-pill">Tahun {{ $selectedYear }}</span>
                                 </div>
                                 <div class="d-flex flex-column flex-sm-row gap-2 mt-3 mt-sm-0">
                                     <select class="form-select form-select-sm" id="desaSelect" style="min-width: 200px;">

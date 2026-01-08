@@ -49,7 +49,29 @@ class ReportController extends Controller
 
     public function income(Request $request)
     {
-        $year = $request->input('year', date('Y'));
+        // Dapatkan tahun yang dipilih (default ke tahun sekarang)
+        $yearRequest = $request->input('year', now()->year);
+        $year = (int)$yearRequest; // Strict integer cast
+
+        // Ambil daftar tahun yang tersedia dari database (Strict Integer)
+        $rentalYears = RentalBooking::withTrashed()
+            ->selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year')
+            ->map(fn($y) => (int)$y)
+            ->toArray();
+            
+        $gasYears = GasOrder::withTrashed()
+            ->selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year')
+            ->map(fn($y) => (int)$y)
+            ->toArray();
+        
+        // Gabungkan dengan tahun sekarang secara eksplisit (Hard Merge)
+        $allYears = array_unique(array_merge($rentalYears, $gasYears, [(int)now()->year]));
+        $availableYears = array_values($allYears);
+        rsort($availableYears);
 
         // Hitung total pendapatan per unit dari sistem (Filter Tahunan)
         $totalPenyewaan = RentalBooking::withTrashed()->whereYear('created_at', $year)
@@ -191,7 +213,8 @@ class ReportController extends Controller
             'year',
             'totalPendapatanData',
             'unitPopulerData',
-            'growth'
+            'growth',
+            'availableYears'
         ));
     }
     
