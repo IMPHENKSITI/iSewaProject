@@ -17,7 +17,7 @@ class BerandaController extends Controller
 {
     public function index(Request $request)
     {
-        $year = date('Y');
+        // $year = date('Y'); // Removed, moved to logic below
         $search = $request->input('search');
         $searchResults = [];
 
@@ -130,19 +130,44 @@ class BerandaController extends Controller
                             ->concat($developerResults);
         }
         
+        // Dapatkan tahun yang dipilih (default ke tahun sekarang)
+        $yearRequest = $request->input('year', now()->year);
+        $year = (int)$yearRequest; // Strict integer cast
+
+        // Ambil daftar tahun yang tersedia dari database (Strict Integer)
+        $rentalYears = RentalBooking::withTrashed()
+            ->selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year')
+            ->map(fn($y) => (int)$y)
+            ->toArray();
+            
+        $gasYears = GasOrder::withTrashed()
+            ->selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->pluck('year')
+            ->map(fn($y) => (int)$y)
+            ->toArray();
+        
+        // Gabungkan dengan tahun sekarang secara eksplisit (Hard Merge)
+        $allYears = array_unique(array_merge($rentalYears, $gasYears, [(int)now()->year]));
+        $availableYears = array_values($allYears);
+        rsort($availableYears);
+
         // Get Kinerja BUMDes data (monthly revenue)
         $kinerjaData = $this->getKinerjaData($year);
         
         // Get Unit Populer data (rental vs gas comparison)
         $unitPopulerData = $this->getUnitPopulerData($year);
         
-        // Get Popular Products
-        $popularProducts = $this->getPopularProducts();
+        // Get Popular Products (Filtered by Year)
+        $popularProducts = $this->getPopularProducts($year);
         
         return view('beranda.index', compact(
             'kinerjaData',
             'unitPopulerData',
             'year',
+            'availableYears', // Pass available years
             'popularProducts',
             'searchResults',
             'search'
@@ -152,11 +177,14 @@ class BerandaController extends Controller
     /**
      * Get Popular Products (Top 4 most rented/sold items)
      */
-    private function getPopularProducts()
+    private function getPopularProducts($year = null)
     {
+        $year = $year ?? (int)date('Y');
+
         // 1. Get Rental Scores
         $rentalPopularity = RentalBooking::withTrashed()
             ->select('barang_id', DB::raw('SUM(quantity) as total_sold'))
+            ->whereYear('created_at', $year) // Filter by Year
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->whereNotNull('barang_id')
             ->groupBy('barang_id')
@@ -184,6 +212,7 @@ class BerandaController extends Controller
         // 3. Get Gas Scores
         $gasPopularity = GasOrder::withTrashed()
             ->select('gas_id', DB::raw('SUM(quantity) as total_sold'))
+            ->whereYear('created_at', $year) // Filter by Year
             ->whereNotIn('status', ['pending', 'cancelled', 'rejected'])
             ->whereNotNull('gas_id')
             ->groupBy('gas_id')

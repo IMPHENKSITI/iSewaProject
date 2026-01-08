@@ -284,9 +284,11 @@
                                         class="px-4 py-2 text-sm border border-white/40 rounded-lg bg-white/60 backdrop-blur-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/80 transition-all">
                                         <option>Desa Pematang Duku Timur</option>
                                     </select>
-                                    <select
+                                    <select id="kinerjaYearSelect"
                                         class="px-4 py-2 text-sm border border-white/40 rounded-lg bg-white/60 backdrop-blur-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/80 transition-all">
-                                        <option>2025</option>
+                                        @foreach($availableYears as $optYear)
+                                            <option value="{{ $optYear }}" {{ $optYear == $year ? 'selected' : '' }}>{{ $optYear }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -301,9 +303,11 @@
                             class="relative rounded-3xl p-6 backdrop-blur-md bg-white/20 border border-white/30 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]">
                             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-5">
                                 <h3 class="text-xl font-bold text-gray-800 mb-3 md:mb-0">Unit Populer</h3>
-                                <select
+                                <select id="populerYearSelect"
                                     class="px-4 py-2 text-sm border border-white/40 rounded-lg bg-white/60 backdrop-blur-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/80 transition-all">
-                                    <option>2025</option>
+                                    @foreach($availableYears as $optYear)
+                                        <option value="{{ $optYear }}" {{ $optYear == $year ? 'selected' : '' }}>{{ $optYear }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="bg-white/30 backdrop-blur-sm rounded-2xl p-5 mb-5 border border-white/20">
@@ -656,6 +660,27 @@
                 this.initCarousel();
                 this.initCharts();
                 this.initUnitCarousel();
+                this.initYearSelectors();
+            },
+
+            // Initialize Year Selectors
+            initYearSelectors() {
+                const handleYearChange = function() {
+                    const selectedYear = this.value;
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('year', selectedYear);
+                    window.location.href = url.toString();
+                };
+
+                const kinerjaSelect = document.getElementById('kinerjaYearSelect');
+                if (kinerjaSelect) {
+                    kinerjaSelect.addEventListener('change', handleYearChange);
+                }
+
+                const populerSelect = document.getElementById('populerYearSelect');
+                if (populerSelect) {
+                    populerSelect.addEventListener('change', handleYearChange);
+                }
             },
 
             // Carousel initialization
