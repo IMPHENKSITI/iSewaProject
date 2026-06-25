@@ -59,8 +59,8 @@ class User extends Authenticatable
             'reset_token_expires_at' => 'datetime', // ✅ TAMBAH INI
             'password' => 'hashed',
             'status' => 'string',
-            'phone' => 'encrypted',
-            'address' => 'encrypted',
+            'phone' => \App\Casts\SafeEncryptCast::class,
+            'address' => \App\Casts\SafeEncryptCast::class,
         ];
     }
 
