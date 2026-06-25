@@ -29,13 +29,15 @@ class NotificationService
             $title = "Penyewaan Disetujui";
         }
 
-        Notification::create([
-            'title' => $title,
-            'message' => $message,
-            'type' => 'approval_success',
-            'user_id' => $order->user_id,
-            'admin_id' => auth()->id(),
-        ]);
+        if ($order->user_id) {
+            Notification::create([
+                'title' => $title,
+                'message' => $message,
+                'type' => 'approval_success',
+                'user_id' => $order->user_id,
+                'admin_id' => auth()->id(),
+            ]);
+        }
     }
 
     /**
@@ -64,13 +66,15 @@ class NotificationService
                 $message = "Status pesanan diperbarui menjadi: " . $status;
         }
 
-        Notification::create([
-            'title' => $title,
-            'message' => $message,
-            'type' => 'status_update',
-            'user_id' => $order->user_id,
-            'admin_id' => auth()->id(),
-        ]);
+        if ($order->user_id) {
+            Notification::create([
+                'title' => $title,
+                'message' => $message,
+                'type' => 'status_update',
+                'user_id' => $order->user_id,
+                'admin_id' => auth()->id(),
+            ]);
+        }
     }
 
     /**
@@ -80,13 +84,15 @@ class NotificationService
     {
         $itemName = $type === 'gas' ? ($order->item_name ?? 'Gas') : ($order->barang->nama_barang ?? 'Alat');
         
-        Notification::create([
-            'title' => 'Permintaan Ditolak',
-            'message' => "Mohon maaf, permintaan {$itemName} Anda ditolak. Alasan: {$reason}",
-            'type' => 'rejection',
-            'user_id' => $order->user_id,
-            'admin_id' => auth()->id(),
-        ]);
+        if ($order->user_id) {
+            Notification::create([
+                'title' => 'Permintaan Ditolak',
+                'message' => "Mohon maaf, permintaan {$itemName} Anda ditolak. Alasan: {$reason}",
+                'type' => 'rejection',
+                'user_id' => $order->user_id,
+                'admin_id' => auth()->id(),
+            ]);
+        }
     }
 
     /**
@@ -97,13 +103,15 @@ class NotificationService
         $itemName = $type === 'gas' ? $order->item_name : $order->barang->nama_barang;
         
         // Notify user
-        Notification::create([
-            'title' => 'Stok Tidak Mencukupi',
-            'message' => "Mohon maaf, stok {$itemName} tidak mencukupi. Silakan ajukan ulang atau hubungi admin.",
-            'type' => 'approval_failed',
-            'user_id' => $order->user_id,
-            'admin_id' => auth()->id(),
-        ]);
+        if ($order->user_id) {
+            Notification::create([
+                'title' => 'Stok Tidak Mencukupi',
+                'message' => "Mohon maaf, stok {$itemName} tidak mencukupi. Silakan ajukan ulang atau hubungi admin.",
+                'type' => 'approval_failed',
+                'user_id' => $order->user_id,
+                'admin_id' => auth()->id(),
+            ]);
+        }
 
         // Notify admin
         AdminNotification::create([
@@ -122,13 +130,15 @@ class NotificationService
     {
         $itemName = $booking->barang->nama_barang ?? 'Alat';
         
-        Notification::create([
-            'title' => 'Penyewaan Selesai',
-            'message' => "Terima kasih! Penyewaan {$itemName} telah selesai. Jangan lupa beri rating ⭐",
-            'type' => 'rental_completed',
-            'user_id' => $booking->user_id,
-            'admin_id' => auth()->id(),
-        ]);
+        if ($booking->user_id) {
+            Notification::create([
+                'title' => 'Penyewaan Selesai',
+                'message' => "Terima kasih! Penyewaan {$itemName} telah selesai. Jangan lupa beri rating ⭐",
+                'type' => 'rental_completed',
+                'user_id' => $booking->user_id,
+                'admin_id' => auth()->id(),
+            ]);
+        }
     }
 
     /**

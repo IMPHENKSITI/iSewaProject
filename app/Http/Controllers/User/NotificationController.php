@@ -12,7 +12,10 @@ class NotificationController extends Controller
     {
         // Ambil semua notifikasi untuk pengguna yang diautentikasi, diurutkan dari yang terbaru
         $notifications = Notification::where('user_id', auth()->id())
-            ->orWhereNull('user_id') // Sertakan notifikasi siaran
+            ->orWhere(function ($query) {
+                $query->whereNull('user_id')
+                      ->where('type', 'pesan_admin');
+            }) // Sertakan notifikasi siaran
             ->with(['admin', 'user'])
             ->orderByDesc('created_at')
             ->get();
@@ -28,7 +31,10 @@ class NotificationController extends Controller
         $notification = Notification::where('id', $id)
             ->where(function($query) {
                 $query->where('user_id', auth()->id())
-                      ->orWhereNull('user_id');
+                      ->orWhere(function ($q) {
+                          $q->whereNull('user_id')
+                            ->where('type', 'pesan_admin');
+                      });
             })
             ->firstOrFail();
 
@@ -49,8 +55,13 @@ class NotificationController extends Controller
 
     public function markAllAsRead()
     {
-        Notification::where('user_id', auth()->id())
-            ->orWhereNull('user_id')
+        Notification::where(function($query) {
+                $query->where('user_id', auth()->id())
+                      ->orWhere(function ($q) {
+                          $q->whereNull('user_id')
+                            ->where('type', 'pesan_admin');
+                      });
+            })
             ->where('is_read', false)
             ->update([
                 'is_read' => true,
@@ -73,7 +84,10 @@ class NotificationController extends Controller
 
             $count = Notification::where(function($query) {
                     $query->where('user_id', auth()->id())
-                        ->orWhereNull('user_id');
+                        ->orWhere(function ($q) {
+                            $q->whereNull('user_id')
+                              ->where('type', 'pesan_admin');
+                        });
                 })
                 ->where('type', '!=', 'pesan_admin') // Kecuali pesan dari admin
                 ->delete();
