@@ -6,18 +6,34 @@
         /* Mobile & Tablet: Fixed (Follows scroll) */
         .navbar-responsive-pos {
             position: fixed;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+            will-change: transform;
         }
 
-        /* Desktop (>= 1024px): Absolute (Does not follow) */
-        @media (min-width: 1024px) {
-            .navbar-responsive-pos {
-                position: absolute !important;
-            }
+
+        
+        .hidden-nav {
+            transform: translateY(-100%) translateZ(0) !important;
         }
+        
+        .sd-navbar-toggle {
+            position: absolute; bottom: -28px; right: 32px;
+            width: 40px; height: 28px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #38bdf8; z-index: 51;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .sd-navbar-toggle:hover { color: #0284c7; background: rgba(255, 255, 255, 0.9); }
+        .sd-navbar-toggle svg { width: 24px; height: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
     </style>
 @endpush
 
-<nav class="navbar-responsive-pos top-0 left-0 w-full z-50 bg-white/10 backdrop-blur-sm shadow-sm">
+<nav id="master-navbar" class="navbar-responsive-pos top-0 left-0 w-full z-50 bg-white/10 backdrop-blur-sm shadow-sm transition-transform duration-300">
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-5 py-0">
         <div class="flex items-center justify-between">
             <div class="flex-shrink-0">
@@ -133,7 +149,101 @@
             </div>
         </div>
     </div>
+
+    <!-- Toggle Button -->
+    <div class="sd-navbar-toggle" id="master-navbar-toggle">
+        <svg id="master-icon-up" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 8l-6 6h12l-6-6z"/>
+        </svg>
+        <svg id="master-icon-down" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+            <path d="M12 16l6-6H6l6 6z"/>
+        </svg>
+    </div>
 </nav>
+
+<script>
+    const initMasterNavbar = function() {
+        const masterToggle = document.getElementById('master-navbar-toggle');
+        const navbar = document.getElementById('master-navbar');
+        
+        if(masterToggle && !masterToggle.dataset.initialized) {
+            masterToggle.dataset.initialized = 'true';
+            masterToggle.addEventListener('click', () => {
+                const iconUp = document.getElementById('master-icon-up');
+                const iconDown = document.getElementById('master-icon-down');
+                
+                if(!navbar) return;
+                navbar.classList.toggle('hidden-nav');
+                
+                // Efek Slider Mengikuti Navbar (Naik/Turun)
+                const sliderContainer = document.getElementById('beranda-slider-container');
+                if(sliderContainer) {
+                    if(navbar.classList.contains('hidden-nav')) {
+                        sliderContainer.style.transform = 'translateY(-100px)'; // Nilai seukuran navbar (sekitar 100px)
+                    } else {
+                        sliderContainer.style.transform = 'translateY(0)';
+                    }
+                }
+
+                if(navbar.classList.contains('hidden-nav')) {
+                    if(iconUp) iconUp.style.display = 'none';
+                    if(iconDown) iconDown.style.display = 'block';
+                } else {
+                    if(iconUp) iconUp.style.display = 'block';
+                    if(iconDown) iconDown.style.display = 'none';
+                }
+            });
+        }
+
+        if (!window.masterNavbarScrollInitialized) {
+            window.masterNavbarScrollInitialized = true;
+            let lastScrollY = window.scrollY;
+            let ticking = false;
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        const iconUp = document.getElementById('master-icon-up');
+                        const iconDown = document.getElementById('master-icon-down');
+                        
+                        if (!navbar) {
+                            ticking = false;
+                            return;
+                        }
+                        
+                        const currentScrollY = window.scrollY;
+                        const sliderContainer = document.getElementById('beranda-slider-container');
+                        
+                        if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                            // Scroll down: Hide navbar
+                            if (!navbar.classList.contains('hidden-nav')) {
+                                navbar.classList.add('hidden-nav');
+                                if(iconUp) iconUp.style.display = 'none';
+                                if(iconDown) iconDown.style.display = 'block';
+                                if(sliderContainer) sliderContainer.style.transform = 'translateY(-100px)';
+                            }
+                        } else if (currentScrollY < lastScrollY) {
+                            // Scroll up: Show navbar
+                            if (navbar.classList.contains('hidden-nav')) {
+                                navbar.classList.remove('hidden-nav');
+                                if(iconUp) iconUp.style.display = 'block';
+                                if(iconDown) iconDown.style.display = 'none';
+                                if(sliderContainer) sliderContainer.style.transform = 'translateY(0)';
+                            }
+                        }
+                        lastScrollY = currentScrollY;
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+        }
+    };
+    
+    document.addEventListener('DOMContentLoaded', initMasterNavbar);
+    // Untuk dukungan Turbo/Livewire (jika ada)
+    document.addEventListener('turbo:load', initMasterNavbar);
+</script>
 
 {{-- ================================================ --}}
 {{-- OVERLAY - z-[998] agar di bawah sidebar z-[999] --}}

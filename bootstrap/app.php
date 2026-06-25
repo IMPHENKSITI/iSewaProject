@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Global Security Middlewares
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->append(\App\Http\Middleware\SanitizeInput::class);
+        $middleware->append(\App\Http\Middleware\DDoSProtection::class);
+
         // Register custom middleware aliases
         $middleware->alias([
             'auth' => \App\Http\Middleware\CheckRole::class,

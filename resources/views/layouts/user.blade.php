@@ -150,31 +150,38 @@
                 });
             },
 
-            // Efek Scroll Navbar
+            // Efek Scroll Navbar (Sembunyi saat scroll bawah, tampil saat scroll atas)
             initScrollEffect() {
-                const navbar = document.querySelector('nav');
+                const navbar = document.getElementById('master-navbar');
                 if (!navbar) return;
 
+                let lastScrollY = window.scrollY;
+
                 const handleScroll = () => {
-                    // Cek jika width desktop (>= 1024px), jangan ubah background
-                    if (window.innerWidth >= 1024) {
-                        navbar.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-sm');
-                        navbar.classList.add('bg-white/10');
-                        return;
-                    }
+                    const currentScrollY = window.scrollY;
                     
-                    if (window.scrollY > 10) {
+                    // Efek background blur saat discroll
+                    if (currentScrollY > 10) {
                         navbar.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-sm');
                         navbar.classList.remove('bg-white/10');
                     } else {
                         navbar.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-sm');
                         navbar.classList.add('bg-white/10');
                     }
+
+                    // Sembunyikan saat scroll ke bawah, tampilkan saat scroll ke atas
+                    if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                        // Scroll Ke Bawah - Sembunyikan
+                        navbar.classList.add('-translate-y-full');
+                    } else if (currentScrollY < lastScrollY) {
+                        // Scroll Ke Atas - Tampilkan
+                        navbar.classList.remove('-translate-y-full');
+                    }
+                    
+                    lastScrollY = currentScrollY <= 0 ? 0 : currentScrollY;
                 };
 
-                window.addEventListener('scroll', handleScroll);
-                // Listen to resize to reset if switching modes
-                window.addEventListener('resize', handleScroll);
+                window.addEventListener('scroll', handleScroll, { passive: true });
             },
 
             // Handler untuk tombol auth di mobile

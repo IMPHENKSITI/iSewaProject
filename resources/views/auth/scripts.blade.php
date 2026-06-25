@@ -333,7 +333,42 @@
                     closeModal();
                     setTimeout(() => window.location.href = data.redirect, 1000);
                 } else {
-                    if (data.errors) {
+                    if (data.is_throttled || response.status === 429) {
+                        const alertBox = document.getElementById('login-throttle-alert');
+                        const alertMsg = document.getElementById('login-throttle-message');
+                        const submitBtn = this.querySelector('button[type="submit"]');
+                        const btnForgot = document.getElementById('btn-open-forgot-password');
+                        
+                        // Tampilkan kotak peringatan
+                        alertBox.classList.remove('hidden');
+                        alertBox.classList.add('flex');
+                        alertMsg.textContent = data.message;
+                        
+                        // Sembunyikan tombol submit utama dan matikan input
+                        submitBtn.classList.add('hidden');
+                        this.querySelectorAll('input').forEach(inp => inp.disabled = true);
+                        
+                        // Highlight tombol lupa password kecil
+                        if (btnForgot) {
+                            btnForgot.classList.add('text-red-600', 'font-bold');
+                        }
+
+                        // Buka otomatis setelah timer habis
+                        const retryAfter = data.retry_after ? data.retry_after * 1000 : 60000;
+                        setTimeout(() => {
+                            alertBox.classList.add('hidden');
+                            alertBox.classList.remove('flex');
+                            submitBtn.classList.remove('hidden');
+                            this.querySelectorAll('input').forEach(inp => {
+                                inp.disabled = false;
+                                inp.value = ''; // Reset input for safety
+                            });
+                            if (btnForgot) {
+                                btnForgot.classList.remove('text-red-600', 'font-bold');
+                            }
+                        }, retryAfter);
+
+                    } else if (data.errors) {
                         Object.keys(data.errors).forEach(field => {
                             showError(this, field, data.errors[field][0]);
                         });
@@ -553,6 +588,11 @@
 
         // Open Forgot Password Modal
         document.getElementById('btn-open-forgot-password')?.addEventListener('click', function() {
+            switchModal(modalLogin, modalForgotPassword);
+        });
+
+        // Open Forgot Password Modal (Dari Tombol Throttle Alert)
+        document.getElementById('btn-throttle-forgot-password')?.addEventListener('click', function() {
             switchModal(modalLogin, modalForgotPassword);
         });
 

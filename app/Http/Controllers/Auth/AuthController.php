@@ -182,11 +182,24 @@ class AuthController extends Controller
                 'remember' => 'nullable|boolean',
             ]);
 
+            $throttleKey = strtolower($validated['email_or_phone']) . '|' . $request->ip();
+
+            if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($throttleKey, 5)) {
+                $seconds = \Illuminate\Support\Facades\RateLimiter::availableIn($throttleKey);
+                return response()->json([
+                    'success' => false,
+                    'message' => "Terlalu banyak percobaan. Silakan coba lagi dalam $seconds detik.",
+                    'is_throttled' => true,
+                    'retry_after' => $seconds
+                ], 429);
+            }
+
             $loginField = $validated['email_or_phone'];
             $fieldType = filter_var($loginField, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
             $user = User::where($fieldType, $loginField)->first();
 
             if (!$user) {
+                \Illuminate\Support\Facades\RateLimiter::hit($throttleKey, 60);
                 return response()->json([
                     'success' => false,
                     'message' => 'Email/nomor telepon tidak ditemukan'
@@ -201,11 +214,14 @@ class AuthController extends Controller
             }
 
             if (!Hash::check($validated['password'], $user->password)) {
+                \Illuminate\Support\Facades\RateLimiter::hit($throttleKey, 60);
                 return response()->json([
                     'success' => false,
                     'message' => 'Password salah'
                 ], 401);
             }
+
+            \Illuminate\Support\Facades\RateLimiter::clear($throttleKey);
 
             // Convert remember value to boolean
             $rememberMe = isset($validated['remember']) && ($validated['remember'] === true || $validated['remember'] === '1' || $validated['remember'] === 1);

@@ -63,7 +63,19 @@
                         <input type="checkbox" name="remember" id="remember-me" value="1" class="mr-2 rounded">
                         <span class="text-gray-600">Ingat Saya</span>
                     </label>
-                    <button type="button" id="btn-open-forgot-password" class="text-blue-500 hover:underline">Lupa Kata Sandi?</button>
+                    <button type="button" id="btn-open-forgot-password" class="text-blue-500 hover:underline transition-all duration-300">Lupa Kata Sandi?</button>
+                </div>
+
+                {{-- Alert Rate Limiting --}}
+                <div id="login-throttle-alert" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-2 flex-col items-center text-center shadow-inner">
+                    <svg class="w-8 h-8 text-red-500 mb-2 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-red-700 font-semibold mb-1 text-[15px]">Akses Terkunci Sementara</p>
+                    <p id="login-throttle-message" class="text-sm text-red-600 mb-3 leading-relaxed"></p>
+                    <button type="button" id="btn-throttle-forgot-password" class="px-5 py-2 bg-red-500 text-white font-semibold rounded-full hover:bg-red-600 hover:shadow-md transition-all duration-200 text-sm transform hover:scale-105 active:scale-95">
+                        Reset Kata Sandi Sekarang
+                    </button>
                 </div>
 
                 <button type="submit"

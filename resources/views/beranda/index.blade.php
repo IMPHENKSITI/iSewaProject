@@ -8,8 +8,11 @@
 
     {{-- UTAMA --}}<main class="flex-grow relative w-full overflow-x-hidden">
 
+        <!-- Layer khusus untuk efek blur di belakang navbar (hanya di paling atas) -->
+        <div id="navbar-blur-bg" class="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-white/30 to-transparent backdrop-blur-sm z-20 pointer-events-none"></div>
+
         {{-- BAGIAN BERANDA --}}<section id="beranda" class="relative z-10">
-            <div class="w-full mx-auto">
+            <div id="beranda-slider-container" class="w-full mx-auto transition-transform duration-500 ease-out">
                 <div class="relative overflow-hidden group">
                     <!-- Wadah Slide -->
                     <div id="carousel-slides" class="flex transition-transform duration-500 ease-out">
