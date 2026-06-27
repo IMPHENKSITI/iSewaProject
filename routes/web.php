@@ -21,6 +21,11 @@ Route::get('/media/profile/{filename}', [MediaController::class, 'userProfile'])
 Route::get('/', function () {
     return redirect('beranda');
 });
+
+Route::get('/sapu-bersih', function () {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    return 'Semua cache berhasil disapu bersih! Silakan coba daftar lagi sekarang.';
+});
 Route::get('/beranda', [App\Http\Controllers\User\BerandaController::class, 'index'])
     ->name('beranda')
     ->middleware('role:user,guest');
