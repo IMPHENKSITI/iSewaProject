@@ -70,7 +70,7 @@ class AuthController extends Controller
             Log::error('Registration error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan'
+                'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -168,7 +168,7 @@ class AuthController extends Controller
             Log::error('Resend OTP error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengirim ulang OTP'
+                'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
     }
