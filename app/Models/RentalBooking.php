@@ -55,6 +55,8 @@ class RentalBooking extends Model
         'total_amount' => 'decimal:2',
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
+        'recipient_name' => \App\Casts\SafeEncryptCast::class,
+        'delivery_address' => \App\Casts\SafeEncryptCast::class,
     ];
 
     /**

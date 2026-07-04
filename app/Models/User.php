@@ -58,6 +58,7 @@ class User extends Authenticatable
             'otp_expires_at' => 'datetime',    // ✅ TAMBAH INI
             'reset_token_expires_at' => 'datetime', // ✅ TAMBAH INI
             'status' => 'string',
+            'name' => \App\Casts\SafeEncryptCast::class,
             'address' => \App\Casts\SafeEncryptCast::class,
         ];
     }

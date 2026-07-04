@@ -46,6 +46,9 @@ class GasOrder extends Model
         'cancellation_requested_at' => 'datetime',
         'confirmed_at' => 'datetime',
         'price' => 'decimal:2',
+        'full_name' => \App\Casts\SafeEncryptCast::class,
+        'email' => \App\Casts\SafeEncryptCast::class,
+        'address' => \App\Casts\SafeEncryptCast::class,
     ];
 
     /**
