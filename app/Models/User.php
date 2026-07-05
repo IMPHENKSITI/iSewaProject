@@ -43,7 +43,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'otp_code',               // ✅ TAMBAH INI (jangan expose OTP)
+        'otp_code',               // 
     ];
 
     /**
@@ -55,8 +55,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'otp_expires_at' => 'datetime',    // ✅ TAMBAH INI
-            'reset_token_expires_at' => 'datetime', // ✅ TAMBAH INI
+            'otp_expires_at' => 'datetime',    // 
+            'reset_token_expires_at' => 'datetime', // 
             'status' => 'string',
             'name' => \App\Casts\SafeEncryptCast::class,
             'address' => \App\Casts\SafeEncryptCast::class,
